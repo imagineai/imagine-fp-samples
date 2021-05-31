@@ -1,0 +1,427 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>Biorthogonality</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library Biorthogonality</h1>
+
+<div class="code">
+<span class="id" title="keyword">Add</span> <span class="id" title="var">Rec</span> <span class="id" title="var">LoadPath</span> "." <span class="id" title="keyword">as</span> <span class="id" title="var">Top</span>.<br/>
+<span class="id" title="keyword">Set</span> <span class="id" title="var">Automatic</span> <span class="id" title="var">Coercions</span> <span class="id" title="keyword">Import</span>.<br/>
+<span class="id" title="keyword">Set Implicit Arguments</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Utf8</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Ensembles</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Sets</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Coq.Structures.Orders</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Relations</span> <span class="id" title="var">Morphisms</span> <span class="id" title="var">Setoid</span> <span class="id" title="var">Equalities</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <span class="id" title="var">Basics</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a name="lab1"></a><h1 class="section">Galois Connections, Orthogonal operators</h1>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">program_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+A Poset Type  Usual Coq.Equalities.Orders ask for a <span class="inlinecode"><span class="id" title="var">compare</span></span> decidable function that
+we do not have on Ensembles. Using a type instead 
+</div>
+<div class="code">
+<span class="id" title="keyword">Module</span> <span class="id" title="keyword">Type</span> <span class="id" title="var">PosetType</span> &lt;: <span class="id" title="var">EqLe</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Declare Module</span> <span class="id" title="var">E</span> : <span class="id" title="var">EqualityType</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">t</span> := <span class="id" title="var">E.t</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">eq</span> := <span class="id" title="var">E.eq</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Parameter</span> <span class="id" title="var">le</span> : <span class="id" title="var">t</span> -&gt; <span class="id" title="var">t</span> -&gt; <span class="id" title="keyword">Prop</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Parameter</span> <span class="id" title="var">le_refl</span> : <span class="id" title="var">Reflexive</span> <span class="id" title="var">le</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Parameter</span> <span class="id" title="var">le_trans</span> : <span class="id" title="var">Transitive</span> <span class="id" title="var">le</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Parameter</span> <span class="id" title="var">le_antisym</span> : @<span class="id" title="var">Antisymmetric</span> <span class="id" title="var">_</span> <span class="id" title="var">E.eq</span> <span class="id" title="var">E.eq_equiv</span> <span class="id" title="var">le</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Parameter</span> <span class="id" title="var">le_compat</span> : <span class="id" title="var">Proper</span> (<span class="id" title="var">eq</span> ==&gt; <span class="id" title="var">eq</span> ==&gt; <span class="id" title="var">iff</span>) <span class="id" title="var">le</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Instance</span> <span class="id" title="var">PosetType_Reflexive</span> : <span class="id" title="var">Reflexive</span> <span class="id" title="var">le</span> := <span class="id" title="var">le_refl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Instance</span> <span class="id" title="var">PosetType_Transitive</span> : <span class="id" title="var">Transitive</span> <span class="id" title="var">le</span> := <span class="id" title="var">le_trans</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Instance</span> <span class="id" title="var">PosetType_Antisymmetric</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;@<span class="id" title="var">Antisymmetric</span> <span class="id" title="var">_</span> <span class="id" title="var">E.eq</span> <span class="id" title="var">E.eq_equiv</span> <span class="id" title="var">le</span> := <span class="id" title="var">le_antisym</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Instance</span> <span class="id" title="var">PosetType_Compat</span> : <span class="id" title="var">Proper</span> (<span class="id" title="var">eq</span> ==&gt; <span class="id" title="var">eq</span> ==&gt; <span class="id" title="var">iff</span>) <span class="id" title="var">le</span> := <span class="id" title="var">le_compat</span>.<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">PosetType</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Antitone Galois Connections 
+</div>
+<div class="code">
+<span class="id" title="keyword">Module</span> <span class="id" title="keyword">Type</span> <span class="id" title="var">GCType</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Declare Module</span> <span class="id" title="var">P</span> : <span class="id" title="var">PosetType</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Declare Module</span> <span class="id" title="var">Q</span> : <span class="id" title="var">PosetType</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> &quot;p ≦ p'" := (<span class="id" title="var">P.le</span> <span class="id" title="var">p</span> <span class="id" title="var">p'</span>) (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 70, <span class="id" title="keyword">no</span> <span class="id" title="keyword">associativity</span>) : <span class="id" title="var">P_scope</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> &quot;p == p'" := (<span class="id" title="var">P.eq</span> <span class="id" title="var">p</span> <span class="id" title="var">p'</span>) (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 70, <span class="id" title="keyword">no</span> <span class="id" title="keyword">associativity</span>) : <span class="id" title="var">P_scope</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Delimit</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">P_scope</span> <span class="id" title="keyword">with</span> <span class="id" title="var">P</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> &quot;q ≦ q'"  := (<span class="id" title="var">Q.le</span> <span class="id" title="var">q</span> <span class="id" title="var">q'</span>) (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 70, <span class="id" title="keyword">no</span> <span class="id" title="keyword">associativity</span>) : <span class="id" title="var">Q_scope</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> &quot;q == q'" := (<span class="id" title="var">Q.eq</span> <span class="id" title="var">q</span> <span class="id" title="var">q'</span>) (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 70, <span class="id" title="keyword">no</span> <span class="id" title="keyword">associativity</span>) : <span class="id" title="var">Q_scope</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Delimit</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">Q_scope</span> <span class="id" title="keyword">with</span> <span class="id" title="var">Q</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Parameter</span> <span class="id" title="var">f</span> : <span class="id" title="var">P.t</span> -&gt; <span class="id" title="var">Q.t</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Parameter</span> <span class="id" title="var">g</span> : <span class="id" title="var">Q.t</span> -&gt; <span class="id" title="var">P.t</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Parameter</span> <span class="id" title="var">antitone</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">p</span> <span class="id" title="var">q</span>, (<span class="id" title="var">q</span> ≦ <span class="id" title="var">f</span>(<span class="id" title="var">p</span>))%<span class="id" title="var">Q</span> &lt;-&gt; (<span class="id" title="var">p</span> ≦ <span class="id" title="var">g</span>(<span class="id" title="var">q</span>))%<span class="id" title="var">P</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">GCType</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The dual Galois Connections 
+</div>
+<div class="code">
+<span class="id" title="keyword">Module</span> <span class="id" title="var">GCDual</span> (<span class="id" title="keyword">Import</span> <span class="id" title="var">GC</span> : <span class="id" title="var">GCType</span>) &lt;: <span class="id" title="var">GCType</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Module</span> <span class="id" title="var">P</span> := <span class="id" title="var">GC.Q</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Module</span> <span class="id" title="var">Q</span> := <span class="id" title="var">GC.P</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">f</span> := <span class="id" title="var">GC.g</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">g</span> := <span class="id" title="var">GC.f</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">antitone</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">p</span> <span class="id" title="var">q</span>, (<span class="id" title="var">q</span> ≦ <span class="id" title="var">f</span>(<span class="id" title="var">p</span>))%<span class="id" title="var">P</span> &lt;-&gt; (<span class="id" title="var">p</span> ≦ <span class="id" title="var">g</span>(<span class="id" title="var">q</span>))%<span class="id" title="var">Q</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">p</span> <span class="id" title="var">q</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">GC.antitone</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">tauto</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">GCDual</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Some properties of Galois Connections 
+</div>
+<div class="code">
+<span class="id" title="keyword">Module</span> <span class="id" title="var">GCFacts</span> (<span class="id" title="keyword">Import</span> <span class="id" title="var">GC</span> : <span class="id" title="var">GCType</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">P</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">comp_extensivity</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> <span class="id" title="var">p</span>, <span class="id" title="var">p</span> ≦ <span class="id" title="var">g</span> (<span class="id" title="var">f</span> <span class="id" title="var">p</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">antitone</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">function_antitone</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> <span class="id" title="var">p</span> <span class="id" title="var">p'</span>, <span class="id" title="var">p</span> ≦ <span class="id" title="var">p'</span> -&gt; (<span class="id" title="var">f</span> (<span class="id" title="var">p'</span>) ≦ <span class="id" title="var">f</span> (<span class="id" title="var">p</span>))%<span class="id" title="var">Q</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">p</span> <span class="id" title="var">p'</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">antitone</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">transitivity</span> <span class="id" title="var">p'</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">comp_extensivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">comp_equality</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> <span class="id" title="var">p</span>, ((<span class="id" title="var">f</span> ∘ <span class="id" title="var">g</span> ∘ <span class="id" title="var">f</span>) <span class="id" title="var">p</span> == <span class="id" title="var">f</span> <span class="id" title="var">p</span>)%<span class="id" title="var">Q</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">Q.le_antisym</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">function_antitone</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">comp_extensivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">compose</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">antitone</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">function_resp</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> <span class="id" title="var">p</span> <span class="id" title="var">p'</span>, <span class="id" title="var">p</span> == <span class="id" title="var">p'</span> -&gt; (<span class="id" title="var">f</span> <span class="id" title="var">p</span> == <span class="id" title="var">f</span> <span class="id" title="var">p'</span>)%<span class="id" title="var">Q</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">p</span> <span class="id" title="var">p'</span> <span class="id" title="var">EQ</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">Q.le_antisym</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">function_antitone</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">EQ</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">function_antitone</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">EQ</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">GCFacts</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Closure operatos (extensive, monotone and idempotent functions) 
+</div>
+<div class="code">
+<span class="id" title="keyword">Module</span> <span class="id" title="keyword">Type</span> <span class="id" title="var">ClosureOperator</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Declare Module</span> <span class="id" title="var">P</span> : <span class="id" title="var">PosetType</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Parameter</span> <span class="id" title="var">h</span> : <span class="id" title="var">P.t</span> -&gt; <span class="id" title="var">P.t</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> &quot;p ≦ q"  := (<span class="id" title="var">P.le</span> <span class="id" title="var">p</span> <span class="id" title="var">q</span>) (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 70, <span class="id" title="keyword">no</span> <span class="id" title="keyword">associativity</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> &quot;p == q" := (<span class="id" title="var">P.eq</span> <span class="id" title="var">p</span> <span class="id" title="var">q</span>) (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 70, <span class="id" title="keyword">no</span> <span class="id" title="keyword">associativity</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Parameter</span> <span class="id" title="var">extensive</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">p</span>, <span class="id" title="var">p</span> ≦ <span class="id" title="var">h</span> (<span class="id" title="var">p</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Parameter</span> <span class="id" title="var">monotone</span>: <span class="id" title="keyword">forall</span> <span class="id" title="var">p</span> <span class="id" title="var">p'</span>, <span class="id" title="var">p</span> ≦ <span class="id" title="var">p'</span> -&gt; <span class="id" title="var">h</span> (<span class="id" title="var">p</span>) ≦ <span class="id" title="var">h</span> (<span class="id" title="var">p'</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Parameter</span> <span class="id" title="var">idemp</span>: <span class="id" title="keyword">forall</span> <span class="id" title="var">p</span>, (<span class="id" title="var">h</span> ∘ <span class="id" title="var">h</span>) <span class="id" title="var">p</span>  == <span class="id" title="var">h</span> <span class="id" title="var">p</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">ClosureOperator</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Obtain a ClosureOperator from a Galois Connections 
+</div>
+<div class="code">
+<span class="id" title="keyword">Module</span> <span class="id" title="var">GCClosure</span> (<span class="id" title="keyword">Import</span> <span class="id" title="var">GC</span> : <span class="id" title="var">GCType</span>) &lt;: <span class="id" title="var">ClosureOperator</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Module</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">GF</span> := <span class="id" title="var">GCFacts</span> <span class="id" title="var">GC</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Module</span> <span class="id" title="var">GD</span> := <span class="id" title="var">GCDual</span> <span class="id" title="var">GC</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Module</span> <span class="id" title="var">GDF</span> := <span class="id" title="var">GCFacts</span> <span class="id" title="var">GD</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Module</span> <span class="id" title="var">P</span> := <span class="id" title="var">GC.P</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">h</span> : <span class="id" title="var">P.t</span> -&gt; <span class="id" title="var">P.t</span> := <span class="id" title="var">g</span> ∘ <span class="id" title="var">f</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">extensive</span>: <span class="id" title="keyword">forall</span> <span class="id" title="var">p</span>, <span class="id" title="var">p</span> ≦ <span class="id" title="var">h</span> (<span class="id" title="var">p</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">p</span>. <span class="id" title="tactic">cbv</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">comp_extensivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">monotone</span>: <span class="id" title="keyword">forall</span> <span class="id" title="var">p</span> <span class="id" title="var">p'</span>, <span class="id" title="var">p</span> ≦ <span class="id" title="var">p'</span> -&gt; <span class="id" title="var">h</span> (<span class="id" title="var">p</span>) ≦ <span class="id" title="var">h</span> (<span class="id" title="var">p'</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">p</span> <span class="id" title="var">p'</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">cbv</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">GDF.function_antitone</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">function_antitone</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">idemp</span>: <span class="id" title="keyword">forall</span> <span class="id" title="var">p</span>, (<span class="id" title="var">h</span> ∘ <span class="id" title="var">h</span>) <span class="id" title="var">p</span> == <span class="id" title="var">h</span> (<span class="id" title="var">p</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">cbv</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">GDF.function_resp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">comp_equality</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">GCClosure</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Use Ensemble.Included as the order to obtain a Poset 
+</div>
+<div class="code">
+<span class="id" title="keyword">Module</span> <span class="id" title="var">InclusionOrdered</span> (<span class="id" title="var">T</span> : <span class="id" title="var">Typ</span>) &lt;: <span class="id" title="var">PosetType</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Module</span> <span class="id" title="var">E</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">t</span> := <span class="id" title="var">Ensemble</span> <span class="id" title="var">T.t</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">eq</span> := <span class="id" title="var">Same_set</span> <span class="id" title="var">T.t</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">eq_equiv</span>: <span class="id" title="var">Equivalence</span> (<span class="id" title="var">Same_set</span> <span class="id" title="var">T.t</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">split</span> ; <span class="id" title="tactic">firstorder</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">End</span> <span class="id" title="var">E</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">t</span> := <span class="id" title="var">Ensemble</span> (<span class="id" title="var">T.t</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">le</span> := <span class="id" title="var">Included</span> (<span class="id" title="var">T.t</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">eq</span> := <span class="id" title="var">Same_set</span> (<span class="id" title="var">T.t</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Hint Unfold</span> <span class="id" title="var">t</span> <span class="id" title="var">le</span> <span class="id" title="var">eq</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">le_compat</span>: <span class="id" title="var">Proper</span> (<span class="id" title="var">eq</span> ==&gt; <span class="id" title="var">eq</span> ==&gt; <span class="id" title="var">iff</span>) <span class="id" title="var">le</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> <span class="id" title="var">EQ</span> <span class="id" title="var">X'</span> <span class="id" title="var">Y'</span> <span class="id" title="var">EQ'</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">EQ</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">EQ'</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">tauto</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">le_refl</span>: <span class="id" title="var">Reflexive</span> <span class="id" title="var">le</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">X</span>. <span class="id" title="tactic">firstorder</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">le_trans</span>: <span class="id" title="var">Transitive</span> <span class="id" title="var">le</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span>. <span class="id" title="tactic">firstorder</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">le_antisym</span>: @<span class="id" title="var">Antisymmetric</span> <span class="id" title="var">_</span> <span class="id" title="var">E.eq</span> <span class="id" title="var">E.eq_equiv</span> <span class="id" title="var">le</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span>. <span class="id" title="tactic">firstorder</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Instance</span> <span class="id" title="var">PosetType_Reflexive</span> : <span class="id" title="var">Reflexive</span> <span class="id" title="var">le</span> := <span class="id" title="var">le_refl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Instance</span> <span class="id" title="var">PosetType_Transitive</span> : <span class="id" title="var">Transitive</span> <span class="id" title="var">le</span> := <span class="id" title="var">le_trans</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Instance</span> <span class="id" title="var">PosetType_Antisymmetric</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;@<span class="id" title="var">Antisymmetric</span> <span class="id" title="var">_</span> <span class="id" title="var">E.eq</span> <span class="id" title="var">E.eq_equiv</span> <span class="id" title="var">le</span> := <span class="id" title="var">le_antisym</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Instance</span> <span class="id" title="var">PosetType_Compat</span> : <span class="id" title="var">Proper</span> (<span class="id" title="var">eq</span> ==&gt; <span class="id" title="var">eq</span> ==&gt; <span class="id" title="var">iff</span>) <span class="id" title="var">le</span> := <span class="id" title="var">le_compat</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">InclusionOrdered</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We need two types (elements, tests) and a satisfability relation 
+</div>
+<div class="code">
+<span class="id" title="keyword">Module</span> <span class="id" title="keyword">Type</span> <span class="id" title="var">TstElt</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Parameter</span> <span class="id" title="var">Elt</span> : <span class="id" title="keyword">Type</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Parameter</span> <span class="id" title="var">Tst</span> : <span class="id" title="keyword">Type</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Parameter</span> <span class="id" title="var">satif</span>: <span class="id" title="var">Elt</span> -&gt; <span class="id" title="var">Tst</span> -&gt; <span class="id" title="keyword">Prop</span>.<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">TstElt</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Orthogonal operatos 
+</div>
+<div class="code">
+<span class="id" title="keyword">Module</span> <span class="id" title="var">OrthogonalOperators</span> (<span class="id" title="keyword">Import</span> <span class="id" title="var">T</span> : <span class="id" title="var">TstElt</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> &quot;e ⊧ t" := (<span class="id" title="var">satif</span> <span class="id" title="var">e</span> <span class="id" title="var">t</span>) (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 70, <span class="id" title="keyword">no</span> <span class="id" title="keyword">associativity</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Implicit</span> <span class="id" title="keyword">Type</span> <span class="id" title="var">t</span> : <span class="id" title="var">Tst</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Implicit</span> <span class="id" title="keyword">Type</span> <span class="id" title="var">e</span> : <span class="id" title="var">Elt</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">btop</span> (<span class="id" title="var">T</span> : <span class="id" title="var">Ensemble</span> <span class="id" title="var">Tst</span>) : <span class="id" title="var">Ensemble</span> <span class="id" title="var">Elt</span> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">fun</span> <span class="id" title="var">e</span> =&gt; <span class="id" title="keyword">forall</span> <span class="id" title="var">t</span>, <span class="id" title="var">In</span> <span class="id" title="var">_</span> <span class="id" title="var">T</span> <span class="id" title="var">t</span> -&gt; <span class="id" title="var">e</span> ⊧ <span class="id" title="var">t</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">bbot</span> (<span class="id" title="var">E</span> : <span class="id" title="var">Ensemble</span> <span class="id" title="var">Elt</span>) : <span class="id" title="var">Ensemble</span> <span class="id" title="var">Tst</span> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">fun</span> <span class="id" title="var">t</span> =&gt; <span class="id" title="keyword">forall</span> <span class="id" title="var">e</span>, <span class="id" title="var">In</span> <span class="id" title="var">_</span> <span class="id" title="var">E</span> <span class="id" title="var">e</span> -&gt; <span class="id" title="var">e</span> ⊧ <span class="id" title="var">t</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> &quot;X ⊤" := (<span class="id" title="var">btop</span> <span class="id" title="var">X</span>) (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 40, <span class="id" title="keyword">no</span> <span class="id" title="keyword">associativity</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> &quot;X ⊥" := (<span class="id" title="var">bbot</span> <span class="id" title="var">X</span>) (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 40, <span class="id" title="keyword">no</span> <span class="id" title="keyword">associativity</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> &quot;X ⌶" := (<span class="id" title="var">X</span> ⊥ ⊤) (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 40, <span class="id" title="keyword">no</span> <span class="id" title="keyword">associativity</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">OrthogonalOperators</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Concrete Galois connections using Ensembles 
+</div>
+<div class="code">
+<span class="id" title="keyword">Module</span> <span class="id" title="var">EnsembleGC</span> (<span class="id" title="var">T</span> : <span class="id" title="var">TstElt</span>) &lt;: <span class="id" title="var">GCType</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Module</span> <span class="id" title="keyword">Export</span> <span class="id" title="var">OO</span> := <span class="id" title="var">OrthogonalOperators</span> <span class="id" title="var">T</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Module</span> <span class="id" title="var">PTyp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">t</span> := <span class="id" title="var">T.Elt</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">End</span> <span class="id" title="var">PTyp</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Module</span> <span class="id" title="var">QTyp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">t</span> := <span class="id" title="var">T.Tst</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">End</span> <span class="id" title="var">QTyp</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Module</span> <span class="id" title="var">P</span> := <span class="id" title="var">InclusionOrdered</span> <span class="id" title="var">PTyp</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Module</span> <span class="id" title="var">Q</span> := <span class="id" title="var">InclusionOrdered</span> <span class="id" title="var">QTyp</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">f</span> := <span class="id" title="var">bbot</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">g</span> := <span class="id" title="var">btop</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">antitone</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> <span class="id" title="var">E0</span> <span class="id" title="var">T0</span>, <span class="id" title="var">Included</span> <span class="id" title="var">_</span> <span class="id" title="var">T0</span> (<span class="id" title="var">E0</span> ⊥) &lt;-&gt; <span class="id" title="var">Included</span> <span class="id" title="var">_</span> <span class="id" title="var">E0</span> (<span class="id" title="var">T0</span> ⊤).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">E0</span> <span class="id" title="var">T0</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">split</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">I</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">e</span> <span class="id" title="var">IE0</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">t</span> <span class="id" title="var">IT0</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">In</span> <span class="id" title="var">_</span> (<span class="id" title="var">E0</span> ⊥) <span class="id" title="var">t</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">I</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">H</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">I</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">t</span> <span class="id" title="var">IT0</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">e</span> <span class="id" title="var">IE0</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">In</span> <span class="id" title="var">_</span> (<span class="id" title="var">T0</span> ⊤) <span class="id" title="var">e</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">I</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">EnsembleGC</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Pack everything together 
+</div>
+<div class="code">
+<span class="id" title="keyword">Module</span> <span class="id" title="var">Biorthogonality</span> (<span class="id" title="var">T</span> : <span class="id" title="var">TstElt</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Module</span> <span class="id" title="keyword">Export</span> <span class="id" title="var">GC</span> := <span class="id" title="var">EnsembleGC</span> <span class="id" title="var">T</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Module</span> <span class="id" title="keyword">Export</span> <span class="id" title="var">CO</span> := <span class="id" title="var">GCClosure</span> <span class="id" title="var">GC</span>.<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">Biorthogonality</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

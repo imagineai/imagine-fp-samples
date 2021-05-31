@@ -1,0 +1,17 @@
+-R . "Top"
+-I ../denot/
+-I ../denot/domain-theory/
+./Syntax.v
+./Utils.v
+./DomainStuff.v
+./BOp.v
+./Map.v
+./Machine.v
+./Obs.v
+./ObsSI.v
+./Biorthogonality.v
+./Semantics.v
+./DenoApprox.v
+./OperApprox.v
+./Compiler.v
+./Sets.v

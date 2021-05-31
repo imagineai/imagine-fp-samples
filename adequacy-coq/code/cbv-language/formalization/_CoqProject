@@ -1,0 +1,17 @@
+-I ../domain-theory/
+-I ../extended-cbn/
+./Types.v
+./Utils.v
+./Domains.v
+./DomainStuff.v
+./DenoApprox.v
+./OperApprox.v
+./ExSem.v
+./InSem.v
+./Lang.v
+./OperSem.v
+./Adequacy.v
+./StrictExt.v
+./MoT.v
+./EmbProjPair.v
+./PredomProd.v

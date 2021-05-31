@@ -1,0 +1,72 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>Utils</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library Utils</h1>
+
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Require</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.1/stdlib//Coq.Strings.String.html#"><span class="id" title="library">String</span></a>. <span class="id" title="keyword">Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">string_scope</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a name="admit"><span class="id" title="definition">admit</span></a> {<span class="id" title="var">T</span>: <span class="id" title="keyword">Type</span>} : <a class="idref" href="Utils.html#T"><span class="id" title="variable">T</span></a>. <span class="id" title="var">Admitted</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Notation</span> <a name="47cc2cb0ec051ed70c2d7add0d2d6769"><span class="id" title="notation">&quot;</span></a>?" := <a class="idref" href="Utils.html#admit"><span class="id" title="axiom">admit</span></a> (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 1, <span class="id" title="keyword">no</span> <span class="id" title="keyword">associativity</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">move_to_top</span> <span class="id" title="var">x</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="var">reverse</span> <span class="id" title="keyword">goal</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;| <span class="id" title="var">H</span> : <span class="id" title="var">_</span> |- <span class="id" title="var">_</span> =&gt; <span class="id" title="tactic">try</span> <span class="id" title="tactic">move</span> <span class="id" title="var">x</span> <span class="id" title="keyword">after</span> <span class="id" title="var">H</span><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Tactic Notation</span> "assert_eq" <span class="id" title="var">ident</span>(<span class="id" title="var">x</span>) <span class="id" title="keyword">constr</span>(<span class="id" title="var">v</span>) :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">let</span> <span class="id" title="var">H</span> := <span class="id" title="tactic">fresh</span> <span class="id" title="tactic">in</span><br/>
+&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">x</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.1/stdlib//Coq.Init.Logic.html#1c39bf18749e5cc609e83c0a0ba5a372"><span class="id" title="notation">=</span></a> <span class="id" title="var">v</span>) <span class="id" title="keyword">as</span> <span class="id" title="var">H</span> <span class="id" title="tactic">by</span> <span class="id" title="tactic">reflexivity</span>;<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">clear</span> <span class="id" title="var">H</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Tactic Notation</span> "Case_aux" <span class="id" title="var">ident</span>(<span class="id" title="var">x</span>) <span class="id" title="keyword">constr</span>(<span class="id" title="var">name</span>) :=<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">first</span> [<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">set</span> (<span class="id" title="var">x</span> := <span class="id" title="var">name</span>); <span class="id" title="var">move_to_top</span> <span class="id" title="var">x</span><br/>
+&nbsp;&nbsp;| <span class="id" title="var">assert_eq</span> <span class="id" title="var">x</span> <span class="id" title="var">name</span>; <span class="id" title="var">move_to_top</span> <span class="id" title="var">x</span><br/>
+&nbsp;&nbsp;| <span class="id" title="tactic">fail</span> 1 "because we are working on a different case" ].<br/>
+
+<br/>
+<span class="id" title="keyword">Tactic Notation</span> "Case" <span class="id" title="keyword">constr</span>(<span class="id" title="var">name</span>) := <span class="id" title="var">Case_aux</span> <span class="id" title="var">Case</span> <span class="id" title="var">name</span>.<br/>
+<span class="id" title="keyword">Tactic Notation</span> "SCase" <span class="id" title="keyword">constr</span>(<span class="id" title="var">name</span>) := <span class="id" title="var">Case_aux</span> <span class="id" title="var">SCase</span> <span class="id" title="var">name</span>.<br/>
+<span class="id" title="keyword">Tactic Notation</span> "SSCase" <span class="id" title="keyword">constr</span>(<span class="id" title="var">name</span>) := <span class="id" title="var">Case_aux</span> <span class="id" title="var">SSCase</span> <span class="id" title="var">name</span>.<br/>
+<span class="id" title="keyword">Tactic Notation</span> "SSSCase" <span class="id" title="keyword">constr</span>(<span class="id" title="var">name</span>) := <span class="id" title="var">Case_aux</span> <span class="id" title="var">SSSCase</span> <span class="id" title="var">name</span>.<br/>
+<span class="id" title="keyword">Tactic Notation</span> "SSSSCase" <span class="id" title="keyword">constr</span>(<span class="id" title="var">name</span>) := <span class="id" title="var">Case_aux</span> <span class="id" title="var">SSSSCase</span> <span class="id" title="var">name</span>.<br/>
+<span class="id" title="keyword">Tactic Notation</span> "SSSSSCase" <span class="id" title="keyword">constr</span>(<span class="id" title="var">name</span>) := <span class="id" title="var">Case_aux</span> <span class="id" title="var">SSSSSCase</span> <span class="id" title="var">name</span>.<br/>
+<span class="id" title="keyword">Tactic Notation</span> "SSSSSSCase" <span class="id" title="keyword">constr</span>(<span class="id" title="var">name</span>) := <span class="id" title="var">Case_aux</span> <span class="id" title="var">SSSSSSCase</span> <span class="id" title="var">name</span>.<br/>
+<span class="id" title="keyword">Tactic Notation</span> "SSSSSSSCase" <span class="id" title="keyword">constr</span>(<span class="id" title="var">name</span>) := <span class="id" title="var">Case_aux</span> <span class="id" title="var">SSSSSSSCase</span> <span class="id" title="var">name</span>.<br/>
+
+<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

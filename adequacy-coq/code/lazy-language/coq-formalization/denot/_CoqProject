@@ -1,0 +1,22 @@
+-Q ./domain-theory ""
+./Biorthogonality.v
+./CCC.v
+./Common.v
+./Compiler.v
+./Correctness.v
+./DenApprox.v
+./Denot.v
+./OpApprox.v
+./Operator.v
+./PredomMore.v
+./PredomNary.v
+./RelDefs.v
+./Rel.v
+./SemChain.v
+./Sequences.v
+./Sets.v
+./Source.v
+./StepIndexing.v
+./Target.v
+./Util.v
+./VecList.v

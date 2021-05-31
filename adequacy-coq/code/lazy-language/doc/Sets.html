@@ -1,0 +1,294 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>Sets</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library Sets</h1>
+
+<div class="code">
+<span class="id" title="keyword">Add</span> <span class="id" title="var">Rec</span> <span class="id" title="var">LoadPath</span> "." <span class="id" title="keyword">as</span> <span class="id" title="var">Top</span>.<br/>
+<span class="id" title="keyword">Set</span> <span class="id" title="var">Automatic</span> <span class="id" title="var">Coercions</span> <span class="id" title="keyword">Import</span>.<br/>
+<span class="id" title="keyword">Set Implicit Arguments</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Utf8</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <span class="id" title="var">Ensembles</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <span class="id" title="var">Sets.Constructive_sets</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <span class="id" title="var">Coq.Program.Equality</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <span class="id" title="var">Setoid</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <span class="id" title="var">Coq.Classes.Morphisms</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <span class="id" title="var">Coq.Classes.RelationClasses</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a name="lab17"></a><h1 class="section">Extended Coq.Ensembles</h1>
+ A few properties about sets and some extremely useful parametric morphisms. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">Included_refl</span>:<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">forall</span> <span class="id" title="var">A</span> <span class="id" title="var">X</span>, <span class="id" title="var">Included</span> <span class="id" title="var">A</span> <span class="id" title="var">X</span> <span class="id" title="var">X</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">firstorder</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">Included_trans</span>:<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">forall</span> <span class="id" title="var">A</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> <span class="id" title="var">Z</span>, <span class="id" title="var">Included</span> <span class="id" title="var">A</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> -&gt; <span class="id" title="var">Included</span> <span class="id" title="var">A</span> <span class="id" title="var">Y</span> <span class="id" title="var">Z</span> -&gt; <span class="id" title="var">Included</span> <span class="id" title="var">A</span> <span class="id" title="var">X</span> <span class="id" title="var">Z</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">firstorder</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Add</span> <span class="id" title="var">Parametric</span> <span class="id" title="var">Relation</span> <span class="id" title="var">A</span> : (<span class="id" title="var">Ensemble</span> <span class="id" title="var">A</span>) (<span class="id" title="var">Included</span> <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span> <span class="id" title="var">proved</span> <span class="id" title="tactic">by</span> (@<span class="id" title="var">Included_refl</span> <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">transitivity</span> <span class="id" title="var">proved</span> <span class="id" title="tactic">by</span> (@<span class="id" title="var">Included_trans</span> <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">as</span> <span class="id" title="var">included_set_rel</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Add</span> <span class="id" title="var">Parametric</span> <span class="id" title="var">Morphism</span> <span class="id" title="var">A</span> (<span class="id" title="var">X</span> : <span class="id" title="var">Ensemble</span> <span class="id" title="var">A</span>) : (<span class="id" title="var">Included</span> <span class="id" title="var">A</span> <span class="id" title="var">X</span>) <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">signature</span> <span class="id" title="var">Same_set</span> <span class="id" title="var">A</span> ==&gt; <span class="id" title="var">iff</span> <span class="id" title="keyword">as</span> <span class="id" title="var">included_same_left_mor</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">firstorder</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Add</span> <span class="id" title="var">Parametric</span> <span class="id" title="var">Morphism</span> <span class="id" title="var">A</span> (<span class="id" title="var">Y</span>: <span class="id" title="var">Ensemble</span> <span class="id" title="var">A</span>) : (<span class="id" title="keyword">fun</span> <span class="id" title="var">X</span> =&gt; <span class="id" title="var">Included</span> <span class="id" title="var">A</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span>) <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">signature</span> <span class="id" title="var">Same_set</span> <span class="id" title="var">A</span> ==&gt; <span class="id" title="var">iff</span> <span class="id" title="keyword">as</span> <span class="id" title="var">included_same_right_mor</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">firstorder</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">Same_set_refl</span>:<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">forall</span> <span class="id" title="var">A</span> <span class="id" title="var">X</span> , <span class="id" title="var">Same_set</span> <span class="id" title="var">A</span> <span class="id" title="var">X</span> <span class="id" title="var">X</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">firstorder</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">Same_set_sym</span>:<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">forall</span> <span class="id" title="var">A</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> , <span class="id" title="var">Same_set</span> <span class="id" title="var">A</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> -&gt; <span class="id" title="var">Same_set</span> <span class="id" title="var">A</span> <span class="id" title="var">Y</span> <span class="id" title="var">X</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">firstorder</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">Same_set_trans</span>:<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">forall</span> <span class="id" title="var">A</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> <span class="id" title="var">Z</span>, <span class="id" title="var">Same_set</span> <span class="id" title="var">A</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> -&gt; <span class="id" title="var">Same_set</span> <span class="id" title="var">A</span> <span class="id" title="var">Y</span> <span class="id" title="var">Z</span> -&gt; <span class="id" title="var">Same_set</span> <span class="id" title="var">A</span> <span class="id" title="var">X</span> <span class="id" title="var">Z</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">firstorder</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">Same_set_in_iff</span>:<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">forall</span> <span class="id" title="var">A</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span>, <span class="id" title="var">Same_set</span> <span class="id" title="var">A</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> &lt;-&gt; (<span class="id" title="keyword">forall</span> <span class="id" title="var">k</span>, <span class="id" title="var">In</span> <span class="id" title="var">A</span> <span class="id" title="var">X</span> <span class="id" title="var">k</span> &lt;-&gt; <span class="id" title="var">In</span> <span class="id" title="var">A</span> <span class="id" title="var">Y</span> <span class="id" title="var">k</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">A</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">split</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">S</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">split</span> ; <span class="id" title="tactic">eapply</span> <span class="id" title="var">S</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">split</span> ;<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">k</span> ;<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">H</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">Union_in_iff</span>:<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">forall</span> <span class="id" title="var">A</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> <span class="id" title="var">p</span>, <span class="id" title="var">In</span> <span class="id" title="var">A</span> (<span class="id" title="var">Union</span> <span class="id" title="var">A</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span>) <span class="id" title="var">p</span> &lt;-&gt; <span class="id" title="var">In</span> <span class="id" title="var">A</span> <span class="id" title="var">X</span> <span class="id" title="var">p</span> \/ <span class="id" title="var">In</span> <span class="id" title="var">A</span> <span class="id" title="var">Y</span> <span class="id" title="var">p</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">A</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">split</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">I</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">I</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">left</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">right</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">Union_introl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">Union_intror</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">auto</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Add</span> <span class="id" title="var">Parametric</span> <span class="id" title="var">Relation</span> <span class="id" title="var">A</span> : (<span class="id" title="var">Ensemble</span> <span class="id" title="var">A</span>) (<span class="id" title="var">Same_set</span> <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span> <span class="id" title="var">proved</span> <span class="id" title="tactic">by</span> (@<span class="id" title="var">Same_set_refl</span> <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">symmetry</span> <span class="id" title="var">proved</span> <span class="id" title="tactic">by</span> (@<span class="id" title="var">Same_set_sym</span> <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">transitivity</span> <span class="id" title="var">proved</span> <span class="id" title="tactic">by</span> (@<span class="id" title="var">Same_set_trans</span> <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">as</span> <span class="id" title="var">same_set_rel</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Add</span> <span class="id" title="var">Parametric</span> <span class="id" title="var">Morphism</span> <span class="id" title="var">A</span> : (<span class="id" title="var">Union</span> <span class="id" title="var">A</span>) <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">signature</span> (<span class="id" title="var">Same_set</span> <span class="id" title="var">A</span>) ==&gt; (<span class="id" title="var">Same_set</span> <span class="id" title="var">A</span>) ==&gt; (<span class="id" title="var">Included</span> <span class="id" title="var">A</span>) <span class="id" title="keyword">as</span> <span class="id" title="var">union_same_included_mor</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> <span class="id" title="var">EQ</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">Z</span> <span class="id" title="var">W</span> <span class="id" title="var">EQ'</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">a</span> <span class="id" title="var">I</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">Union_in_iff</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">Union_in_iff</span> <span class="id" title="tactic">in</span> <span class="id" title="var">I</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">EQ</span>  <span class="id" title="keyword">as</span> [<span class="id" title="var">INC1</span> <span class="id" title="var">INC2</span>].<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">EQ'</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">INC3</span> <span class="id" title="var">INC4</span>].<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">I</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">H1</span> | <span class="id" title="var">H2</span>].<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">specialize</span> (<span class="id" title="var">INC1</span> <span class="id" title="var">_</span> <span class="id" title="var">H1</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">left</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">specialize</span> (<span class="id" title="var">INC3</span> <span class="id" title="var">_</span> <span class="id" title="var">H2</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">right</span>. <span class="id" title="tactic">auto</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Add</span> <span class="id" title="var">Parametric</span> <span class="id" title="var">Morphism</span> <span class="id" title="var">A</span> : (<span class="id" title="var">Union</span> <span class="id" title="var">A</span>) <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">signature</span> (<span class="id" title="var">Same_set</span> <span class="id" title="var">A</span>) ==&gt; (<span class="id" title="var">Same_set</span> <span class="id" title="var">A</span>) ==&gt; (<span class="id" title="var">Same_set</span> <span class="id" title="var">A</span>) <span class="id" title="keyword">as</span> <span class="id" title="var">union_same_mor</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">Γ</span> <span class="id" title="var">Δ</span> <span class="id" title="var">EQ</span> <span class="id" title="var">Γ'</span> <span class="id" title="var">Δ'</span> <span class="id" title="var">EQ'</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">split</span> ;<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">union_same_included_mor</span> ;<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">symmetry</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">symmetry</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">auto</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Add</span> <span class="id" title="var">Parametric</span> <span class="id" title="var">Morphism</span> <span class="id" title="var">A</span> : (<span class="id" title="var">Included</span> <span class="id" title="var">A</span>) <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">signature</span> <span class="id" title="var">Same_set</span> <span class="id" title="var">A</span> ==&gt; <span class="id" title="var">Same_set</span> <span class="id" title="var">A</span> ==&gt; <span class="id" title="var">iff</span> <span class="id" title="keyword">as</span> <span class="id" title="var">included_mor</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> <span class="id" title="var">EQ1</span> <span class="id" title="var">X'</span> <span class="id" title="var">Y'</span> <span class="id" title="var">EQ2</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">Included</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">Same_set_in_iff</span> <span class="id" title="tactic">in</span> <span class="id" title="var">EQ1</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">Same_set_in_iff</span> <span class="id" title="tactic">in</span> <span class="id" title="var">EQ2</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">firstorder</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">included_left_rewrite</span> <span class="id" title="var">H</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="keyword">goal</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;| [ |-  <span class="id" title="var">Included</span> ?<span class="id" title="var">Z</span> ?<span class="id" title="var">X</span> ?<span class="id" title="var">Y</span> ] =&gt; <span class="id" title="tactic">pattern</span> <span class="id" title="var">X</span> ; <span class="id" title="tactic">rewrite</span> <span class="id" title="var">H</span><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">included_right_rewrite</span> <span class="id" title="var">H</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="keyword">goal</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;| [ |-  <span class="id" title="var">Included</span> ?<span class="id" title="var">Z</span> ?<span class="id" title="var">X</span> ?<span class="id" title="var">Y</span> ] =&gt; <span class="id" title="tactic">pattern</span> <span class="id" title="var">Y</span> ; <span class="id" title="tactic">rewrite</span> <span class="id" title="var">H</span><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">union_included</span>:<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">forall</span> <span class="id" title="var">A</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> <span class="id" title="var">Z</span>, <span class="id" title="var">Included</span> <span class="id" title="var">A</span> <span class="id" title="var">X</span> <span class="id" title="var">Z</span> -&gt; <span class="id" title="var">Included</span> <span class="id" title="var">A</span> <span class="id" title="var">Y</span> <span class="id" title="var">Z</span> -&gt; <span class="id" title="var">Included</span> <span class="id" title="var">A</span> (<span class="id" title="var">Union</span> <span class="id" title="var">A</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span>) <span class="id" title="var">Z</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">A</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> <span class="id" title="var">Z</span> <span class="id" title="var">H1</span> <span class="id" title="var">H2</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">H3</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">H3</span> ;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eauto</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">Union_comm</span>:<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">forall</span> <span class="id" title="var">A</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span>, <span class="id" title="var">Same_set</span> <span class="id" title="var">_</span> (<span class="id" title="var">Union</span> <span class="id" title="var">A</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span>) (<span class="id" title="var">Union</span> <span class="id" title="var">A</span> <span class="id" title="var">Y</span> <span class="id" title="var">X</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">A</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">Same_set_in_iff</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">k</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">repeat</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">Union_in_iff</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">tauto</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">Union_assoc</span>:<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">forall</span> <span class="id" title="var">A</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> <span class="id" title="var">Z</span>, <span class="id" title="var">Same_set</span> <span class="id" title="var">_</span> (<span class="id" title="var">Union</span> <span class="id" title="var">A</span> (<span class="id" title="var">Union</span> <span class="id" title="var">A</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span>) <span class="id" title="var">Z</span>) (<span class="id" title="var">Union</span> <span class="id" title="var">A</span> <span class="id" title="var">X</span> (<span class="id" title="var">Union</span> <span class="id" title="var">A</span> <span class="id" title="var">Y</span> <span class="id" title="var">Z</span>)).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">A</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> <span class="id" title="var">Z</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">Same_set_in_iff</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">k</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">repeat</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">Union_in_iff</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">tauto</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">Union_idem</span>:<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">forall</span> <span class="id" title="var">A</span> <span class="id" title="var">X</span>, <span class="id" title="var">Same_set</span> <span class="id" title="var">_</span> (<span class="id" title="var">Union</span> <span class="id" title="var">A</span> <span class="id" title="var">X</span> <span class="id" title="var">X</span>) <span class="id" title="var">X</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">A</span> <span class="id" title="var">X</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">Same_set_in_iff</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">k</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">Union_in_iff</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">tauto</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">Union_subset</span>:<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">forall</span> <span class="id" title="var">A</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Included</span> <span class="id" title="var">A</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Same_set</span> <span class="id" title="var">_</span> (<span class="id" title="var">Union</span> <span class="id" title="var">A</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span>) <span class="id" title="var">Y</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">A</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> <span class="id" title="var">IN</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">Same_set_in_iff</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">k</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">repeat</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">Union_in_iff</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">firstorder</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">Included_Union_1</span>:<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">forall</span> <span class="id" title="var">A</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span>, <span class="id" title="var">Included</span> <span class="id" title="var">_</span> <span class="id" title="var">X</span> (<span class="id" title="var">Union</span> <span class="id" title="var">A</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">k</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">Union_in_iff</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">tauto</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">Included_Union_2</span>:<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">forall</span> <span class="id" title="var">A</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span>, <span class="id" title="var">Included</span> <span class="id" title="var">_</span> <span class="id" title="var">Y</span> (<span class="id" title="var">Union</span> <span class="id" title="var">A</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">k</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">Union_in_iff</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">tauto</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">Included_Singleton</span>:<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">forall</span> <span class="id" title="var">A</span> <span class="id" title="var">X</span> <span class="id" title="var">p</span>, <span class="id" title="var">Included</span> <span class="id" title="var">A</span> (<span class="id" title="var">Singleton</span> <span class="id" title="var">_</span> <span class="id" title="var">p</span>) <span class="id" title="var">X</span> &lt;-&gt; <span class="id" title="var">In</span> <span class="id" title="var">_</span> <span class="id" title="var">X</span> <span class="id" title="var">p</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">A</span> <span class="id" title="var">X</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">split</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">I</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">specialize</span> (<span class="id" title="var">I</span> <span class="id" title="var">p</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">I</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">constructor</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">P</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">a</span> <span class="id" title="var">I'</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">I'</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">auto</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

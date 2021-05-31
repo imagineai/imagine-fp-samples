@@ -1,0 +1,14 @@
+Compile the domain theory library first using the Makefile inside
+./domain-theory/ folder. Then compile this folder using ./Makefile.
+
+In Emacs use ProofGeneral 4.3 to automatically adjust the loadpath
+accordingly to the file ./_CoqProject (not available in ProofGeneral
+4.2) or just set the loadpath in the old way using environment
+variables as described in ProofGeneral documentation.
+
+The domain theory library was written by Benton et.al [1], we updated
+the code for the last stable version of Coq available at the moment
+(8.5pl1). Our extensions for the library are in the files PredomMore,
+PredomNary, and CCC.v
+
+[1] Benton et.al, Formalizing Domains, Ultrametric Spaces and Semantics of Programming Languages. 

@@ -1,0 +1,177 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>CoherenceExample</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library CoherenceExample</h1>
+
+<div class="code">
+</div>
+
+<div class="doc">
+new in 8.4! 
+</div>
+<div class="code">
+<span class="id" title="keyword">Set</span> <span class="id" title="var">Automatic</span> <span class="id" title="var">Coercions</span> <span class="id" title="keyword">Import</span>.<br/>
+<span class="id" title="keyword">Unset</span> <span class="id" title="var">Automatic</span> <span class="id" title="var">Introduction</span>.<br/>
+</div>
+
+<div class="doc">
+endof new in 8.4 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Add</span> <span class="id" title="var">LoadPath</span> "../domain-theory".<br/>
+<span class="id" title="keyword">Add</span> <span class="id" title="var">LoadPath</span> "../extended-cbn".<br/>
+
+<br/>
+<span class="id" title="keyword">Set Implicit Arguments</span>.<br/>
+<span class="id" title="keyword">Unset</span> <span class="id" title="keyword">Strict</span> <span class="id" title="keyword">Implicit</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="Utils.html#"><span class="id" title="library">Utils</span></a>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.1/stdlib//Coq.Program.Program.html#"><span class="id" title="library">Program</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="Lang.html#"><span class="id" title="library">Lang</span></a>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="Types.html#"><span class="id" title="library">Types</span></a>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="InSem.html#"><span class="id" title="library">InSem</span></a>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="ExSem.html#"><span class="id" title="library">ExSem</span></a>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="DomainStuff.html#"><span class="id" title="library">DomainStuff</span></a>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="OperSem.html#"><span class="id" title="library">OperSem</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.1/stdlib//Coq.Relations.Relation_Operators.html#"><span class="id" title="library">Relations.Relation_Operators</span></a>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="Adequacy.html#"><span class="id" title="library">Adequacy</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="library">PredomAll</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="Domains.html#"><span class="id" title="library">Domains</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <a class="idref" href="MoT.html#"><span class="id" title="library">MoT</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Set Implicit Arguments</span>.<br/>
+<span class="id" title="keyword">Unset</span> <span class="id" title="keyword">Strict</span> <span class="id" title="keyword">Implicit</span>.<br/>
+<span class="id" title="keyword">Import</span> <span class="id" title="var">Prenex</span> <span class="id" title="var">Implicits</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Include</span> <a class="idref" href="Domains.html#RD"><span class="id" title="module">RD</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a name="V_True"><span class="id" title="definition">V_True</span></a> {<span class="id" title="var">E</span>:<a class="idref" href="Lang.html#Env"><span class="id" title="definition">Env</span></a>} := @<a class="idref" href="Lang.html#BOOL"><span class="id" title="constructor">BOOL</span></a> <a class="idref" href="CoherenceExample.html#E"><span class="id" title="variable">E</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.1/stdlib//Coq.Init.Datatypes.html#true"><span class="id" title="constructor">true</span></a>.<br/>
+<span class="id" title="keyword">Definition</span> <a name="V_False"><span class="id" title="definition">V_False</span></a> {<span class="id" title="var">E</span>:<a class="idref" href="Lang.html#Env"><span class="id" title="definition">Env</span></a>} := @<a class="idref" href="Lang.html#BOOL"><span class="id" title="constructor">BOOL</span></a> <a class="idref" href="CoherenceExample.html#E"><span class="id" title="variable">E</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.1/stdlib//Coq.Init.Datatypes.html#false"><span class="id" title="constructor">false</span></a>.<br/>
+<span class="id" title="keyword">Definition</span> <a name="E_True"><span class="id" title="definition">E_True</span></a> {<span class="id" title="var">E</span>:<a class="idref" href="Lang.html#Env"><span class="id" title="definition">Env</span></a>} := @<a class="idref" href="Lang.html#VAL"><span class="id" title="constructor">VAL</span></a> <a class="idref" href="CoherenceExample.html#E"><span class="id" title="variable">E</span></a> <a class="idref" href="CoherenceExample.html#V_True"><span class="id" title="definition">V_True</span></a>.<br/>
+<span class="id" title="keyword">Definition</span> <a name="E_False"><span class="id" title="definition">E_False</span></a> {<span class="id" title="var">E</span>:<a class="idref" href="Lang.html#Env"><span class="id" title="definition">Env</span></a>} := @<a class="idref" href="Lang.html#VAL"><span class="id" title="constructor">VAL</span></a> <a class="idref" href="CoherenceExample.html#E"><span class="id" title="variable">E</span></a> <a class="idref" href="CoherenceExample.html#V_False"><span class="id" title="definition">V_False</span></a>.<br/>
+<span class="id" title="keyword">Definition</span> <a name="v0"><span class="id" title="definition">v0</span></a> {<span class="id" title="var">E</span>:<a class="idref" href="Lang.html#Env"><span class="id" title="definition">Env</span></a>} := <a class="idref" href="Lang.html#ZVAR"><span class="id" title="constructor">ZVAR</span></a> <a class="idref" href="CoherenceExample.html#E"><span class="id" title="variable">E</span></a>.<br/>
+<span class="id" title="keyword">Definition</span> <a name="v1"><span class="id" title="definition">v1</span></a> {<span class="id" title="var">E</span>:<a class="idref" href="Lang.html#Env"><span class="id" title="definition">Env</span></a>} := <a class="idref" href="Lang.html#SVAR"><span class="id" title="constructor">SVAR</span></a> (<a class="idref" href="Lang.html#ZVAR"><span class="id" title="constructor">ZVAR</span></a> <a class="idref" href="CoherenceExample.html#E"><span class="id" title="variable">E</span></a>).<br/>
+<span class="id" title="keyword">Definition</span> <a name="v2"><span class="id" title="definition">v2</span></a> {<span class="id" title="var">E</span>:<a class="idref" href="Lang.html#Env"><span class="id" title="definition">Env</span></a>} := <a class="idref" href="Lang.html#SVAR"><span class="id" title="constructor">SVAR</span></a> (<a class="idref" href="Lang.html#SVAR"><span class="id" title="constructor">SVAR</span></a> (<a class="idref" href="Lang.html#ZVAR"><span class="id" title="constructor">ZVAR</span></a> <a class="idref" href="CoherenceExample.html#E"><span class="id" title="variable">E</span></a>)).<br/>
+<span class="id" title="keyword">Definition</span> <a name="v3"><span class="id" title="definition">v3</span></a> {<span class="id" title="var">E</span>:<a class="idref" href="Lang.html#Env"><span class="id" title="definition">Env</span></a>} := <a class="idref" href="Lang.html#SVAR"><span class="id" title="constructor">SVAR</span></a> (<a class="idref" href="Lang.html#SVAR"><span class="id" title="constructor">SVAR</span></a> (<a class="idref" href="Lang.html#SVAR"><span class="id" title="constructor">SVAR</span></a> (<a class="idref" href="Lang.html#ZVAR"><span class="id" title="constructor">ZVAR</span></a> <a class="idref" href="CoherenceExample.html#E"><span class="id" title="variable">E</span></a>))).<br/>
+<span class="id" title="keyword">Definition</span> <a name="V_v0"><span class="id" title="definition">V_v0</span></a> {<span class="id" title="var">E</span>:<a class="idref" href="Lang.html#Env"><span class="id" title="definition">Env</span></a>} := <a class="idref" href="Lang.html#VAL"><span class="id" title="constructor">VAL</span></a> (<a class="idref" href="Lang.html#VAR"><span class="id" title="constructor">VAR</span></a> (@<a class="idref" href="CoherenceExample.html#v0"><span class="id" title="definition">v0</span></a> <a class="idref" href="CoherenceExample.html#E"><span class="id" title="variable">E</span></a>)).<br/>
+<span class="id" title="keyword">Definition</span> <a name="V_v1"><span class="id" title="definition">V_v1</span></a> {<span class="id" title="var">E</span>:<a class="idref" href="Lang.html#Env"><span class="id" title="definition">Env</span></a>} := <a class="idref" href="Lang.html#VAL"><span class="id" title="constructor">VAL</span></a> (<a class="idref" href="Lang.html#VAR"><span class="id" title="constructor">VAR</span></a> (@<a class="idref" href="CoherenceExample.html#v1"><span class="id" title="definition">v1</span></a> <a class="idref" href="CoherenceExample.html#E"><span class="id" title="variable">E</span></a>)).<br/>
+<span class="id" title="keyword">Definition</span> <a name="V_v2"><span class="id" title="definition">V_v2</span></a> {<span class="id" title="var">E</span>:<a class="idref" href="Lang.html#Env"><span class="id" title="definition">Env</span></a>} := <a class="idref" href="Lang.html#VAL"><span class="id" title="constructor">VAL</span></a> (<a class="idref" href="Lang.html#VAR"><span class="id" title="constructor">VAR</span></a> (@<a class="idref" href="CoherenceExample.html#v2"><span class="id" title="definition">v2</span></a> <a class="idref" href="CoherenceExample.html#E"><span class="id" title="variable">E</span></a>)).<br/>
+<span class="id" title="keyword">Definition</span> <a name="V_v3"><span class="id" title="definition">V_v3</span></a> {<span class="id" title="var">E</span>:<a class="idref" href="Lang.html#Env"><span class="id" title="definition">Env</span></a>} := <a class="idref" href="Lang.html#VAL"><span class="id" title="constructor">VAL</span></a> (<a class="idref" href="Lang.html#VAR"><span class="id" title="constructor">VAR</span></a> (@<a class="idref" href="CoherenceExample.html#v3"><span class="id" title="definition">v3</span></a> <a class="idref" href="CoherenceExample.html#E"><span class="id" title="variable">E</span></a>)).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a name="bool_sum"><span class="id" title="definition">bool_sum</span></a> {<span class="id" title="var">E</span>:<a class="idref" href="Lang.html#Env"><span class="id" title="definition">Env</span></a>} := <a class="idref" href="Lang.html#FUN"><span class="id" title="constructor">FUN</span></a> (<a class="idref" href="Lang.html#VAL"><span class="id" title="constructor">VAL</span></a> (<a class="idref" href="Lang.html#FUN"><span class="id" title="constructor">FUN</span></a> (@<a class="idref" href="Lang.html#NOp"><span class="id" title="constructor">NOp</span></a> (<a class="idref" href="CoherenceExample.html#E"><span class="id" title="variable">E</span></a><span class="id" title="notation">.+4</span>) <a class="idref" href="Lang.html#PlusOP"><span class="id" title="constructor">PlusOP</span></a> <a class="idref" href="CoherenceExample.html#V_v0"><span class="id" title="definition">V_v0</span></a> <a class="idref" href="CoherenceExample.html#V_v2"><span class="id" title="definition">V_v2</span></a>))).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a name="bool_sum_app"><span class="id" title="definition">bool_sum_app</span></a> {<span class="id" title="var">E</span>:<a class="idref" href="Lang.html#Env"><span class="id" title="definition">Env</span></a>} :=<br/>
+&nbsp;&nbsp;<a class="idref" href="Lang.html#LET"><span class="id" title="constructor">LET</span></a> (<a class="idref" href="Lang.html#APP"><span class="id" title="constructor">APP</span></a> (@<a class="idref" href="CoherenceExample.html#bool_sum"><span class="id" title="definition">bool_sum</span></a> <a class="idref" href="CoherenceExample.html#E"><span class="id" title="variable">E</span></a>) <a class="idref" href="CoherenceExample.html#V_True"><span class="id" title="definition">V_True</span></a>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<a class="idref" href="Lang.html#APP"><span class="id" title="constructor">APP</span></a> (<a class="idref" href="Lang.html#VAR"><span class="id" title="constructor">VAR</span></a> <a class="idref" href="CoherenceExample.html#v0"><span class="id" title="definition">v0</span></a>) <a class="idref" href="CoherenceExample.html#V_False"><span class="id" title="definition">V_False</span></a>)<br/>
+.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <a name="bool_sum_tj"><span class="id" title="lemma">bool_sum_tj</span></a> : (<a class="idref" href="Types.html#af522e7bcd6f546a086933f85f4775b4"><span class="id" title="notation">[]</span></a> <a class="idref" href="Types.html#ba2e9cc4274db99f4ed58e49f7003238"><span class="id" title="notation">v</span></a><a class="idref" href="Types.html#ba2e9cc4274db99f4ed58e49f7003238"><span class="id" title="notation">⊢</span></a> <a class="idref" href="CoherenceExample.html#bool_sum"><span class="id" title="definition">bool_sum</span></a> <a class="idref" href="Types.html#ba2e9cc4274db99f4ed58e49f7003238"><span class="id" title="notation">⦂</span></a> <a class="idref" href="Types.html#140d5c78c8b6ba316d1660b41c46219e"><span class="id" title="notation">nat</span></a><a class="idref" href="Types.html#a43d20708063ce19b185b9f080c928b2"><span class="id" title="notation">̂</span></a> <a class="idref" href="Types.html#a43d20708063ce19b185b9f080c928b2"><span class="id" title="notation">⇥</span></a> <a class="idref" href="Types.html#140d5c78c8b6ba316d1660b41c46219e"><span class="id" title="notation">nat</span></a><a class="idref" href="Types.html#a43d20708063ce19b185b9f080c928b2"><span class="id" title="notation">̂</span></a> <a class="idref" href="Types.html#a43d20708063ce19b185b9f080c928b2"><span class="id" title="notation">⇥</span></a> <a class="idref" href="Types.html#140d5c78c8b6ba316d1660b41c46219e"><span class="id" title="notation">nat</span></a>̂).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="Types.html#FunRule"><span class="id" title="constructor">FunRule</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="Types.html#ValRule"><span class="id" title="constructor">ValRule</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="Types.html#FunRule"><span class="id" title="constructor">FunRule</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="Types.html#NOpRule"><span class="id" title="constructor">NOpRule</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="Types.html#ValRule"><span class="id" title="constructor">ValRule</span></a>. <span class="id" title="tactic">apply</span> <a class="idref" href="Types.html#VarRule"><span class="id" title="constructor">VarRule</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="Types.html#ValRule"><span class="id" title="constructor">ValRule</span></a>. <span class="id" title="tactic">apply</span> <a class="idref" href="Types.html#VarRule"><span class="id" title="constructor">VarRule</span></a>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <a name="bool_sum_tj'"><span class="id" title="lemma">bool_sum_tj'</span></a> : (<a class="idref" href="Types.html#af522e7bcd6f546a086933f85f4775b4"><span class="id" title="notation">[]</span></a> <a class="idref" href="Types.html#ba2e9cc4274db99f4ed58e49f7003238"><span class="id" title="notation">v</span></a><a class="idref" href="Types.html#ba2e9cc4274db99f4ed58e49f7003238"><span class="id" title="notation">⊢</span></a> <a class="idref" href="CoherenceExample.html#bool_sum"><span class="id" title="definition">bool_sum</span></a> <a class="idref" href="Types.html#ba2e9cc4274db99f4ed58e49f7003238"><span class="id" title="notation">⦂</span></a> <a class="idref" href="Types.html#8a79662fe5ff9b1d9aa784bc889cd209"><span class="id" title="notation">bool</span></a><a class="idref" href="Types.html#a43d20708063ce19b185b9f080c928b2"><span class="id" title="notation">̂</span></a> <a class="idref" href="Types.html#a43d20708063ce19b185b9f080c928b2"><span class="id" title="notation">⇥</span></a> <a class="idref" href="Types.html#8a79662fe5ff9b1d9aa784bc889cd209"><span class="id" title="notation">bool</span></a><a class="idref" href="Types.html#a43d20708063ce19b185b9f080c928b2"><span class="id" title="notation">̂</span></a> <a class="idref" href="Types.html#a43d20708063ce19b185b9f080c928b2"><span class="id" title="notation">⇥</span></a> <a class="idref" href="Types.html#140d5c78c8b6ba316d1660b41c46219e"><span class="id" title="notation">nat</span></a>̂).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="Types.html#SubsVRule"><span class="id" title="constructor">SubsVRule</span></a> <span class="id" title="keyword">with</span> (<span class="id" title="var">θ</span>:=<a class="idref" href="Types.html#140d5c78c8b6ba316d1660b41c46219e"><span class="id" title="notation">nat</span></a><a class="idref" href="Types.html#a43d20708063ce19b185b9f080c928b2"><span class="id" title="notation">̂</span></a> <a class="idref" href="Types.html#a43d20708063ce19b185b9f080c928b2"><span class="id" title="notation">⇥</span></a> <a class="idref" href="Types.html#140d5c78c8b6ba316d1660b41c46219e"><span class="id" title="notation">nat</span></a><a class="idref" href="Types.html#a43d20708063ce19b185b9f080c928b2"><span class="id" title="notation">̂</span></a> <a class="idref" href="Types.html#a43d20708063ce19b185b9f080c928b2"><span class="id" title="notation">⇥</span></a> <a class="idref" href="Types.html#140d5c78c8b6ba316d1660b41c46219e"><span class="id" title="notation">nat</span></a>̂).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="CoherenceExample.html#bool_sum_tj"><span class="id" title="lemma">bool_sum_tj</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="Types.html#SubFunRule"><span class="id" title="constructor">SubFunRule</span></a>. <span class="id" title="tactic">constructor</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="Types.html#SubFunRule"><span class="id" title="constructor">SubFunRule</span></a>. <span class="id" title="tactic">constructor</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">constructor</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <a name="bool_sum_app_tj"><span class="id" title="lemma">bool_sum_app_tj</span></a> : (<a class="idref" href="Types.html#af522e7bcd6f546a086933f85f4775b4"><span class="id" title="notation">[]</span></a> <a class="idref" href="Types.html#46b9b833df2d763f2735dcfb86543dcc"><span class="id" title="notation">e</span></a><a class="idref" href="Types.html#46b9b833df2d763f2735dcfb86543dcc"><span class="id" title="notation">⊢</span></a> <a class="idref" href="CoherenceExample.html#bool_sum_app"><span class="id" title="definition">bool_sum_app</span></a> <a class="idref" href="Types.html#46b9b833df2d763f2735dcfb86543dcc"><span class="id" title="notation">⦂</span></a> <a class="idref" href="Types.html#140d5c78c8b6ba316d1660b41c46219e"><span class="id" title="notation">nat</span></a>̂).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="Types.html#LetRule"><span class="id" title="constructor">LetRule</span></a> <span class="id" title="keyword">with</span> (<span class="id" title="var">θ'</span>:=<a class="idref" href="Types.html#140d5c78c8b6ba316d1660b41c46219e"><span class="id" title="notation">nat</span></a><a class="idref" href="Types.html#a43d20708063ce19b185b9f080c928b2"><span class="id" title="notation">̂</span></a> <a class="idref" href="Types.html#a43d20708063ce19b185b9f080c928b2"><span class="id" title="notation">⇥</span></a> <a class="idref" href="Types.html#140d5c78c8b6ba316d1660b41c46219e"><span class="id" title="notation">nat</span></a>̂).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="Types.html#AppRule"><span class="id" title="constructor">AppRule</span></a> <span class="id" title="keyword">with</span> (<span class="id" title="var">θ'</span>:=<a class="idref" href="Types.html#140d5c78c8b6ba316d1660b41c46219e"><span class="id" title="notation">nat</span></a>̂).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="CoherenceExample.html#bool_sum_tj"><span class="id" title="lemma">bool_sum_tj</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="Types.html#SubsVRule"><span class="id" title="constructor">SubsVRule</span></a> <span class="id" title="keyword">with</span> (<span class="id" title="var">θ</span>:=<a class="idref" href="Types.html#8a79662fe5ff9b1d9aa784bc889cd209"><span class="id" title="notation">bool</span></a>̂). <span class="id" title="tactic">constructor</span>. <span class="id" title="tactic">constructor</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="Types.html#AppRule"><span class="id" title="constructor">AppRule</span></a> <span class="id" title="keyword">with</span> (<span class="id" title="var">θ'</span>:=<a class="idref" href="Types.html#140d5c78c8b6ba316d1660b41c46219e"><span class="id" title="notation">nat</span></a>̂).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="Types.html#VarRule"><span class="id" title="constructor">VarRule</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="Types.html#SubsVRule"><span class="id" title="constructor">SubsVRule</span></a> <span class="id" title="keyword">with</span> (<span class="id" title="var">θ</span>:=<a class="idref" href="Types.html#8a79662fe5ff9b1d9aa784bc889cd209"><span class="id" title="notation">bool</span></a>̂). <span class="id" title="tactic">constructor</span>. <span class="id" title="tactic">constructor</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <a name="bool_sum_app_tj'"><span class="id" title="lemma">bool_sum_app_tj'</span></a> : (<a class="idref" href="Types.html#af522e7bcd6f546a086933f85f4775b4"><span class="id" title="notation">[]</span></a> <a class="idref" href="Types.html#46b9b833df2d763f2735dcfb86543dcc"><span class="id" title="notation">e</span></a><a class="idref" href="Types.html#46b9b833df2d763f2735dcfb86543dcc"><span class="id" title="notation">⊢</span></a> <a class="idref" href="CoherenceExample.html#bool_sum_app"><span class="id" title="definition">bool_sum_app</span></a> <a class="idref" href="Types.html#46b9b833df2d763f2735dcfb86543dcc"><span class="id" title="notation">⦂</span></a> <a class="idref" href="Types.html#140d5c78c8b6ba316d1660b41c46219e"><span class="id" title="notation">nat</span></a>̂).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="Types.html#LetRule"><span class="id" title="constructor">LetRule</span></a> <span class="id" title="keyword">with</span> (<span class="id" title="var">θ'</span>:=<a class="idref" href="Types.html#8a79662fe5ff9b1d9aa784bc889cd209"><span class="id" title="notation">bool</span></a><a class="idref" href="Types.html#a43d20708063ce19b185b9f080c928b2"><span class="id" title="notation">̂</span></a> <a class="idref" href="Types.html#a43d20708063ce19b185b9f080c928b2"><span class="id" title="notation">⇥</span></a> <a class="idref" href="Types.html#140d5c78c8b6ba316d1660b41c46219e"><span class="id" title="notation">nat</span></a>̂).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="Types.html#AppRule"><span class="id" title="constructor">AppRule</span></a> <span class="id" title="keyword">with</span> (<span class="id" title="var">θ'</span>:=<a class="idref" href="Types.html#8a79662fe5ff9b1d9aa784bc889cd209"><span class="id" title="notation">bool</span></a>̂).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="CoherenceExample.html#bool_sum_tj'"><span class="id" title="lemma">bool_sum_tj'</span></a>. <span class="id" title="tactic">constructor</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="Types.html#AppRule"><span class="id" title="constructor">AppRule</span></a> <span class="id" title="keyword">with</span> (<span class="id" title="var">θ'</span>:=<a class="idref" href="Types.html#8a79662fe5ff9b1d9aa784bc889cd209"><span class="id" title="notation">bool</span></a>̂).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="Types.html#VarRule"><span class="id" title="constructor">VarRule</span></a>. <span class="id" title="tactic">constructor</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <a name="bool_sum_coherent"><span class="id" title="lemma">bool_sum_coherent</span></a> :<br/>
+&nbsp;&nbsp;<a class="idref" href="InSem.html#23b832b8347819d209d69691811ca6bd"><span class="id" title="notation">t</span></a><a class="idref" href="InSem.html#23b832b8347819d209d69691811ca6bd"><span class="id" title="notation">⟦</span></a> <a class="idref" href="CoherenceExample.html#bool_sum_app_tj"><span class="id" title="lemma">bool_sum_app_tj</span></a> <a class="idref" href="InSem.html#23b832b8347819d209d69691811ca6bd"><span class="id" title="notation">⟧</span></a><a class="idref" href="InSem.html#23b832b8347819d209d69691811ca6bd"><span class="id" title="notation">e</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.1/stdlib//Coq.Program.Syntax.html#15d0087b74ef8a6bcc16368cb9a89942"><span class="id" title="notation">()</span></a> <span class="id" title="notation">=-=</span> <a class="idref" href="InSem.html#23b832b8347819d209d69691811ca6bd"><span class="id" title="notation">t</span></a><a class="idref" href="InSem.html#23b832b8347819d209d69691811ca6bd"><span class="id" title="notation">⟦</span></a> <a class="idref" href="CoherenceExample.html#bool_sum_app_tj'"><span class="id" title="lemma">bool_sum_app_tj'</span></a> <a class="idref" href="InSem.html#23b832b8347819d209d69691811ca6bd"><span class="id" title="notation">⟧</span></a><a class="idref" href="InSem.html#23b832b8347819d209d69691811ca6bd"><span class="id" title="notation">e</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.1/stdlib//Coq.Program.Syntax.html#15d0087b74ef8a6bcc16368cb9a89942"><span class="id" title="notation">()</span></a><br/>
+.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="MoT.html#Coherence"><span class="id" title="lemma">Coherence</span></a>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <a name="true_sum_false"><span class="id" title="definition">true_sum_false</span></a> {<span class="id" title="var">E</span>:<a class="idref" href="Lang.html#Env"><span class="id" title="definition">Env</span></a>} := @<a class="idref" href="Lang.html#NOp"><span class="id" title="constructor">NOp</span></a> <a class="idref" href="CoherenceExample.html#E"><span class="id" title="variable">E</span></a> <a class="idref" href="Lang.html#PlusOP"><span class="id" title="constructor">PlusOP</span></a> (<a class="idref" href="Lang.html#VAL"><span class="id" title="constructor">VAL</span></a> <a class="idref" href="CoherenceExample.html#V_True"><span class="id" title="definition">V_True</span></a>) (<a class="idref" href="Lang.html#VAL"><span class="id" title="constructor">VAL</span></a> <a class="idref" href="CoherenceExample.html#V_False"><span class="id" title="definition">V_False</span></a>).<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <a name="true_sum_computes"><span class="id" title="lemma">true_sum_computes</span></a> : <a class="idref" href="http://coq.inria.fr/distrib/8.8.1/stdlib//Coq.Init.Datatypes.html#44400027531d4bc3f586a1997dc874c0"><span class="id" title="notation">(</span></a><a class="idref" href="Lang.html#1bcfff782645e550303b44d1d50df7a5"><span class="id" title="notation">∅</span></a><a class="idref" href="http://coq.inria.fr/distrib/8.8.1/stdlib//Coq.Init.Datatypes.html#44400027531d4bc3f586a1997dc874c0"><span class="id" title="notation">,</span></a> <a class="idref" href="CoherenceExample.html#true_sum_false"><span class="id" title="definition">true_sum_false</span></a><a class="idref" href="http://coq.inria.fr/distrib/8.8.1/stdlib//Coq.Init.Datatypes.html#44400027531d4bc3f586a1997dc874c0"><span class="id" title="notation">)</span></a> <a class="idref" href="OperSem.html#2256e363ce09235f28216ce255a428c8"><span class="id" title="notation">⟼⋆</span></a> <a class="idref" href="http://coq.inria.fr/distrib/8.8.1/stdlib//Coq.Init.Datatypes.html#44400027531d4bc3f586a1997dc874c0"><span class="id" title="notation">(</span></a><a class="idref" href="Lang.html#1bcfff782645e550303b44d1d50df7a5"><span class="id" title="notation">∅</span></a><a class="idref" href="http://coq.inria.fr/distrib/8.8.1/stdlib//Coq.Init.Datatypes.html#44400027531d4bc3f586a1997dc874c0"><span class="id" title="notation">,</span></a> <a class="idref" href="Lang.html#2c0a5a7a3edbd2d036ce52734d0e9f72"><span class="id" title="notation">⌊</span></a> 1 <a class="idref" href="Lang.html#2c0a5a7a3edbd2d036ce52734d0e9f72"><span class="id" title="notation">⌋</span></a><a class="idref" href="http://coq.inria.fr/distrib/8.8.1/stdlib//Coq.Init.Datatypes.html#44400027531d4bc3f586a1997dc874c0"><span class="id" title="notation">)</span></a>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.1/stdlib//Coq.Relations.Relation_Operators.html#rt_trans"><span class="id" title="constructor">rt_trans</span></a>. <span class="id" title="tactic">eapply</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.1/stdlib//Coq.Relations.Relation_Operators.html#rt_step"><span class="id" title="constructor">rt_step</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">constructor</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.1/stdlib//Coq.Relations.Relation_Operators.html#rt_trans"><span class="id" title="constructor">rt_trans</span></a>. <span class="id" title="tactic">eapply</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.1/stdlib//Coq.Relations.Relation_Operators.html#rt_step"><span class="id" title="constructor">rt_step</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">constructor</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.1/stdlib//Coq.Relations.Relation_Operators.html#rt_trans"><span class="id" title="constructor">rt_trans</span></a>. <span class="id" title="tactic">eapply</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.1/stdlib//Coq.Relations.Relation_Operators.html#rt_step"><span class="id" title="constructor">rt_step</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">constructor</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.1/stdlib//Coq.Relations.Relation_Operators.html#rt_trans"><span class="id" title="constructor">rt_trans</span></a>. <span class="id" title="tactic">eapply</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.1/stdlib//Coq.Relations.Relation_Operators.html#rt_step"><span class="id" title="constructor">rt_step</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">constructor</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.1/stdlib//Coq.Relations.Relation_Operators.html#rt_trans"><span class="id" title="constructor">rt_trans</span></a>. <span class="id" title="tactic">eapply</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.1/stdlib//Coq.Relations.Relation_Operators.html#rt_step"><span class="id" title="constructor">rt_step</span></a>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">constructor</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <a class="idref" href="http://coq.inria.fr/distrib/8.8.1/stdlib//Coq.Relations.Relation_Operators.html#rt_refl"><span class="id" title="constructor">rt_refl</span></a>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

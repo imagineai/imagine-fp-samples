@@ -1,0 +1,1224 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>Machine</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library Machine</h1>
+
+<div class="code">
+<span class="id" title="keyword">Add</span> <span class="id" title="var">Rec</span> <span class="id" title="var">LoadPath</span> "." <span class="id" title="keyword">as</span> <span class="id" title="var">Top</span>.<br/>
+<span class="id" title="keyword">Set Implicit Arguments</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">List</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Coq.Init.Datatypes</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <span class="id" title="var">Map</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Equalities</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Ensembles</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">SetoidList</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Finite_sets</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Finite_sets_facts</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Coq.Program.Equality</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Sets</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">ZArith</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">BOp</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a name="lab4"></a><h1 class="section">Target Language. Machine transitions and components</h1>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Close</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">nat_scope</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Inductive</span> <span class="id" title="var">Val</span> : <span class="id" title="keyword">Type</span> :=<br/>
+| <span class="id" title="var">iunit</span> : <span class="id" title="var">Val</span><br/>
+| <span class="id" title="var">iint</span>  : <span class="id" title="var">Z</span> -&gt; <span class="id" title="var">Val</span><br/>
+| <span class="id" title="var">igrab</span> : <span class="id" title="var">Code</span> -&gt; <span class="id" title="var">Val</span><br/>
+| <span class="id" title="var">ipair</span> : <span class="id" title="var">Code</span> -&gt; <span class="id" title="var">Code</span> -&gt; <span class="id" title="var">Val</span><br/>
+</div>
+
+<div class="doc">
+Instructions 
+</div>
+<div class="code">
+<span class="id" title="keyword">with</span> <span class="id" title="var">Code</span> : <span class="id" title="keyword">Type</span> :=<br/>
+| <span class="id" title="var">ival</span>    : <span class="id" title="var">Val</span>  -&gt; <span class="id" title="var">Code</span><br/>
+| <span class="id" title="var">iaccess</span> : <span class="id" title="var">nat</span>   -&gt; <span class="id" title="var">Code</span><br/>
+| <span class="id" title="var">ipush</span>   : <span class="id" title="var">nat</span>   -&gt; <span class="id" title="var">Code</span> -&gt; <span class="id" title="var">Code</span><br/>
+| <span class="id" title="var">ilet</span>    : <span class="id" title="var">Code</span> -&gt; <span class="id" title="var">Code</span> -&gt; <span class="id" title="var">Code</span><br/>
+| <span class="id" title="var">ibop</span>    : <span class="id" title="var">BOp</span>  -&gt; <span class="id" title="var">Code</span> -&gt; <span class="id" title="var">Code</span> -&gt; <span class="id" title="var">Code</span><br/>
+| <span class="id" title="var">iifz</span>    : <span class="id" title="var">Code</span> -&gt; <span class="id" title="var">Code</span> -&gt; <span class="id" title="var">Code</span> -&gt; <span class="id" title="var">Code</span><br/>
+| <span class="id" title="var">ifst</span>    : <span class="id" title="var">nat</span>   -&gt; <span class="id" title="var">Code</span><br/>
+| <span class="id" title="var">isnd</span>    : <span class="id" title="var">nat</span>   -&gt; <span class="id" title="var">Code</span><br/>
+| <span class="id" title="var">irec</span>    : <span class="id" title="var">Code</span> -&gt; <span class="id" title="var">Code</span><br/>
+.<br/>
+
+<br/>
+<span class="id" title="keyword">Module</span> <span class="id" title="var">Machine</span> (<span class="id" title="var">PointerType</span> : <span class="id" title="var">UsualDecidableType</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">Pointer</span> := <span class="id" title="var">PointerType.t</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Inductive</span> <span class="id" title="var">Cont</span> : <span class="id" title="keyword">Type</span> :=<br/>
+&nbsp;&nbsp;| <span class="id" title="var">ZBOpL</span> : <span class="id" title="var">Code</span> -&gt; <span class="id" title="var">Cont</span><br/>
+&nbsp;&nbsp;| <span class="id" title="var">ZBOpR</span> : <span class="id" title="var">Val</span>  -&gt; <span class="id" title="var">Cont</span><br/>
+&nbsp;&nbsp;| <span class="id" title="var">IfZ</span>   : <span class="id" title="var">Code</span> -&gt; <span class="id" title="var">Code</span> -&gt; <span class="id" title="var">Cont</span><br/>
+&nbsp;&nbsp;.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Inductive</span> <span class="id" title="var">HeapElem</span> : <span class="id" title="keyword">Type</span> :=<br/>
+&nbsp;&nbsp;| <span class="id" title="var">K</span> : <span class="id" title="var">Cont</span> -&gt; <span class="id" title="var">HeapElem</span><br/>
+&nbsp;&nbsp;| <span class="id" title="var">C</span> : <span class="id" title="var">Code</span> -&gt; <span class="id" title="var">HeapElem</span><br/>
+&nbsp;&nbsp;.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">MEnv</span> := <span class="id" title="var">list</span> <span class="id" title="var">Pointer</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">MClos</span> : <span class="id" title="keyword">Type</span> := <span class="id" title="var">Code</span> * <span class="id" title="var">MEnv</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">HClos</span> : <span class="id" title="keyword">Type</span> := <span class="id" title="var">HeapElem</span> * <span class="id" title="var">MEnv</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Module</span> <span class="id" title="var">CodeTyp</span> &lt;: <span class="id" title="var">Equalities.Typ</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">t</span> := <span class="id" title="var">HeapElem</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">End</span> <span class="id" title="var">CodeTyp</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Module</span> <span class="id" title="keyword">Export</span> <span class="id" title="var">HeapM</span> := <span class="id" title="var">UsualHeap</span> <span class="id" title="var">PointerType</span> <span class="id" title="var">CodeTyp</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">HClos_to_MClos</span> (<span class="id" title="var">he</span> : <span class="id" title="var">HClos</span>) : <span class="id" title="var">option</span> <span class="id" title="var">MClos</span> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="var">fst</span> <span class="id" title="var">he</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">K</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">None</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">C</span> <span class="id" title="var">c</span> =&gt; <span class="id" title="var">Some</span> (<span class="id" title="var">c</span>, <span class="id" title="var">snd</span> <span class="id" title="var">he</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">MClos_to_HClos</span> (<span class="id" title="var">α</span> : <span class="id" title="var">MClos</span>) : <span class="id" title="var">HClos</span> := (<span class="id" title="var">C</span> (<span class="id" title="var">fst</span> <span class="id" title="var">α</span>), <span class="id" title="var">snd</span> <span class="id" title="var">α</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">HClos_prop</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">α</span> <span class="id" title="var">β</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">HClos_to_MClos</span> <span class="id" title="var">β</span> = <span class="id" title="var">Some</span> <span class="id" title="var">α</span> -&gt; <span class="id" title="var">MClos_to_HClos</span> <span class="id" title="var">α</span> = <span class="id" title="var">β</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">α</span> <span class="id" title="var">β</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">MClos_to_HClos</span>. <span class="id" title="tactic">destruct</span> <span class="id" title="var">β</span>. <span class="id" title="tactic">destruct</span> <span class="id" title="var">h</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">inversion</span> <span class="id" title="var">H</span>. <span class="id" title="tactic">inversion</span> <span class="id" title="var">H</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">HClos_prop'</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">α</span> <span class="id" title="var">β</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">MClos_to_HClos</span> <span class="id" title="var">α</span> = <span class="id" title="var">β</span> -&gt; <span class="id" title="var">HClos_to_MClos</span> <span class="id" title="var">β</span> = <span class="id" title="var">Some</span> <span class="id" title="var">α</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">α</span> <span class="id" title="var">β</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">MClos_to_HClos</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>. <span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">H</span>. <span class="id" title="tactic">destruct</span> <span class="id" title="var">α</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Range of a heap 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">heap_range_ptr</span> (<span class="id" title="var">Γ</span> : <span class="id" title="var">Heap</span>) : <span class="id" title="var">KeySet</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="keyword">fun</span> <span class="id" title="var">k</span> =&gt; <span class="id" title="tactic">exists</span> <span class="id" title="var">k'</span>, <span class="id" title="tactic">exists</span> <span class="id" title="var">i</span>, <span class="id" title="tactic">exists</span> <span class="id" title="var">η</span>,  <span class="id" title="var">Map.MapsTo</span> <span class="id" title="var">k'</span> (<span class="id" title="var">i</span>, <span class="id" title="var">η</span>) <span class="id" title="var">Γ</span> /\ <span class="id" title="var">List.In</span> <span class="id" title="var">k</span> <span class="id" title="var">η</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Pointers occurring in the heap, (domain and range) 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">heap_ptr</span> (<span class="id" title="var">Γ</span> : <span class="id" title="var">Heap</span>) : <span class="id" title="var">KeySet</span> := <span class="id" title="var">Union</span> <span class="id" title="var">_</span> (<span class="id" title="var">key_set</span> <span class="id" title="var">Γ</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">heap_range_ptr</span> <span class="id" title="var">Γ</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+A heap is well formed if all its pointers occur in its domain 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">heap_wf</span> <span class="id" title="var">Γ</span> : <span class="id" title="keyword">Prop</span> := <span class="id" title="var">Same_set</span> <span class="id" title="var">_</span> (<span class="id" title="var">heap_ptr</span> <span class="id" title="var">Γ</span>) (<span class="id" title="var">key_set</span> <span class="id" title="var">Γ</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Stacks hold "markers" to signal an application or an update of a pointer 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Inductive</span> <span class="id" title="var">Marker</span> : <span class="id" title="keyword">Type</span> :=<br/>
+&nbsp;&nbsp;| <span class="id" title="var">mapply</span>     : <span class="id" title="var">Pointer</span> -&gt; <span class="id" title="var">Marker</span><br/>
+&nbsp;&nbsp;| <span class="id" title="var">mupdate</span>    : <span class="id" title="var">Pointer</span> -&gt; <span class="id" title="var">Marker</span><br/>
+&nbsp;&nbsp;| <span class="id" title="var">mapplypi1</span>  : <span class="id" title="var">Marker</span><br/>
+&nbsp;&nbsp;| <span class="id" title="var">mapplypi2</span>  : <span class="id" title="var">Marker</span><br/>
+&nbsp;&nbsp;| <span class="id" title="var">mupdatepi1</span> : <span class="id" title="var">Pointer</span> -&gt; <span class="id" title="var">Marker</span><br/>
+&nbsp;&nbsp;| <span class="id" title="var">mupdatepi2</span> : <span class="id" title="var">Pointer</span> -&gt; <span class="id" title="var">Marker</span><br/>
+&nbsp;&nbsp;| <span class="id" title="var">bopapply</span>   : <span class="id" title="var">Pointer</span> -&gt; <span class="id" title="var">BOp</span> -&gt; <span class="id" title="var">Marker</span><br/>
+&nbsp;&nbsp;| <span class="id" title="var">ifzapply</span>   : <span class="id" title="var">Pointer</span> -&gt; <span class="id" title="var">Marker</span><br/>
+&nbsp;&nbsp;.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> &quot;⌑ p" := (<span class="id" title="var">mapply</span> <span class="id" title="var">p</span>) (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 10).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> &quot;# p" := (<span class="id" title="var">mupdate</span> <span class="id" title="var">p</span>) (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 10).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> &quot;#1 p" := (<span class="id" title="var">mupdatepi1</span> <span class="id" title="var">p</span>) (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 10).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> &quot;#2 p" := (<span class="id" title="var">mupdatepi2</span> <span class="id" title="var">p</span>) (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 10).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> &quot;⦿ p bop" := (<span class="id" title="var">bopapply</span> <span class="id" title="var">p</span> <span class="id" title="var">bop</span>) (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 10).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> &quot;? p" := (<span class="id" title="var">ifzapply</span> <span class="id" title="var">p</span>) (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 10).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">stack</span> := <span class="id" title="var">list</span> <span class="id" title="var">Marker</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The pointer behind the marker 
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">conf</span> := <span class="id" title="var">Heap</span> * <span class="id" title="var">MClos</span> * <span class="id" title="var">stack</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Implicit</span> <span class="id" title="keyword">Type</span> <span class="id" title="var">s</span>  : <span class="id" title="var">stack</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Implicit</span> <span class="id" title="keyword">Type</span> <span class="id" title="var">η</span>  : <span class="id" title="var">MEnv</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Implicit</span> <span class="id" title="keyword">Type</span> <span class="id" title="var">p</span>  : <span class="id" title="var">Pointer</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Implicit</span> <span class="id" title="keyword">Type</span> <span class="id" title="var">i</span>  : <span class="id" title="var">Code</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Implicit</span> <span class="id" title="keyword">Type</span> <span class="id" title="var">he</span> : <span class="id" title="var">HeapElem</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Implicit</span> <span class="id" title="keyword">Type</span> <span class="id" title="var">Γ</span>  : <span class="id" title="var">Heap</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Implicit</span> <span class="id" title="keyword">Type</span> <span class="id" title="var">n</span>  : <span class="id" title="var">nat</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Implicit</span> <span class="id" title="keyword">Type</span> <span class="id" title="var">α</span>  : <span class="id" title="var">MClos</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Implicit</span> <span class="id" title="keyword">Type</span> <span class="id" title="var">β</span>  : <span class="id" title="var">HClos</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Implicit</span> <span class="id" title="keyword">Type</span> <span class="id" title="var">w</span>  : <span class="id" title="var">conf</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Set of pointers of an environment 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">env_ptr</span> <span class="id" title="var">η</span> : <span class="id" title="var">KeySet</span> := <span class="id" title="keyword">fun</span> <span class="id" title="var">p</span> =&gt; <span class="id" title="var">List.In</span> <span class="id" title="var">p</span> <span class="id" title="var">η</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Set of pointers of an stack 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">stack_ptr</span> <span class="id" title="var">s</span> : <span class="id" title="var">KeySet</span> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">fun</span> <span class="id" title="var">p</span> =&gt; <span class="id" title="var">List.In</span> (⌑ <span class="id" title="var">p</span>) <span class="id" title="var">s</span> \/<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">List.In</span> (# <span class="id" title="var">p</span>) <span class="id" title="var">s</span> \/<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">List.In</span> (<span class="id" title="var">mupdatepi1</span> <span class="id" title="var">p</span>) <span class="id" title="var">s</span> \/<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">List.In</span> (<span class="id" title="var">mupdatepi2</span> <span class="id" title="var">p</span>) <span class="id" title="var">s</span> \/<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="tactic">exists</span> <span class="id" title="var">bop</span>, <span class="id" title="var">List.In</span> (<span class="id" title="var">bopapply</span> <span class="id" title="var">p</span> <span class="id" title="var">bop</span>) <span class="id" title="var">s</span>) \/<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">List.In</span> (<span class="id" title="var">ifzapply</span> <span class="id" title="var">p</span>) <span class="id" title="var">s</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+A configuration if well formed if all the pointers in the environment and
+the stack belong to the domain of the heap, and also the heap itself is
+wellformed 
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">conf_wf</span> (<span class="id" title="var">conf</span> : <span class="id" title="var">conf</span>) :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="var">conf</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Γ</span>, (<span class="id" title="var">i</span>, <span class="id" title="var">η</span>), <span class="id" title="var">s</span>) =&gt; <span class="id" title="var">heap_wf</span> <span class="id" title="var">Γ</span> /\<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Included</span> <span class="id" title="var">_</span> (<span class="id" title="var">env_ptr</span> <span class="id" title="var">η</span>) (<span class="id" title="var">key_set</span> <span class="id" title="var">Γ</span>) /\<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Included</span> <span class="id" title="var">_</span> (<span class="id" title="var">stack_ptr</span> <span class="id" title="var">s</span>) (<span class="id" title="var">key_set</span> <span class="id" title="var">Γ</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Notion of pointer freshness 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">fresh_for_heap</span>  <span class="id" title="var">p</span> <span class="id" title="var">Γ</span> := ~ <span class="id" title="var">SetIn</span> (<span class="id" title="var">heap_ptr</span> <span class="id" title="var">Γ</span>) <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">fresh_for_env</span> <span class="id" title="var">p</span> <span class="id" title="var">η</span> := ~ <span class="id" title="var">SetIn</span> (<span class="id" title="var">env_ptr</span> <span class="id" title="var">η</span>) <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">fresh_for_stack</span> <span class="id" title="var">p</span> <span class="id" title="var">s</span> :=  ~ <span class="id" title="var">SetIn</span> (<span class="id" title="var">stack_ptr</span> <span class="id" title="var">s</span>) <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">fresh_for</span> <span class="id" title="var">p</span> <span class="id" title="var">Γ</span> <span class="id" title="var">η</span> <span class="id" title="var">s</span> := <span class="id" title="var">fresh_for_heap</span> <span class="id" title="var">p</span> <span class="id" title="var">Γ</span> /\<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">fresh_for_stack</span> <span class="id" title="var">p</span> <span class="id" title="var">s</span> /\ <span class="id" title="var">fresh_for_env</span> <span class="id" title="var">p</span> <span class="id" title="var">η</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Reserved Notation</span> &quot;w ↦ y" (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 70, <span class="id" title="keyword">no</span> <span class="id" title="keyword">associativity</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Transition rules of the machine 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Inductive</span> <span class="id" title="var">trans</span> : <span class="id" title="var">conf</span> -&gt; <span class="id" title="var">conf</span> -&gt; <span class="id" title="keyword">Prop</span> :=<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+Update 
+</div>
+<div class="code">
+&nbsp;&nbsp;| <span class="id" title="var">ival_update</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">Γ</span> <span class="id" title="var">η</span> <span class="id" title="var">p</span> <span class="id" title="var">s</span> <span class="id" title="var">iv</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Γ</span>, (<span class="id" title="var">ival</span> <span class="id" title="var">iv</span>,<span class="id" title="var">η</span>), # <span class="id" title="var">p</span> :: <span class="id" title="var">s</span>) ↦ (<span class="id" title="var">Map.add</span> <span class="id" title="var">p</span> (<span class="id" title="var">C</span> (<span class="id" title="var">ival</span> <span class="id" title="var">iv</span>),<span class="id" title="var">η</span>) <span class="id" title="var">Γ</span>, (<span class="id" title="var">ival</span> <span class="id" title="var">iv</span>,<span class="id" title="var">η</span>), <span class="id" title="var">s</span>)<br/>
+&nbsp;&nbsp;| <span class="id" title="var">ival_update_1</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">Γ</span> <span class="id" title="var">i</span> <span class="id" title="var">i'</span> <span class="id" title="var">η</span> <span class="id" title="var">η'</span> <span class="id" title="var">p</span> <span class="id" title="var">s</span> <span class="id" title="var">iv</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Map.find</span> <span class="id" title="var">p</span> <span class="id" title="var">Γ</span> = <span class="id" title="var">Some</span> ((<span class="id" title="var">C</span> (<span class="id" title="var">ival</span> (<span class="id" title="var">ipair</span> <span class="id" title="var">i</span> <span class="id" title="var">i'</span>)), <span class="id" title="var">η'</span>)) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">let</span> <span class="id" title="var">α</span> := (<span class="id" title="var">C</span> (<span class="id" title="var">ival</span> (<span class="id" title="var">ipair</span> (<span class="id" title="var">ival</span> <span class="id" title="var">iv</span>) <span class="id" title="var">i'</span>)), <span class="id" title="var">η'</span>) <span class="id" title="tactic">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Γ</span>, (<span class="id" title="var">ival</span> <span class="id" title="var">iv</span>, <span class="id" title="var">η</span>), <span class="id" title="var">mupdatepi1</span> <span class="id" title="var">p</span> :: <span class="id" title="var">s</span>) ↦ (<span class="id" title="var">Map.add</span> <span class="id" title="var">p</span> <span class="id" title="var">α</span> <span class="id" title="var">Γ</span>, (<span class="id" title="var">ival</span> <span class="id" title="var">iv</span>, <span class="id" title="var">η</span>), <span class="id" title="var">s</span>)<br/>
+&nbsp;&nbsp;| <span class="id" title="var">ival_update_2</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">Γ</span> <span class="id" title="var">i</span> <span class="id" title="var">i'</span> <span class="id" title="var">η</span> <span class="id" title="var">η'</span> <span class="id" title="var">p</span> <span class="id" title="var">s</span> <span class="id" title="var">iv</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Map.find</span> <span class="id" title="var">p</span> <span class="id" title="var">Γ</span> = <span class="id" title="var">Some</span> (<span class="id" title="var">C</span> (<span class="id" title="var">ival</span> (<span class="id" title="var">ipair</span> <span class="id" title="var">i</span> <span class="id" title="var">i'</span>)), <span class="id" title="var">η'</span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">let</span> <span class="id" title="var">α</span> := (<span class="id" title="var">C</span> (<span class="id" title="var">ival</span> (<span class="id" title="var">ipair</span> <span class="id" title="var">i</span> (<span class="id" title="var">ival</span> <span class="id" title="var">iv</span>))), <span class="id" title="var">η'</span>) <span class="id" title="tactic">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Γ</span>, (<span class="id" title="var">ival</span> <span class="id" title="var">iv</span>, <span class="id" title="var">η</span>), <span class="id" title="var">mupdatepi2</span> <span class="id" title="var">p</span> :: <span class="id" title="var">s</span>) ↦ (<span class="id" title="var">Map.add</span> <span class="id" title="var">p</span> <span class="id" title="var">α</span> <span class="id" title="var">Γ</span>, (<span class="id" title="var">ival</span> <span class="id" title="var">iv</span>, <span class="id" title="var">η</span>), <span class="id" title="var">s</span>)<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+Apply Grab 
+</div>
+<div class="code">
+&nbsp;&nbsp;| <span class="id" title="var">tgrab_apply</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">Γ</span> <span class="id" title="var">i</span> <span class="id" title="var">η</span>  <span class="id" title="var">p</span> <span class="id" title="var">s</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Γ</span>, (<span class="id" title="var">ival</span> (<span class="id" title="var">igrab</span> <span class="id" title="var">i</span>), <span class="id" title="var">η</span>), ⌑ <span class="id" title="var">p</span> :: <span class="id" title="var">s</span>) ↦ (<span class="id" title="var">Γ</span>, (<span class="id" title="var">i</span>, <span class="id" title="var">p</span> :: <span class="id" title="var">η</span>) , <span class="id" title="var">s</span>)<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+Ifz 0 
+</div>
+<div class="code">
+&nbsp;&nbsp;| <span class="id" title="var">tifz_0</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">Γ</span> <span class="id" title="var">η</span> <span class="id" title="var">η'</span> <span class="id" title="var">i'</span> <span class="id" title="var">i''</span> <span class="id" title="var">p</span> <span class="id" title="var">s</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Map.find</span> <span class="id" title="var">p</span> <span class="id" title="var">Γ</span> = <span class="id" title="var">Some</span> (<span class="id" title="var">K</span> (<span class="id" title="var">IfZ</span> <span class="id" title="var">i'</span> <span class="id" title="var">i''</span>), <span class="id" title="var">η'</span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Γ</span>, (<span class="id" title="var">ival</span> (<span class="id" title="var">iint</span> 0%<span class="id" title="var">Z</span>),<span class="id" title="var">η</span>), ? <span class="id" title="var">p</span> :: <span class="id" title="var">s</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↦<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Γ</span>, (<span class="id" title="var">i'</span>,<span class="id" title="var">η'</span>), <span class="id" title="var">s</span>)<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+Ifz z ≠ 0 
+</div>
+<div class="code">
+&nbsp;&nbsp;| <span class="id" title="var">tifz_n0</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">Γ</span> <span class="id" title="var">η</span> <span class="id" title="var">η'</span> <span class="id" title="var">i'</span> <span class="id" title="var">i''</span> <span class="id" title="var">p</span> <span class="id" title="var">s</span> <span class="id" title="var">z</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Map.find</span> <span class="id" title="var">p</span> <span class="id" title="var">Γ</span> = <span class="id" title="var">Some</span> (<span class="id" title="var">K</span> (<span class="id" title="var">IfZ</span> <span class="id" title="var">i'</span> <span class="id" title="var">i''</span>), <span class="id" title="var">η'</span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">z</span> &lt;&gt; 0%<span class="id" title="var">Z</span> -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Γ</span>, (<span class="id" title="var">ival</span> (<span class="id" title="var">iint</span> <span class="id" title="var">z</span>%<span class="id" title="var">Z</span>),<span class="id" title="var">η</span>), ? <span class="id" title="var">p</span> :: <span class="id" title="var">s</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↦<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Γ</span>, (<span class="id" title="var">i''</span>,<span class="id" title="var">η'</span>), <span class="id" title="var">s</span>)  <br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+Access 
+</div>
+<div class="code">
+&nbsp;&nbsp;| <span class="id" title="var">taccess</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">Γ</span> <span class="id" title="var">η</span> <span class="id" title="var">p</span> <span class="id" title="var">s</span> <span class="id" title="var">n</span> <span class="id" title="var">α</span> <span class="id" title="var">β</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nth_error</span> <span class="id" title="var">η</span> <span class="id" title="var">n</span> = <span class="id" title="var">Some</span> <span class="id" title="var">p</span> -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Map.find</span> <span class="id" title="var">p</span> <span class="id" title="var">Γ</span> = <span class="id" title="var">Some</span> <span class="id" title="var">β</span> -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">HClos_to_MClos</span> <span class="id" title="var">β</span> = <span class="id" title="var">Some</span> <span class="id" title="var">α</span> -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Γ</span>, (<span class="id" title="var">iaccess</span> <span class="id" title="var">n</span>, <span class="id" title="var">η</span>), <span class="id" title="var">s</span>) ↦ (<span class="id" title="var">Γ</span>, <span class="id" title="var">α</span>, # <span class="id" title="var">p</span> :: <span class="id" title="var">s</span>)<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+Push 
+</div>
+<div class="code">
+&nbsp;&nbsp;| <span class="id" title="var">tpush</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">Γ</span> <span class="id" title="var">η</span> <span class="id" title="var">p</span> <span class="id" title="var">s</span> <span class="id" title="var">n</span> <span class="id" title="var">i</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nth_error</span> <span class="id" title="var">η</span> <span class="id" title="var">n</span> = <span class="id" title="var">Some</span> <span class="id" title="var">p</span> -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Γ</span>, (<span class="id" title="var">ipush</span> <span class="id" title="var">n</span> <span class="id" title="var">i</span>, <span class="id" title="var">η</span>), <span class="id" title="var">s</span>) ↦ (<span class="id" title="var">Γ</span>, (<span class="id" title="var">i</span>, <span class="id" title="var">η</span>), ⌑ <span class="id" title="var">p</span> :: <span class="id" title="var">s</span>)<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+Let 
+</div>
+<div class="code">
+&nbsp;&nbsp;| <span class="id" title="var">tlet</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">Γ</span> <span class="id" title="var">i</span> <span class="id" title="var">i'</span> <span class="id" title="var">η</span> <span class="id" title="var">p</span> <span class="id" title="var">s</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">fresh_for</span> <span class="id" title="var">p</span> <span class="id" title="var">Γ</span> <span class="id" title="var">η</span> <span class="id" title="var">s</span> -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Γ</span>, (<span class="id" title="var">ilet</span> <span class="id" title="var">i</span> <span class="id" title="var">i'</span>, <span class="id" title="var">η</span>), <span class="id" title="var">s</span>) ↦ (<span class="id" title="var">Map.add</span> <span class="id" title="var">p</span> (<span class="id" title="var">C</span> <span class="id" title="var">i</span>, <span class="id" title="var">η</span>) <span class="id" title="var">Γ</span>, (<span class="id" title="var">i'</span>, <span class="id" title="var">p</span> :: <span class="id" title="var">η</span>), <span class="id" title="var">s</span>)<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+Apply π1 
+</div>
+<div class="code">
+&nbsp;&nbsp;| <span class="id" title="var">tpair_apply_pi1</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">Γ</span> <span class="id" title="var">η</span> <span class="id" title="var">i</span> <span class="id" title="var">i'</span> <span class="id" title="var">s</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Γ</span>, (<span class="id" title="var">ival</span> (<span class="id" title="var">ipair</span> <span class="id" title="var">i</span> <span class="id" title="var">i'</span>), <span class="id" title="var">η</span>), <span class="id" title="var">mapplypi1</span> :: <span class="id" title="var">s</span>) ↦ (<span class="id" title="var">Γ</span>, (<span class="id" title="var">i</span>,<span class="id" title="var">η</span>), <span class="id" title="var">s</span>)<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+Apply π2 
+</div>
+<div class="code">
+&nbsp;&nbsp;| <span class="id" title="var">tpair_apply_pi2</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">Γ</span> <span class="id" title="var">η</span> <span class="id" title="var">i</span> <span class="id" title="var">i'</span> <span class="id" title="var">s</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Γ</span>, (<span class="id" title="var">ival</span> (<span class="id" title="var">ipair</span> <span class="id" title="var">i</span> <span class="id" title="var">i'</span>), <span class="id" title="var">η</span>), <span class="id" title="var">mapplypi2</span> :: <span class="id" title="var">s</span>) ↦ (<span class="id" title="var">Γ</span>, (<span class="id" title="var">i'</span>,<span class="id" title="var">η</span>), <span class="id" title="var">s</span>)<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+Ifz 
+</div>
+<div class="code">
+&nbsp;&nbsp;| <span class="id" title="var">tifz</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">Γ</span> <span class="id" title="var">η</span> <span class="id" title="var">i</span> <span class="id" title="var">i'</span> <span class="id" title="var">i''</span> <span class="id" title="var">p</span> <span class="id" title="var">s</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">fresh_for</span> <span class="id" title="var">p</span> <span class="id" title="var">Γ</span> <span class="id" title="var">η</span> <span class="id" title="var">s</span> -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Γ</span>, (<span class="id" title="var">iifz</span> <span class="id" title="var">i</span> <span class="id" title="var">i'</span> <span class="id" title="var">i''</span>, <span class="id" title="var">η</span>), <span class="id" title="var">s</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↦<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Map.add</span> <span class="id" title="var">p</span> (<span class="id" title="var">K</span> (<span class="id" title="var">IfZ</span> <span class="id" title="var">i'</span> <span class="id" title="var">i''</span>), <span class="id" title="var">η</span>) <span class="id" title="var">Γ</span>, (<span class="id" title="var">i</span>,<span class="id" title="var">η</span>), ? <span class="id" title="var">p</span> :: <span class="id" title="var">s</span>)<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+Fst 
+</div>
+<div class="code">
+&nbsp;&nbsp;| <span class="id" title="var">tfst</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">Γ</span> <span class="id" title="var">n</span> <span class="id" title="var">η</span> <span class="id" title="var">p</span> <span class="id" title="var">s</span> <span class="id" title="var">α</span> <span class="id" title="var">β</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nth_error</span> <span class="id" title="var">η</span> <span class="id" title="var">n</span> = <span class="id" title="var">Some</span> <span class="id" title="var">p</span> -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Map.find</span> <span class="id" title="var">p</span> <span class="id" title="var">Γ</span> = <span class="id" title="var">Some</span> <span class="id" title="var">β</span> -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">HClos_to_MClos</span> <span class="id" title="var">β</span> = <span class="id" title="var">Some</span> <span class="id" title="var">α</span> -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Γ</span>, (<span class="id" title="var">ifst</span> <span class="id" title="var">n</span>, <span class="id" title="var">η</span>), <span class="id" title="var">s</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↦<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Γ</span>, <span class="id" title="var">α</span>, # <span class="id" title="var">p</span> :: (<span class="id" title="var">mapplypi1</span> :: (#1 <span class="id" title="var">p</span> :: <span class="id" title="var">s</span>)))<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+Snd 
+</div>
+<div class="code">
+&nbsp;&nbsp;| <span class="id" title="var">tsnd</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">Γ</span> <span class="id" title="var">n</span> <span class="id" title="var">η</span> <span class="id" title="var">p</span> <span class="id" title="var">s</span> <span class="id" title="var">α</span> <span class="id" title="var">β</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nth_error</span> <span class="id" title="var">η</span> <span class="id" title="var">n</span> = <span class="id" title="var">Some</span> <span class="id" title="var">p</span> -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Map.find</span> <span class="id" title="var">p</span> <span class="id" title="var">Γ</span> = <span class="id" title="var">Some</span> <span class="id" title="var">β</span> -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">HClos_to_MClos</span> <span class="id" title="var">β</span> = <span class="id" title="var">Some</span> <span class="id" title="var">α</span> -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Γ</span>, (<span class="id" title="var">isnd</span> <span class="id" title="var">n</span>, <span class="id" title="var">η</span>), <span class="id" title="var">s</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↦<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Γ</span>, <span class="id" title="var">α</span>, # <span class="id" title="var">p</span> :: (<span class="id" title="var">mapplypi2</span> :: (#2 <span class="id" title="var">p</span> :: <span class="id" title="var">s</span>)))<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+BOp Apply 1 
+</div>
+<div class="code">
+&nbsp;&nbsp;| <span class="id" title="var">tbop_apply_1</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">bop</span> <span class="id" title="var">Γ</span> <span class="id" title="var">i</span> <span class="id" title="var">i'</span> <span class="id" title="var">η</span> <span class="id" title="var">p</span> <span class="id" title="var">s</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">fresh_for</span> <span class="id" title="var">p</span> <span class="id" title="var">Γ</span> <span class="id" title="var">η</span> <span class="id" title="var">s</span> -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Γ</span>, (<span class="id" title="var">ibop</span> <span class="id" title="var">bop</span> <span class="id" title="var">i</span> <span class="id" title="var">i'</span>, <span class="id" title="var">η</span>), <span class="id" title="var">s</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↦<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Map.add</span> <span class="id" title="var">p</span> (<span class="id" title="var">K</span> (<span class="id" title="var">ZBOpL</span> <span class="id" title="var">i'</span>), <span class="id" title="var">η</span>) <span class="id" title="var">Γ</span>, (<span class="id" title="var">i</span>, <span class="id" title="var">η</span>), <span class="id" title="var">bopapply</span> <span class="id" title="var">p</span> <span class="id" title="var">bop</span> :: <span class="id" title="var">s</span>)<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+BOp Apply 2 
+</div>
+<div class="code">
+&nbsp;&nbsp;| <span class="id" title="var">tbop_apply_2</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">bop</span> <span class="id" title="var">Γ</span> <span class="id" title="var">z</span> <span class="id" title="var">i'</span> <span class="id" title="var">η</span> <span class="id" title="var">η'</span> <span class="id" title="var">p</span> <span class="id" title="var">s</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Map.find</span> <span class="id" title="var">p</span> <span class="id" title="var">Γ</span> = <span class="id" title="var">Some</span> (<span class="id" title="var">K</span> (<span class="id" title="var">ZBOpL</span> <span class="id" title="var">i'</span>), <span class="id" title="var">η</span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Γ</span>, (<span class="id" title="var">ival</span> (<span class="id" title="var">iint</span> <span class="id" title="var">z</span>), <span class="id" title="var">η'</span>), <span class="id" title="var">bopapply</span> <span class="id" title="var">p</span> <span class="id" title="var">bop</span> :: <span class="id" title="var">s</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↦<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Map.add</span> <span class="id" title="var">p</span> (<span class="id" title="var">K</span> (<span class="id" title="var">ZBOpR</span> (<span class="id" title="var">iint</span> <span class="id" title="var">z</span>)), <span class="id" title="var">η'</span>) <span class="id" title="var">Γ</span>, (<span class="id" title="var">i'</span>, <span class="id" title="var">η</span>), <span class="id" title="var">bopapply</span> <span class="id" title="var">p</span> <span class="id" title="var">bop</span> :: <span class="id" title="var">s</span>)<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+BOp Apply 3 
+</div>
+<div class="code">
+&nbsp;&nbsp;| <span class="id" title="var">tbop_apply_3</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">bop</span> <span class="id" title="var">Γ</span> <span class="id" title="var">z</span> <span class="id" title="var">z'</span> <span class="id" title="var">η</span> <span class="id" title="var">η'</span> <span class="id" title="var">p</span> <span class="id" title="var">s</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Map.find</span> <span class="id" title="var">p</span> <span class="id" title="var">Γ</span> = <span class="id" title="var">Some</span> (<span class="id" title="var">K</span> (<span class="id" title="var">ZBOpR</span> (<span class="id" title="var">iint</span> <span class="id" title="var">z</span>)), <span class="id" title="var">η</span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">let</span> <span class="id" title="var">iv</span> := <span class="id" title="var">ival</span> (<span class="id" title="var">iint</span> (<span class="id" title="var">semZBOp</span> <span class="id" title="var">bop</span> <span class="id" title="var">z</span> <span class="id" title="var">z'</span>)) <span class="id" title="tactic">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Γ</span>, (<span class="id" title="var">ival</span> (<span class="id" title="var">iint</span> <span class="id" title="var">z'</span>), <span class="id" title="var">η'</span>), <span class="id" title="var">bopapply</span> <span class="id" title="var">p</span> <span class="id" title="var">bop</span> :: <span class="id" title="var">s</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↦<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Γ</span>, (<span class="id" title="var">iv</span>, <span class="id" title="var">η</span>), <span class="id" title="var">s</span>)<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+Rec Eval 
+</div>
+<div class="code">
+&nbsp;&nbsp;| <span class="id" title="var">rec_eval</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">Γ</span> <span class="id" title="var">i</span> <span class="id" title="var">η</span> <span class="id" title="var">p</span> <span class="id" title="var">s</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">fresh_for</span> <span class="id" title="var">p</span> <span class="id" title="var">Γ</span> <span class="id" title="var">η</span> <span class="id" title="var">s</span> -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Γ</span>, (<span class="id" title="var">irec</span> <span class="id" title="var">i</span>, <span class="id" title="var">η</span>), <span class="id" title="var">s</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↦<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Map.add</span> <span class="id" title="var">p</span> (<span class="id" title="var">C</span> (<span class="id" title="var">irec</span> <span class="id" title="var">i</span>), <span class="id" title="var">η</span>) <span class="id" title="var">Γ</span>, (<span class="id" title="var">i</span>, <span class="id" title="var">p</span>::<span class="id" title="var">η</span>), <span class="id" title="var">s</span>)<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">where</span> &quot;w1 ↦ w2" := (<span class="id" title="var">trans</span> <span class="id" title="var">w1</span> <span class="id" title="var">w2</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Equality of configurations 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">conf_eq</span> (<span class="id" title="var">w</span> <span class="id" title="var">w'</span> : <span class="id" title="var">conf</span>) :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="var">w</span>, <span class="id" title="var">w'</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Γ</span>, <span class="id" title="var">α</span>, <span class="id" title="var">s</span>), (<span class="id" title="var">Γ'</span>, <span class="id" title="var">α'</span>, <span class="id" title="var">s'</span>) =&gt; <span class="id" title="var">Γ</span> ≃ <span class="id" title="var">Γ'</span> /\  <span class="id" title="var">α</span> = <span class="id" title="var">α'</span> /\ <span class="id" title="var">s</span> = <span class="id" title="var">s'</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> &quot;w [==] w'" := (<span class="id" title="var">conf_eq</span> <span class="id" title="var">w</span> <span class="id" title="var">w'</span>) (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 70, <span class="id" title="keyword">no</span> <span class="id" title="keyword">associativity</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">env_ptr_cons_included</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> <span class="id" title="var">p</span> <span class="id" title="var">η</span> <span class="id" title="var">X</span>, <span class="id" title="var">Included</span> <span class="id" title="var">_</span> (<span class="id" title="var">env_ptr</span> <span class="id" title="var">η</span>) <span class="id" title="var">X</span> -&gt; <span class="id" title="var">SetIn</span> <span class="id" title="var">X</span> <span class="id" title="var">p</span> -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Included</span> <span class="id" title="var">_</span> (<span class="id" title="var">env_ptr</span> (<span class="id" title="var">p</span> :: <span class="id" title="var">η</span>)) <span class="id" title="var">X</span> .<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">p</span> <span class="id" title="var">η</span> <span class="id" title="var">X</span> <span class="id" title="var">In1</span> <span class="id" title="var">In2</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">q</span> <span class="id" title="var">In3</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">cbn</span> <span class="id" title="tactic">in</span> <span class="id" title="var">In3</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">In3</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">EQ</span> | <span class="id" title="var">In4</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">subst</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">In1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">stack_ptr_cons_included</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> <span class="id" title="var">p</span> <span class="id" title="var">s</span> <span class="id" title="var">X</span>, <span class="id" title="var">Included</span> <span class="id" title="var">_</span> (<span class="id" title="var">stack_ptr</span> <span class="id" title="var">s</span>) <span class="id" title="var">X</span> -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">SetIn</span> <span class="id" title="var">X</span> <span class="id" title="var">p</span> -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Included</span> <span class="id" title="var">_</span> (<span class="id" title="var">stack_ptr</span> (⌑ <span class="id" title="var">p</span> :: <span class="id" title="var">s</span>)) <span class="id" title="var">X</span> .<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">p</span> <span class="id" title="var">η</span> <span class="id" title="var">X</span> <span class="id" title="var">In1</span> <span class="id" title="var">In2</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">q</span> <span class="id" title="var">In3</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">Ensembles.In</span> <span class="id" title="tactic">in</span> <span class="id" title="var">In3</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">stack_ptr</span> <span class="id" title="tactic">in</span> <span class="id" title="var">In3</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">In3</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">H</span> | <span class="id" title="var">H'</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">set</span> (<span class="id" title="var">E</span> := <span class="id" title="var">List.in_inv</span> <span class="id" title="var">H</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">E</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">E1</span> | <span class="id" title="var">E2</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">injection</span> <span class="id" title="var">E1</span>. <span class="id" title="tactic">intros</span>. <span class="id" title="tactic">subst</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">In1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">left</span>. <span class="id" title="tactic">auto</span>. <span class="id" title="tactic">inversion</span> <span class="id" title="var">H'</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">set</span> (<span class="id" title="var">E</span> := <span class="id" title="var">List.in_inv</span> <span class="id" title="var">H</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">E</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">E1</span> | <span class="id" title="var">E2</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">discriminate</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">In1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">right</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">inversion</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">set</span> (<span class="id" title="var">E</span> := <span class="id" title="var">List.in_inv</span> <span class="id" title="var">H0</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">E</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">E1</span> | <span class="id" title="var">E2</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">discriminate</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">In1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">right</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">inversion</span> <span class="id" title="var">H0</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">set</span> (<span class="id" title="var">E</span> := <span class="id" title="var">List.in_inv</span> <span class="id" title="var">H1</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">E</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">E1</span> | <span class="id" title="var">E2</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">discriminate</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">In1</span>. <span class="id" title="tactic">right</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">inversion</span> <span class="id" title="var">H1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">In1</span>. <span class="id" title="tactic">do</span> 4 <span class="id" title="tactic">right</span>. <span class="id" title="tactic">left</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">H2</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">bop</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">set</span> (<span class="id" title="var">E</span> := <span class="id" title="var">List.in_inv</span> <span class="id" title="var">H2</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">E</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">E1</span> | <span class="id" title="var">E2</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">discriminate</span>. <span class="id" title="tactic">exists</span> <span class="id" title="var">bop</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">inversion</span> <span class="id" title="var">H2</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">discriminate</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">In1</span>. <span class="id" title="tactic">do</span> 5 <span class="id" title="tactic">right</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">stack_ptr_cons_included2</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> <span class="id" title="var">p</span> <span class="id" title="var">s</span> <span class="id" title="var">X</span>, <span class="id" title="var">Included</span> <span class="id" title="var">_</span> (<span class="id" title="var">stack_ptr</span> <span class="id" title="var">s</span>) <span class="id" title="var">X</span> -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">SetIn</span> <span class="id" title="var">X</span> <span class="id" title="var">p</span> -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Included</span> <span class="id" title="var">_</span> (<span class="id" title="var">stack_ptr</span> (<span class="id" title="var">mupdatepi1</span> <span class="id" title="var">p</span> :: <span class="id" title="var">s</span>)) <span class="id" title="var">X</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">p</span> <span class="id" title="var">η</span> <span class="id" title="var">X</span> <span class="id" title="var">In1</span> <span class="id" title="var">In2</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">q</span> <span class="id" title="var">In3</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">Ensembles.In</span> <span class="id" title="tactic">in</span> <span class="id" title="var">In3</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">stack_ptr</span> <span class="id" title="tactic">in</span> <span class="id" title="var">In3</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">In3</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">H</span> | <span class="id" title="var">H'</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">set</span> (<span class="id" title="var">E</span> := <span class="id" title="var">List.in_inv</span> <span class="id" title="var">H</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">E</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">E1</span> | <span class="id" title="var">E2</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">discriminate</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">In1</span>. <span class="id" title="tactic">left</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">H'</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">H</span> | <span class="id" title="var">H''</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">set</span> (<span class="id" title="var">E</span> := <span class="id" title="var">List.in_inv</span> <span class="id" title="var">H</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">E</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">E1</span> | <span class="id" title="var">E2</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">discriminate</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">In1</span>. <span class="id" title="tactic">right</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">H''</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">H</span> | <span class="id" title="var">H'</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">set</span> (<span class="id" title="var">E</span> := <span class="id" title="var">List.in_inv</span> <span class="id" title="var">H</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">E</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">E1</span> | <span class="id" title="var">E2</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">injection</span> <span class="id" title="var">E1</span>. <span class="id" title="tactic">intros</span>. <span class="id" title="tactic">subst</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">In1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">right</span>. <span class="id" title="tactic">right</span>. <span class="id" title="tactic">left</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">H'</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">H</span> | <span class="id" title="var">H''</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">set</span> (<span class="id" title="var">E</span> := <span class="id" title="var">List.in_inv</span> <span class="id" title="var">H</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">E</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">E1</span> | <span class="id" title="var">E2</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">discriminate</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">In1</span>. <span class="id" title="tactic">right</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">In1</span>. <span class="id" title="tactic">do</span> 4 <span class="id" title="tactic">right</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">H''</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">H</span> | <span class="id" title="var">H'</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">H</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">bop</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">set</span> (<span class="id" title="var">E</span> := <span class="id" title="var">List.in_inv</span> <span class="id" title="var">H</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">E</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">E1</span> | <span class="id" title="var">E2</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">discriminate</span>. <span class="id" title="tactic">left</span>. <span class="id" title="tactic">exists</span> <span class="id" title="var">bop</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">inversion</span> <span class="id" title="var">H'</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">discriminate</span>. <span class="id" title="tactic">right</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">stack_ptr_cons_included_bop</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> <span class="id" title="var">bop</span> <span class="id" title="var">p</span> <span class="id" title="var">s</span> <span class="id" title="var">X</span>, <span class="id" title="var">Included</span> <span class="id" title="var">_</span> (<span class="id" title="var">stack_ptr</span> <span class="id" title="var">s</span>) <span class="id" title="var">X</span> -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">SetIn</span> <span class="id" title="var">X</span> <span class="id" title="var">p</span> -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Included</span> <span class="id" title="var">_</span> (<span class="id" title="var">stack_ptr</span> (<span class="id" title="var">bopapply</span> <span class="id" title="var">p</span> <span class="id" title="var">bop</span> :: <span class="id" title="var">s</span>)) <span class="id" title="var">X</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">bop</span> <span class="id" title="var">p</span> <span class="id" title="var">η</span> <span class="id" title="var">X</span> <span class="id" title="var">In1</span> <span class="id" title="var">In2</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">q</span> <span class="id" title="var">In3</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">Ensembles.In</span> <span class="id" title="tactic">in</span> <span class="id" title="var">In3</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">stack_ptr</span> <span class="id" title="tactic">in</span> <span class="id" title="var">In3</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">In3</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">H</span> | <span class="id" title="var">H'</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">set</span> (<span class="id" title="var">E</span> := <span class="id" title="var">List.in_inv</span> <span class="id" title="var">H</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">E</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">E1</span> | <span class="id" title="var">E2</span>]. <span class="id" title="tactic">discriminate</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">In1</span>. <span class="id" title="tactic">left</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">inversion</span> <span class="id" title="var">H'</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">set</span> (<span class="id" title="var">E</span> := <span class="id" title="var">List.in_inv</span> <span class="id" title="var">H</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">E</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">E1</span> | <span class="id" title="var">E2</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">discriminate</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">In1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">right</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">inversion</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">set</span> (<span class="id" title="var">E</span> := <span class="id" title="var">List.in_inv</span> <span class="id" title="var">H0</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">E</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">E1</span> | <span class="id" title="var">E2</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">discriminate</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">In1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">right</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">inversion</span> <span class="id" title="var">H0</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">set</span> (<span class="id" title="var">E</span> := <span class="id" title="var">List.in_inv</span> <span class="id" title="var">H1</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">E</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">E1</span> | <span class="id" title="var">E2</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">discriminate</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">In1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">right</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">inversion</span> <span class="id" title="var">H1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">H2</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">bop'</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">inversion</span> <span class="id" title="var">H2</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">injection</span> <span class="id" title="var">H3</span>. <span class="id" title="tactic">intros</span> <span class="id" title="var">H4</span> <span class="id" title="var">H5</span>. <span class="id" title="tactic">subst</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">In1</span>. <span class="id" title="tactic">do</span> 4 <span class="id" title="tactic">right</span>. <span class="id" title="tactic">left</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> <span class="id" title="var">bop'</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">inversion</span> <span class="id" title="var">H2</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">discriminate</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">In1</span>. <span class="id" title="tactic">do</span> 5 <span class="id" title="tactic">right</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">stack_ptr_cons_included_if</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> <span class="id" title="var">p</span> <span class="id" title="var">s</span> <span class="id" title="var">X</span>, <span class="id" title="var">Included</span> <span class="id" title="var">_</span> (<span class="id" title="var">stack_ptr</span> <span class="id" title="var">s</span>) <span class="id" title="var">X</span> -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">SetIn</span> <span class="id" title="var">X</span> <span class="id" title="var">p</span> -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Included</span> <span class="id" title="var">_</span> (<span class="id" title="var">stack_ptr</span> (? <span class="id" title="var">p</span> :: <span class="id" title="var">s</span>)) <span class="id" title="var">X</span> .<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">p</span> <span class="id" title="var">η</span> <span class="id" title="var">X</span> <span class="id" title="var">In1</span> <span class="id" title="var">In2</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">q</span> <span class="id" title="var">In3</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">Ensembles.In</span> <span class="id" title="tactic">in</span> <span class="id" title="var">In3</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">stack_ptr</span> <span class="id" title="tactic">in</span> <span class="id" title="var">In3</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">In3</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">H</span> | <span class="id" title="var">H'</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">set</span> (<span class="id" title="var">E</span> := <span class="id" title="var">List.in_inv</span> <span class="id" title="var">H</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">E</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">E1</span> | <span class="id" title="var">E2</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">discriminate</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">In1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">left</span>. <span class="id" title="tactic">auto</span>. <span class="id" title="tactic">inversion</span> <span class="id" title="var">H'</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">set</span> (<span class="id" title="var">E</span> := <span class="id" title="var">List.in_inv</span> <span class="id" title="var">H</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">E</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">E1</span> | <span class="id" title="var">E2</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">discriminate</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">In1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">right</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">inversion</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">set</span> (<span class="id" title="var">E</span> := <span class="id" title="var">List.in_inv</span> <span class="id" title="var">H0</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">E</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">E1</span> | <span class="id" title="var">E2</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">discriminate</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">In1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">right</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">inversion</span> <span class="id" title="var">H0</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">set</span> (<span class="id" title="var">E</span> := <span class="id" title="var">List.in_inv</span> <span class="id" title="var">H1</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">E</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">E1</span> | <span class="id" title="var">E2</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">discriminate</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">In1</span>. <span class="id" title="tactic">right</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">inversion</span> <span class="id" title="var">H1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">In1</span>. <span class="id" title="tactic">do</span> 4 <span class="id" title="tactic">right</span>. <span class="id" title="tactic">left</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">H2</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">bop</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">set</span> (<span class="id" title="var">E</span> := <span class="id" title="var">List.in_inv</span> <span class="id" title="var">H2</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">E</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">E1</span> | <span class="id" title="var">E2</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">discriminate</span>. <span class="id" title="tactic">exists</span> <span class="id" title="var">bop</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">set</span> (<span class="id" title="var">E</span> := <span class="id" title="var">List.in_inv</span> <span class="id" title="var">H2</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">E</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">E1</span> | <span class="id" title="var">E2</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">injection</span> <span class="id" title="var">E1</span>. <span class="id" title="tactic">intros</span>. <span class="id" title="tactic">subst</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">In1</span>. <span class="id" title="tactic">do</span> 5 <span class="id" title="tactic">right</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">stack_ptr_eq_1</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> <span class="id" title="var">s</span>, <span class="id" title="var">Same_set</span> <span class="id" title="var">PointerType.t</span> (<span class="id" title="var">stack_ptr</span> (<span class="id" title="var">mapplypi1</span> :: <span class="id" title="var">s</span>)) (<span class="id" title="var">stack_ptr</span> <span class="id" title="var">s</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">s</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Same_set_in_iff</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">split</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">inversion</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">H0</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">E1</span> | <span class="id" title="var">E2</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">discriminate</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">left</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">inversion</span> <span class="id" title="var">H0</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">H1</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">E1</span> | <span class="id" title="var">E2</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">discriminate</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">right</span>. <span class="id" title="tactic">left</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">inversion</span> <span class="id" title="var">H1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">H2</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">E1</span> | <span class="id" title="var">E2</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">discriminate</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">right</span>. <span class="id" title="tactic">right</span>. <span class="id" title="tactic">left</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">inversion</span> <span class="id" title="var">H2</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">H3</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">E1</span> | <span class="id" title="var">E2</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">discriminate</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">right</span>. <span class="id" title="tactic">right</span>. <span class="id" title="tactic">right</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">inversion</span> <span class="id" title="var">H3</span>. <span class="id" title="tactic">inversion</span> <span class="id" title="var">H4</span>. <span class="id" title="tactic">inversion</span> <span class="id" title="var">H5</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">discriminate</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">do</span> 4 <span class="id" title="tactic">right</span>. <span class="id" title="tactic">left</span>. <span class="id" title="tactic">exists</span> <span class="id" title="var">x</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">inversion</span> <span class="id" title="var">H4</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">discriminate</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">do</span> 5 <span class="id" title="tactic">right</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">H</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">H0</span> | [<span class="id" title="var">H1</span> | [<span class="id" title="var">H2</span> | [<span class="id" title="var">H3</span> | [<span class="id" title="var">H4</span> | <span class="id" title="var">H5</span>]]]]].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">left</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">in_cons</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">right</span>. <span class="id" title="tactic">left</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">in_cons</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">right</span>. <span class="id" title="tactic">right</span>. <span class="id" title="tactic">left</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">in_cons</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">right</span>. <span class="id" title="tactic">right</span>. <span class="id" title="tactic">right</span>. <span class="id" title="tactic">left</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">in_cons</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">right</span>. <span class="id" title="tactic">right</span>. <span class="id" title="tactic">right</span>. <span class="id" title="tactic">right</span>. <span class="id" title="tactic">left</span>. <span class="id" title="tactic">destruct</span> <span class="id" title="var">H4</span>. <span class="id" title="tactic">exists</span> <span class="id" title="var">x</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">in_cons</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">right</span>. <span class="id" title="tactic">right</span>. <span class="id" title="tactic">right</span>. <span class="id" title="tactic">right</span>. <span class="id" title="tactic">right</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">in_cons</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">stack_ptr_eq_2</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> <span class="id" title="var">s</span>, <span class="id" title="var">Same_set</span> <span class="id" title="var">PointerType.t</span> (<span class="id" title="var">stack_ptr</span> (<span class="id" title="var">mapplypi2</span> :: <span class="id" title="var">s</span>)) (<span class="id" title="var">stack_ptr</span> <span class="id" title="var">s</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">s</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Same_set_in_iff</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">split</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">inversion</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">H0</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">E1</span> | <span class="id" title="var">E2</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">discriminate</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">left</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">inversion</span> <span class="id" title="var">H0</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">H1</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">E1</span> | <span class="id" title="var">E2</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">discriminate</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">right</span>. <span class="id" title="tactic">left</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">inversion</span> <span class="id" title="var">H1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">H2</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">E1</span> | <span class="id" title="var">E2</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">discriminate</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">right</span>. <span class="id" title="tactic">right</span>. <span class="id" title="tactic">left</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">inversion</span> <span class="id" title="var">H2</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">H3</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">E1</span> | <span class="id" title="var">E2</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">discriminate</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">right</span>. <span class="id" title="tactic">right</span>. <span class="id" title="tactic">right</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">inversion</span> <span class="id" title="var">H3</span>. <span class="id" title="tactic">inversion</span> <span class="id" title="var">H4</span>. <span class="id" title="tactic">inversion</span> <span class="id" title="var">H5</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">discriminate</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">do</span> 4 <span class="id" title="tactic">right</span>. <span class="id" title="tactic">left</span>. <span class="id" title="tactic">exists</span> <span class="id" title="var">x</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">inversion</span> <span class="id" title="var">H4</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">discriminate</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">do</span> 5 <span class="id" title="tactic">right</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">H</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">H0</span> | [<span class="id" title="var">H1</span> | [<span class="id" title="var">H2</span> | [<span class="id" title="var">H3</span> | [<span class="id" title="var">H4</span> | <span class="id" title="var">H5</span>]]]]].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">left</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">in_cons</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">right</span>. <span class="id" title="tactic">left</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">in_cons</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">right</span>. <span class="id" title="tactic">right</span>. <span class="id" title="tactic">left</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">in_cons</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">right</span>. <span class="id" title="tactic">right</span>. <span class="id" title="tactic">right</span>. <span class="id" title="tactic">left</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">in_cons</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">right</span>. <span class="id" title="tactic">right</span>. <span class="id" title="tactic">right</span>. <span class="id" title="tactic">right</span>. <span class="id" title="tactic">left</span>. <span class="id" title="tactic">destruct</span> <span class="id" title="var">H4</span>. <span class="id" title="tactic">exists</span> <span class="id" title="var">x</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">in_cons</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">right</span>. <span class="id" title="tactic">right</span>. <span class="id" title="tactic">right</span>. <span class="id" title="tactic">right</span>. <span class="id" title="tactic">right</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">in_cons</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">Join_range_ptr</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> <span class="id" title="var">Γ</span> <span class="id" title="var">Δ</span>, <span class="id" title="var">Γ</span> ⋈ <span class="id" title="var">Δ</span>  -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Same_set</span> <span class="id" title="var">_</span> (<span class="id" title="var">heap_range_ptr</span> (<span class="id" title="var">Γ</span> ∪ <span class="id" title="var">Δ</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Union</span> <span class="id" title="var">_</span> (<span class="id" title="var">heap_range_ptr</span> <span class="id" title="var">Γ</span>) (<span class="id" title="var">heap_range_ptr</span> <span class="id" title="var">Δ</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">Γ</span> <span class="id" title="var">Δ</span> <span class="id" title="var">Hjble</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">split</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">p</span> <span class="id" title="var">In1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">In1</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">q</span> [<span class="id" title="var">i</span> [<span class="id" title="var">η</span> [<span class="id" title="var">M1</span> <span class="id" title="var">In2</span>]]]].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">destruct_MapsTo_join</span> <span class="id" title="var">H1</span> <span class="id" title="var">H2</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">Union_introl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> <span class="id" title="var">q</span>. <span class="id" title="tactic">exists</span> <span class="id" title="var">i</span>. <span class="id" title="tactic">exists</span> <span class="id" title="var">η</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">Union_intror</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> <span class="id" title="var">q</span>. <span class="id" title="tactic">exists</span> <span class="id" title="var">i</span>. <span class="id" title="tactic">exists</span> <span class="id" title="var">η</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">p</span> <span class="id" title="var">In1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">Union</span> <span class="id" title="var">_</span> (<span class="id" title="var">heap_range_ptr</span> <span class="id" title="var">Γ</span>) (<span class="id" title="var">heap_range_ptr</span> <span class="id" title="var">Δ</span>) <span class="id" title="var">p</span>) <span class="id" title="keyword">as</span> <span class="id" title="var">In1'</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">In1'</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">q</span> <span class="id" title="var">In2</span> | <span class="id" title="var">q</span> <span class="id" title="var">In3</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">In2</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">q'</span> [<span class="id" title="var">i</span> [<span class="id" title="var">η</span> [<span class="id" title="var">M1</span> <span class="id" title="var">In2</span>]]]].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> <span class="id" title="var">q'</span>. <span class="id" title="tactic">exists</span> <span class="id" title="var">i</span>. <span class="id" title="tactic">exists</span> <span class="id" title="var">η</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">split</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">MapRaw.MapsTo_join_1</span> ; <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">In3</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">q'</span> [<span class="id" title="var">i</span> [<span class="id" title="var">η</span> [<span class="id" title="var">M1</span> <span class="id" title="var">In2</span>]]]].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> <span class="id" title="var">q'</span>. <span class="id" title="tactic">exists</span> <span class="id" title="var">i</span>. <span class="id" title="tactic">exists</span> <span class="id" title="var">η</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">split</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">Submap_MapsTo_leibniz</span> ; <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">join_sub2</span> ; <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">auto</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">Join_heap_ptr</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> <span class="id" title="var">Γ</span> <span class="id" title="var">Δ</span>, <span class="id" title="var">Γ</span> ⋈ <span class="id" title="var">Δ</span>  -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Same_set</span> <span class="id" title="var">_</span> (<span class="id" title="var">heap_ptr</span> (<span class="id" title="var">Γ</span> ∪ <span class="id" title="var">Δ</span>)) (<span class="id" title="var">Union</span> <span class="id" title="var">_</span> (<span class="id" title="var">heap_ptr</span> <span class="id" title="var">Γ</span>) (<span class="id" title="var">heap_ptr</span> <span class="id" title="var">Δ</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">Γ</span> <span class="id" title="var">Δ</span> <span class="id" title="var">Hjble</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">heap_ptr</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">Join_range_ptr</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">Join_key_set</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">Same_set_in_iff</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">k</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">repeat</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">Union_in_iff</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">tauto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">wf_union</span>: <span class="id" title="keyword">forall</span>  <span class="id" title="var">Γ</span> <span class="id" title="var">Δ</span> : <span class="id" title="var">Heap</span>, <span class="id" title="var">Γ</span> ⋈ <span class="id" title="var">Δ</span> -&gt; <span class="id" title="var">heap_wf</span> <span class="id" title="var">Γ</span> -&gt; <span class="id" title="var">heap_wf</span> <span class="id" title="var">Δ</span> -&gt; <span class="id" title="var">heap_wf</span> (<span class="id" title="var">Γ</span> ∪ <span class="id" title="var">Δ</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">Γ</span> <span class="id" title="var">Δ</span> <span class="id" title="var">Hjble</span> <span class="id" title="var">Hwf0</span> <span class="id" title="var">Hwf1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">heap_wf</span> <span class="id" title="tactic">in</span> *.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">Join_key_set</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">Join_heap_ptr</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">Hwf0</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">Hwf1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">Same_set_in_iff</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">k</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">repeat</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">Union_in_iff</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">tauto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">find_heap_range</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> <span class="id" title="var">η</span> <span class="id" title="var">Γ</span> <span class="id" title="var">p</span> <span class="id" title="var">he</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">find</span> <span class="id" title="var">p</span> <span class="id" title="var">Γ</span> = <span class="id" title="var">Some</span> (<span class="id" title="var">he</span>, <span class="id" title="var">η</span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Included</span> <span class="id" title="var">_</span> (<span class="id" title="var">env_ptr</span> <span class="id" title="var">η</span>) (<span class="id" title="var">heap_range_ptr</span> <span class="id" title="var">Γ</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">η</span> <span class="id" title="var">Γ</span> <span class="id" title="var">p</span> <span class="id" title="var">he</span> <span class="id" title="var">Hf</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">q</span> <span class="id" title="var">I</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">env_ptr</span> <span class="id" title="tactic">in</span> <span class="id" title="var">I</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">Ensembles.In</span> <span class="id" title="tactic">in</span> <span class="id" title="var">I</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> <span class="id" title="var">p</span>. <span class="id" title="tactic">exists</span> <span class="id" title="var">he</span>. <span class="id" title="tactic">exists</span> <span class="id" title="var">η</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">split</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">F.find_mapsto_iff</span> ;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">heap_range_singleton</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> <span class="id" title="var">Γ</span> <span class="id" title="var">he</span> <span class="id" title="var">η</span> <span class="id" title="var">p</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Same_set</span> <span class="id" title="var">_</span> (<span class="id" title="var">heap_range_ptr</span> (⎨ <span class="id" title="var">p</span> ⤇ (<span class="id" title="var">he</span>, <span class="id" title="var">η</span>) ⎬)) (<span class="id" title="var">env_ptr</span> <span class="id" title="var">η</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">Γ</span> <span class="id" title="var">he</span> <span class="id" title="var">η</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">split</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">q</span> <span class="id" title="var">I</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">I</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">q'</span> [<span class="id" title="var">i'</span> [<span class="id" title="var">η'</span> [<span class="id" title="var">EQ</span> <span class="id" title="var">I'</span>]]]].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">singleton</span> <span class="id" title="tactic">in</span> <span class="id" title="var">EQ</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">F.add_mapsto_iff</span> <span class="id" title="tactic">in</span> <span class="id" title="var">EQ</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">EQ</span> <span class="id" title="keyword">as</span> [[<span class="id" title="var">EQ1</span> <span class="id" title="var">EQ2</span>] | <span class="id" title="var">H'</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">injection</span> <span class="id" title="var">EQ2</span>. <span class="id" title="tactic">intros</span>. <span class="id" title="tactic">subst</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">H'</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">_</span> <span class="id" title="var">H'</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">F.empty_mapsto_iff</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H'</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">contradiction</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">q</span> <span class="id" title="var">I</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> <span class="id" title="var">p</span>. <span class="id" title="tactic">exists</span> <span class="id" title="var">he</span>. <span class="id" title="tactic">exists</span> <span class="id" title="var">η</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">split</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">MapsTo_singleton</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">heap_range_Included</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> <span class="id" title="var">Γ</span> <span class="id" title="var">Δ</span>, <span class="id" title="var">Γ</span> ≃ <span class="id" title="var">Δ</span> -&gt; <span class="id" title="var">Included</span> <span class="id" title="var">_</span> (<span class="id" title="var">heap_range_ptr</span> <span class="id" title="var">Γ</span>) (<span class="id" title="var">heap_range_ptr</span> <span class="id" title="var">Δ</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">Γ</span> <span class="id" title="var">Δ</span> <span class="id" title="var">EQ</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">p</span> <span class="id" title="var">I</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">I</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">q</span> [<span class="id" title="var">i</span> [<span class="id" title="var">η</span> [<span class="id" title="var">Hf</span> <span class="id" title="var">I'</span>]]]].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> <span class="id" title="var">q</span>. <span class="id" title="tactic">exists</span> <span class="id" title="var">i</span>. <span class="id" title="tactic">exists</span>  <span class="id" title="var">η</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">split</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">EQ</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">heap_range_Same</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> <span class="id" title="var">Γ</span> <span class="id" title="var">Δ</span>, <span class="id" title="var">Γ</span> ≃ <span class="id" title="var">Δ</span> -&gt; <span class="id" title="var">Same_set</span> <span class="id" title="var">_</span> (<span class="id" title="var">heap_range_ptr</span> <span class="id" title="var">Γ</span>) (<span class="id" title="var">heap_range_ptr</span> <span class="id" title="var">Δ</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">Γ</span> <span class="id" title="var">Δ</span> <span class="id" title="var">EQ</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">split</span> ;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">heap_range_Included</span> ;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">symmetry</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Add</span> <span class="id" title="var">Parametric</span> <span class="id" title="var">Morphism</span> : (<span class="id" title="var">heap_range_ptr</span>) <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">signature</span> <span class="id" title="var">Equal</span> ==&gt; (<span class="id" title="var">Same_set</span> <span class="id" title="var">PointerType.t</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">as</span> <span class="id" title="var">heap_range_ptr_mor</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">heap_range_Same</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">heap_ptr_Included</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> <span class="id" title="var">Γ</span> <span class="id" title="var">Δ</span>, <span class="id" title="var">Γ</span> ≃ <span class="id" title="var">Δ</span> -&gt; <span class="id" title="var">Included</span> <span class="id" title="var">_</span> (<span class="id" title="var">heap_ptr</span> <span class="id" title="var">Γ</span>) (<span class="id" title="var">heap_ptr</span> <span class="id" title="var">Δ</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">Γ</span> <span class="id" title="var">Δ</span> <span class="id" title="var">EQ</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">heap_ptr</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">Equal_key_set</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;2 : { <span class="id" title="tactic">eauto</span>. }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">EQ</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">auto</span> <span class="id" title="keyword">with</span> <span class="id" title="var">sets</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">heap_ptr_Same</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> <span class="id" title="var">Γ</span> <span class="id" title="var">Δ</span>, <span class="id" title="var">Γ</span> ≃ <span class="id" title="var">Δ</span> -&gt; <span class="id" title="var">Same_set</span> <span class="id" title="var">_</span> (<span class="id" title="var">heap_ptr</span> <span class="id" title="var">Γ</span>) (<span class="id" title="var">heap_ptr</span> <span class="id" title="var">Δ</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">Γ</span> <span class="id" title="var">Δ</span> <span class="id" title="var">EQ</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">split</span> ;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">heap_ptr_Included</span> ;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">symmetry</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Add</span> <span class="id" title="var">Parametric</span> <span class="id" title="var">Morphism</span> : (<span class="id" title="var">heap_ptr</span>) <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">signature</span> <span class="id" title="var">Equal</span> ==&gt; (<span class="id" title="var">Same_set</span> <span class="id" title="var">PointerType.t</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">as</span> <span class="id" title="var">heap_ptr_mor</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">heap_ptr_Same</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Add</span> <span class="id" title="var">Parametric</span> <span class="id" title="var">Morphism</span> : (<span class="id" title="var">key_set</span>) <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">signature</span> <span class="id" title="var">Equal</span> ==&gt; (<span class="id" title="var">Same_set</span> <span class="id" title="var">PointerType.t</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">as</span> <span class="id" title="var">key_set_mor</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">Equal_key_set</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Add</span> <span class="id" title="var">Parametric</span> <span class="id" title="var">Morphism</span> : (<span class="id" title="var">heap_wf</span>) <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">signature</span> <span class="id" title="var">Equal</span> ==&gt; <span class="id" title="var">impl</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">as</span> <span class="id" title="var">heap_wf_impl_mor</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">Γ</span> <span class="id" title="var">Δ</span> <span class="id" title="var">EQ</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">Hwf</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">heap_wf</span> <span class="id" title="tactic">in</span> *.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">transitivity</span> (<span class="id" title="var">heap_ptr</span> <span class="id" title="var">Γ</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">EQ</span>. <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">transitivity</span> (<span class="id" title="var">key_set</span> <span class="id" title="var">Γ</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">EQ</span>. <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">key_set_singleton</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> <span class="id" title="var">Γ</span> <span class="id" title="var">he</span> <span class="id" title="var">η</span> <span class="id" title="var">p</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Same_set</span> <span class="id" title="var">_</span> (<span class="id" title="var">key_set</span> (⎨ <span class="id" title="var">p</span> ⤇ (<span class="id" title="var">he</span>, <span class="id" title="var">η</span>) ⎬)) (<span class="id" title="var">Singleton</span> <span class="id" title="var">_</span> <span class="id" title="var">p</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">Γ</span> <span class="id" title="var">i</span> <span class="id" title="var">η</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">split</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">q</span> <span class="id" title="var">I</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">Ensembles.In</span> <span class="id" title="tactic">in</span> <span class="id" title="var">I</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">key_set</span> <span class="id" title="tactic">in</span> <span class="id" title="var">I</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">singleton</span> <span class="id" title="tactic">in</span> <span class="id" title="var">I</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">F.add_in_iff</span> <span class="id" title="tactic">in</span> <span class="id" title="var">I</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">I</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">H1</span> | <span class="id" title="var">H2</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">H1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">constructor</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">F.empty_in_iff</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H2</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">contradiction</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">q</span> <span class="id" title="var">I</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">I</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> (<span class="id" title="var">i</span>, <span class="id" title="var">η</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">MapsTo_singleton</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">Joinable_fresh</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> <span class="id" title="var">Γ</span> <span class="id" title="var">p</span> <span class="id" title="var">β</span>, <span class="id" title="var">fresh_for_heap</span> <span class="id" title="var">p</span> <span class="id" title="var">Γ</span> -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Γ</span> ⋈ ⎨ <span class="id" title="var">p</span> ⤇ <span class="id" title="var">β</span> ⎬.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">Γ</span> <span class="id" title="var">p</span> <span class="id" title="var">β</span> <span class="id" title="tactic">fresh</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">fresh_for_heap</span> <span class="id" title="tactic">in</span> <span class="id" title="tactic">fresh</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">heap_ptr</span> <span class="id" title="tactic">in</span> <span class="id" title="tactic">fresh</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (~ <span class="id" title="var">Map.SetIn</span> (<span class="id" title="var">key_set</span> <span class="id" title="var">Γ</span>) <span class="id" title="var">p</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">M</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="tactic">fresh</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">constructor</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">key_set</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">Joinable_not_in</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">Join_add_prop'</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">Γ</span> <span class="id" title="var">Δ</span> <span class="id" title="var">p</span> <span class="id" title="var">β</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">fresh_for_heap</span> <span class="id" title="var">p</span> <span class="id" title="var">Δ</span> -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Γ</span> ⋈ <span class="id" title="var">Δ</span> -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">add</span> <span class="id" title="var">p</span> <span class="id" title="var">β</span> <span class="id" title="var">Γ</span> ⋈ <span class="id" title="var">Δ</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">Γ</span> <span class="id" title="var">Δ</span> <span class="id" title="var">p</span> <span class="id" title="var">β</span> <span class="id" title="var">p_fresh_Δ</span> <span class="id" title="var">Γ_Δ</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Joinable_fresh</span> <span class="id" title="keyword">with</span> (<span class="id" title="var">β</span>:=<span class="id" title="var">β</span>) <span class="id" title="tactic">in</span> <span class="id" title="var">p_fresh_Δ</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Join_add_prop</span>. <span class="id" title="tactic">auto</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">heap_add_prop'</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">Γ</span> <span class="id" title="var">Δ</span> <span class="id" title="var">p</span> <span class="id" title="var">β</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">fresh_for_heap</span> <span class="id" title="var">p</span> <span class="id" title="var">Δ</span> -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Γ</span> ⋈ <span class="id" title="var">Δ</span> ∪ (⎨ <span class="id" title="var">p</span> ⤇ <span class="id" title="var">β</span> ⎬) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Γ</span> ∪ <span class="id" title="var">add</span> <span class="id" title="var">p</span> <span class="id" title="var">β</span> <span class="id" title="var">Δ</span>) ≃ <span class="id" title="var">add</span> <span class="id" title="var">p</span> <span class="id" title="var">β</span> (<span class="id" title="var">Γ</span> ∪ <span class="id" title="var">Δ</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">Γ</span> <span class="id" title="var">Δ</span> <span class="id" title="var">p</span> <span class="id" title="var">β</span> <span class="id" title="var">p_fresh_Δ</span> <span class="id" title="var">Hjble</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">heap_add_prop</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Joinable_fresh</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">heap_add_prop_idemp''</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">Γ</span> <span class="id" title="var">Δ</span> <span class="id" title="var">p</span> <span class="id" title="var">β</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">fresh_for_heap</span> <span class="id" title="var">p</span> <span class="id" title="var">Δ</span> -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Γ</span> ⋈ <span class="id" title="var">Δ</span> -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">add</span> <span class="id" title="var">p</span> <span class="id" title="var">β</span> (<span class="id" title="var">Γ</span> ∪ <span class="id" title="var">Δ</span>) ≃ (<span class="id" title="var">add</span> <span class="id" title="var">p</span> <span class="id" title="var">β</span> (<span class="id" title="var">Γ</span> ∪ <span class="id" title="var">Δ</span>)) ∪ <span class="id" title="var">Δ</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">Γ</span> <span class="id" title="var">Δ</span> <span class="id" title="var">p</span> <span class="id" title="var">β</span> <span class="id" title="var">p_fresh_Δ</span> <span class="id" title="var">Γ_Δ</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Joinable_fresh</span> <span class="id" title="keyword">with</span> (<span class="id" title="var">β</span>:=<span class="id" title="var">β</span>) <span class="id" title="tactic">in</span> <span class="id" title="var">p_fresh_Δ</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">heap_add_prop_idemp</span>. <span class="id" title="tactic">auto</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">heap_add_prop_idemp'''</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">Γ</span> <span class="id" title="var">Δ</span> <span class="id" title="var">p</span> <span class="id" title="var">β</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">fresh_for_heap</span> <span class="id" title="var">p</span> <span class="id" title="var">Γ</span> -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Γ</span> ⋈ <span class="id" title="var">Δ</span> -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">add</span> <span class="id" title="var">p</span> <span class="id" title="var">β</span> (<span class="id" title="var">Γ</span> ∪ <span class="id" title="var">Δ</span>) ≃ (<span class="id" title="var">add</span> <span class="id" title="var">p</span> <span class="id" title="var">β</span> (<span class="id" title="var">Γ</span> ∪ <span class="id" title="var">Δ</span>)) ∪ <span class="id" title="var">Γ</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">Γ</span> <span class="id" title="var">Δ</span> <span class="id" title="var">p</span> <span class="id" title="var">β</span> <span class="id" title="var">p_fresh_Γ</span> <span class="id" title="var">Γ_Δ</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Joinable_fresh</span> <span class="id" title="keyword">with</span> (<span class="id" title="var">β</span>:=<span class="id" title="var">β</span>) <span class="id" title="tactic">in</span> <span class="id" title="var">p_fresh_Γ</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">heap_add_prop_idemp'</span>. <span class="id" title="tactic">auto</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">fresh_for_heap_join</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">Γ</span> <span class="id" title="var">Δ</span> <span class="id" title="var">p</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Γ</span> ⋈ <span class="id" title="var">Δ</span> -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">fresh_for_heap</span> <span class="id" title="var">p</span> (<span class="id" title="var">Γ</span> ∪ <span class="id" title="var">Δ</span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">fresh_for_heap</span> <span class="id" title="var">p</span> (<span class="id" title="var">Γ</span>) /\ <span class="id" title="var">fresh_for_heap</span> <span class="id" title="var">p</span> (<span class="id" title="var">Δ</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">Γ</span> <span class="id" title="var">Δ</span> <span class="id" title="var">Γ_join_Δ</span> <span class="id" title="var">p</span> <span class="id" title="var">p_fresh_ΓΔ</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">split</span>. <span class="id" title="tactic">intro</span> <span class="id" title="var">p_in</span>. <span class="id" title="tactic">destruct</span> <span class="id" title="var">p_in</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Union_introl</span> <span class="id" title="keyword">with</span> (<span class="id" title="var">C</span>:=<span class="id" title="var">key_set</span> <span class="id" title="var">Δ</span>) <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Join_key_set</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Union_introl</span> <span class="id" title="keyword">with</span> (<span class="id" title="var">C</span>:=<span class="id" title="var">heap_range_ptr</span> (<span class="id" title="var">Γ</span> ∪ <span class="id" title="var">Δ</span>)) <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">p_fresh_ΓΔ</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>. <span class="id" title="tactic">inversion</span> <span class="id" title="var">H</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Union_introl</span> <span class="id" title="keyword">with</span> (<span class="id" title="var">C</span>:=<span class="id" title="var">heap_range_ptr</span> <span class="id" title="var">Δ</span>) <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Join_range_ptr</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Union_intror</span> <span class="id" title="keyword">with</span> (<span class="id" title="var">B</span>:=<span class="id" title="var">key_set</span> (<span class="id" title="var">Γ</span> ∪ <span class="id" title="var">Δ</span>)) <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">p_fresh_ΓΔ</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>. <span class="id" title="tactic">inversion</span> <span class="id" title="var">H</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">p_in</span>. <span class="id" title="tactic">destruct</span> <span class="id" title="var">p_in</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Union_intror</span> <span class="id" title="keyword">with</span> (<span class="id" title="var">B</span>:=<span class="id" title="var">key_set</span> <span class="id" title="var">Γ</span>) <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Join_key_set</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Union_introl</span> <span class="id" title="keyword">with</span> (<span class="id" title="var">C</span>:=<span class="id" title="var">heap_range_ptr</span> (<span class="id" title="var">Γ</span> ∪ <span class="id" title="var">Δ</span>)) <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">p_fresh_ΓΔ</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>. <span class="id" title="tactic">inversion</span> <span class="id" title="var">H</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Union_intror</span> <span class="id" title="keyword">with</span> (<span class="id" title="var">B</span>:=<span class="id" title="var">heap_range_ptr</span> <span class="id" title="var">Γ</span>) <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Join_range_ptr</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Union_intror</span> <span class="id" title="keyword">with</span> (<span class="id" title="var">B</span>:=<span class="id" title="var">key_set</span> (<span class="id" title="var">Γ</span> ∪ <span class="id" title="var">Δ</span>)) <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">p_fresh_ΓΔ</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>. <span class="id" title="tactic">inversion</span> <span class="id" title="var">H</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">fresh_for_heap_join_1</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">Γ</span> <span class="id" title="var">Δ</span> <span class="id" title="var">p</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Γ</span> ⋈ <span class="id" title="var">Δ</span> -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">fresh_for_heap</span> <span class="id" title="var">p</span> (<span class="id" title="var">Γ</span>) /\ <span class="id" title="var">fresh_for_heap</span> <span class="id" title="var">p</span> (<span class="id" title="var">Δ</span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">fresh_for_heap</span> <span class="id" title="var">p</span> (<span class="id" title="var">Γ</span> ∪ <span class="id" title="var">Δ</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">Γ</span> <span class="id" title="var">Δ</span> <span class="id" title="var">Γ_join_Δ</span> <span class="id" title="var">p</span> [<span class="id" title="var">p_fresh_Γ</span> <span class="id" title="var">p_fresh_Δ</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">p_in</span>. <span class="id" title="tactic">destruct</span> <span class="id" title="var">p_in</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Join_key_set</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Union_introl</span> <span class="id" title="keyword">with</span> (<span class="id" title="var">C</span>:=<span class="id" title="var">heap_range_ptr</span> <span class="id" title="var">Γ</span>) <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">p_fresh_Γ</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>. <span class="id" title="tactic">inversion</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Union_introl</span> <span class="id" title="keyword">with</span> (<span class="id" title="var">C</span>:=<span class="id" title="var">heap_range_ptr</span> <span class="id" title="var">Δ</span>) <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">p_fresh_Δ</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>. <span class="id" title="tactic">inversion</span> <span class="id" title="var">H</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">H</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">k</span> [<span class="id" title="var">i</span> [<span class="id" title="var">η</span> [? ?]]]].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">join_MapsTo</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">p_fresh_Γ</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Union_intror</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> <span class="id" title="var">k</span>, <span class="id" title="var">i</span>, <span class="id" title="var">η</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">p_fresh_Δ</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Union_intror</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> <span class="id" title="var">k</span>, <span class="id" title="var">i</span>, <span class="id" title="var">η</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">heap_add_join_prop</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">Γ</span> <span class="id" title="var">Δ</span> <span class="id" title="var">p</span> <span class="id" title="var">β</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">fresh_for_heap</span> <span class="id" title="var">p</span> <span class="id" title="var">Γ</span> -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Γ</span> ⋈ <span class="id" title="var">Δ</span> -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">add</span> <span class="id" title="var">p</span> <span class="id" title="var">β</span> <span class="id" title="var">Γ</span>) ∪ (<span class="id" title="var">add</span> <span class="id" title="var">p</span> <span class="id" title="var">β</span> <span class="id" title="var">Δ</span>) ≃ <span class="id" title="var">Γ</span> ∪ (<span class="id" title="var">add</span> <span class="id" title="var">p</span> <span class="id" title="var">β</span> <span class="id" title="var">Δ</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">Γ</span> <span class="id" title="var">Δ</span> <span class="id" title="var">p</span> <span class="id" title="var">β</span> <span class="id" title="var">p_fresh</span> <span class="id" title="var">Γ_Δ</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Joinable_Equal_1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">split</span>. <span class="id" title="tactic">intros</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">join_in</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>. <span class="id" title="tactic">destruct</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">F.add_in_iff</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>. <span class="id" title="tactic">destruct</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">join_in2</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">F.add_in_iff</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">left</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">join_in1</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">join_in2</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">join_in</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>. <span class="id" title="tactic">destruct</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">join_in1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">F.add_in_iff</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">right</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">join_in2</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Joinable_join_intro_r</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Joinable_join_intro_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Join_add_prop'</span>. <span class="id" title="tactic">auto</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">Joinable_refl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Join_add_prop'</span>. <span class="id" title="tactic">auto</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Joinable_join_intro_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Join_add_prop''</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Join_add_prop''</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">Joinable_refl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">Join_fresh_add_prop</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">Γ</span> <span class="id" title="var">Δ</span> <span class="id" title="var">p</span> <span class="id" title="var">β</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">fresh_for_heap</span> <span class="id" title="var">p</span> <span class="id" title="var">Δ</span> -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Γ</span> ⋈ <span class="id" title="var">Map.add</span> <span class="id" title="var">p</span> <span class="id" title="var">β</span> <span class="id" title="var">Δ</span> -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Γ</span> ⋈ <span class="id" title="var">Δ</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">Γ</span> <span class="id" title="var">Δ</span> <span class="id" title="var">p</span> <span class="id" title="var">β</span> <span class="id" title="var">p_fresh</span> <span class="id" title="var">Γ_pΔ</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">k</span>. <span class="id" title="tactic">intros</span> <span class="id" title="var">e</span> <span class="id" title="var">e'</span> <span class="id" title="var">H</span> <span class="id" title="var">H0</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Γ_pΔ</span> <span class="id" title="keyword">with</span> (<span class="id" title="var">k</span>:=<span class="id" title="var">k</span>). <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">F.add_mapsto_iff</span>. <span class="id" title="tactic">right</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">split</span>. <span class="id" title="tactic">intros</span> <span class="id" title="var">p_k</span>. <span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">p_k</span> <span class="id" title="tactic">in</span> *.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">p_fresh</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">heap_ptr</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Union_introl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">key_set_find_in</span> <span class="id" title="keyword">with</span>(<span class="id" title="var">e</span>:=<span class="id" title="var">e'</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">find_1</span>. <span class="id" title="tactic">auto</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">heap_add_prop''</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">Γ</span> <span class="id" title="var">Δ</span> <span class="id" title="var">p</span> <span class="id" title="var">β</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">fresh_for_heap</span> <span class="id" title="var">p</span> (<span class="id" title="var">Γ</span> ∪ <span class="id" title="var">Δ</span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Γ</span> ⋈ <span class="id" title="var">Δ</span> -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">add</span> <span class="id" title="var">p</span> <span class="id" title="var">β</span> <span class="id" title="var">Γ</span> ∪ <span class="id" title="var">Δ</span>) ≃ <span class="id" title="var">add</span> <span class="id" title="var">p</span> <span class="id" title="var">β</span> (<span class="id" title="var">Γ</span> ∪ <span class="id" title="var">Δ</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">Γ</span> <span class="id" title="var">Δ</span> <span class="id" title="var">p</span> <span class="id" title="var">β</span> <span class="id" title="var">p_fresh</span> <span class="id" title="var">Hjble</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">fresh_for_heap_join</span> <span class="id" title="tactic">in</span> <span class="id" title="var">p_fresh</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">Join_comm_1</span>. <span class="id" title="tactic">rewrite</span> <span class="id" title="var">heap_add_prop</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">F.add_m</span>. <span class="id" title="tactic">auto</span>. <span class="id" title="tactic">auto</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Joinable_fresh</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">p_fresh</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Joinable_join_intro_r</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Joinable_fresh</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">p_fresh</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Join_add_prop'</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">p_fresh</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">heaps_prop_ifz</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">Γ</span> <span class="id" title="var">Γ'</span> <span class="id" title="var">Δ</span> <span class="id" title="var">p</span> <span class="id" title="var">β</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">fresh_for_heap</span> <span class="id" title="var">p</span> (<span class="id" title="var">Γ</span> ∪ <span class="id" title="var">Δ</span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Γ</span> ⋈ <span class="id" title="var">Δ</span> -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Γ'</span> ⋈ <span class="id" title="var">Map.add</span> <span class="id" title="var">p</span> <span class="id" title="var">β</span> (<span class="id" title="var">Γ</span> ∪ <span class="id" title="var">Δ</span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Γ'</span> ∪ <span class="id" title="var">Map.add</span> <span class="id" title="var">p</span> <span class="id" title="var">β</span> (<span class="id" title="var">Γ</span> ∪ <span class="id" title="var">Δ</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;≃<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Γ</span> ∪ <span class="id" title="var">Δ</span>) ∪ (<span class="id" title="var">Γ'</span> ∪ <span class="id" title="var">Map.add</span> <span class="id" title="var">p</span> <span class="id" title="var">β</span> <span class="id" title="var">Δ</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">Γ</span> <span class="id" title="var">Γ'</span> <span class="id" title="var">Δ</span> <span class="id" title="var">p</span> <span class="id" title="var">β</span> <span class="id" title="var">p_fresh</span> <span class="id" title="var">Γ_Δ</span> <span class="id" title="var">Γ'_ΓpΔ</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Joinable_Equal_1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">split</span>. <span class="id" title="tactic">intros</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">join_in</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>. <span class="id" title="tactic">destruct</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">join_in2</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">join_in1</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">F.add_in_iff</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>. <span class="id" title="tactic">destruct</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">join_in2</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">join_in2</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">F.add_in_iff</span>. <span class="id" title="tactic">left</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">join_in1</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">join_in</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>. <span class="id" title="tactic">destruct</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">join_in2</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">F.add_in_iff</span>. <span class="id" title="tactic">right</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">join_in</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>. <span class="id" title="tactic">destruct</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">join_in1</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">F.add_in_iff</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>. <span class="id" title="tactic">destruct</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">join_in2</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">F.add_in_iff</span>. <span class="id" title="tactic">left</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">join_in2</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">F.add_in_iff</span>. <span class="id" title="tactic">right</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">join_in2</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Joinable_join_intro_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Joinable_join_intro_r</span>. <span class="id" title="tactic">eapply</span> <span class="id" title="var">Join_fresh_add_prop</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">p_fresh</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Γ'_ΓpΔ</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Joinable_join_intro_r</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">Joinable_refl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">joinable_comm</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">Join_add_prop</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">Join_add_prop'''</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">Γ'_ΓpΔ</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">Join_fresh_add_prop</span> <span class="id" title="var">p_fresh</span>) <span class="id" title="tactic">in</span> <span class="id" title="var">Γ'_ΓpΔ</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">joinable_comm</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">comp_join_elim_r</span> <span class="id" title="keyword">with</span> (<span class="id" title="var">Δ</span>:=<span class="id" title="var">Γ</span>). <span class="id" title="tactic">auto</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">Γ'_ΓpΔ</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Joinable_join_intro_r</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">Join_add_prop</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Joinable_fresh</span>. <span class="id" title="tactic">auto</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">Joinable_refl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Joinable_join_intro_r</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Join_add_prop''</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Joinable_join_intro_l</span>. <span class="id" title="tactic">auto</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">Joinable_refl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">wf_add</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">Γ</span> : <span class="id" title="var">Heap</span>) <span class="id" title="var">p</span> <span class="id" title="var">ik</span> <span class="id" title="var">η</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">heap_wf</span> <span class="id" title="var">Γ</span> -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Included</span> <span class="id" title="var">_</span> (<span class="id" title="var">env_ptr</span> <span class="id" title="var">η</span>) (<span class="id" title="var">key_set</span> <span class="id" title="var">Γ</span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">heap_wf</span> (<span class="id" title="var">Map.add</span> <span class="id" title="var">p</span> (<span class="id" title="var">ik</span>, <span class="id" title="var">η</span>) <span class="id" title="var">Γ</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">Γ</span> <span class="id" title="var">p</span> <span class="id" title="var">ik</span> <span class="id" title="var">η</span> <span class="id" title="var">Γwf</span> <span class="id" title="var">η_Γ</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">split</span>. <span class="id" title="tactic">intros</span> <span class="id" title="var">q</span> <span class="id" title="var">q_in</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">q_in</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">H</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">k</span> [<span class="id" title="var">i'</span> [<span class="id" title="var">η'</span> [? ?]]]].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">F.add_mapsto_iff</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>. <span class="id" title="tactic">destruct</span> <span class="id" title="var">H</span>. <span class="id" title="tactic">destruct</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">inversion</span> <span class="id" title="var">H1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">F.add_in_iff</span>. <span class="id" title="tactic">right</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">η_Γ</span>. <span class="id" title="tactic">rewrite</span> -&gt; <span class="id" title="var">H4</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">F.add_in_iff</span>. <span class="id" title="tactic">right</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Γwf</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Union_intror</span>. <span class="id" title="tactic">exists</span> <span class="id" title="var">k</span>, <span class="id" title="var">i'</span>, <span class="id" title="var">η'</span>. <span class="id" title="tactic">destruct</span> <span class="id" title="var">H</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">q</span> <span class="id" title="var">q_in</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Union_introl</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">Machine</span>.<br/>
+
+<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

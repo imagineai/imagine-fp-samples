@@ -1,0 +1,880 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>DomainStuff</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library DomainStuff</h1>
+
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Add</span> <span class="id" title="var">LoadPath</span> "../denot/domain-theory".<br/>
+</div>
+
+<div class="doc">
+new in 8.4! 
+</div>
+<div class="code">
+<span class="id" title="keyword">Set</span> <span class="id" title="var">Automatic</span> <span class="id" title="var">Coercions</span> <span class="id" title="keyword">Import</span>.<br/>
+<span class="id" title="keyword">Unset</span> <span class="id" title="var">Automatic</span> <span class="id" title="var">Introduction</span>.<br/>
+</div>
+
+<div class="doc">
+endof new in 8.4 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Utils</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">uniirec</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">ZArith</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Set Implicit Arguments</span>.<br/>
+<span class="id" title="keyword">Unset</span> <span class="id" title="keyword">Strict</span> <span class="id" title="keyword">Implicit</span>.<br/>
+<span class="id" title="keyword">Import</span> <span class="id" title="var">Prenex</span> <span class="id" title="var">Implicits</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Include</span> <span class="id" title="var">RD</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">KR</span> := <span class="id" title="var">kleisli</span> (<span class="id" title="var">eta</span> &lt;&lt; <span class="id" title="var">Roll</span>).<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">KUR</span> := <span class="id" title="var">kleisli</span> (<span class="id" title="var">eta</span> &lt;&lt; <span class="id" title="var">Unroll</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Canonical</span> <span class="id" title="keyword">Structure</span> <span class="id" title="var">int_cpoType</span> := <span class="id" title="keyword">Eval</span> <span class="id" title="tactic">hnf</span> <span class="id" title="tactic">in</span> <span class="id" title="var">discrete_cpoType</span> <span class="id" title="var">Z</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">EpsStable</span> (<span class="id" title="var">D</span> : <span class="id" title="var">cpoType</span>) <span class="id" title="var">a</span> <span class="id" title="var">b</span> : (<span class="id" title="var">a</span> =-= <span class="id" title="var">b</span> ) -&gt; (@<span class="id" title="var">tset_eq</span> (<span class="id" title="var">D</span> <span class="id" title="var">_BOT</span>) (<span class="id" title="var">Eps</span> <span class="id" title="var">a</span>) (<span class="id" title="var">Eps</span> <span class="id" title="var">b</span>)).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">D</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> [<span class="id" title="var">leq</span> <span class="id" title="var">geq</span>].<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simpl</span> <span class="id" title="tactic">in</span> *.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">split</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">DLleEps_left</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">DLle_trans</span> <span class="id" title="keyword">with</span> (<span class="id" title="var">y</span> := <span class="id" title="var">b</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">leq</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">fst</span> (<span class="id" title="var">eq_Eps</span> <span class="id" title="var">b</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">DLleEps_right</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">DLle_trans</span> <span class="id" title="keyword">with</span> (<span class="id" title="var">y</span>:=<span class="id" title="var">b</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">snd</span> (<span class="id" title="var">eq_Eps</span> <span class="id" title="var">b</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">geq</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">DLleEpsTrans</span> (<span class="id" title="var">D</span> : <span class="id" title="var">cpoType</span>) (<span class="id" title="var">a</span> <span class="id" title="var">b</span> :<span class="id" title="var">D</span> <span class="id" title="var">_BOT</span>) : <span class="id" title="var">a</span> &lt;= <span class="id" title="var">b</span> -&gt; <span class="id" title="var">Eps</span> <span class="id" title="var">a</span> &lt;= <span class="id" title="var">b</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">D</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">leq</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">DLle_trans</span> <span class="id" title="keyword">with</span> (<span class="id" title="var">y</span> := <span class="id" title="var">a</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">snd</span> (<span class="id" title="var">eq_Eps</span> <span class="id" title="var">a</span>)). <span class="id" title="tactic">apply</span> <span class="id" title="var">leq</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">DLleEq</span> (<span class="id" title="var">D</span> : <span class="id" title="var">cpoType</span>) : <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span>, <span class="id" title="var">a</span> =-= <span class="id" title="var">b</span> -&gt; @<span class="id" title="var">DLle</span> <span class="id" title="var">D</span> <span class="id" title="var">a</span> <span class="id" title="var">c</span> -&gt; @<span class="id" title="var">DLle</span> <span class="id" title="var">D</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">D</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span> [<span class="id" title="var">_</span> <span class="id" title="var">bLta</span>] <span class="id" title="var">leq</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">DLle_trans</span> <span class="id" title="var">bLta</span> <span class="id" title="var">leq</span>).<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">DLleEqR</span> (<span class="id" title="var">D</span> : <span class="id" title="var">cpoType</span>) : <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span> <span class="id" title="var">c</span> <span class="id" title="var">d</span>, <span class="id" title="var">c</span> =-= <span class="id" title="var">d</span> -&gt; @<span class="id" title="var">DLle</span> <span class="id" title="var">D</span> <span class="id" title="var">a</span> <span class="id" title="var">c</span> -&gt; @<span class="id" title="var">DLle</span> <span class="id" title="var">D</span> <span class="id" title="var">a</span> <span class="id" title="var">d</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">D</span> <span class="id" title="var">a</span> <span class="id" title="var">c</span> <span class="id" title="var">d</span> [<span class="id" title="var">cLtd</span> <span class="id" title="var">_</span>] <span class="id" title="var">leq</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">DLle_trans</span> <span class="id" title="var">leq</span> <span class="id" title="var">cLtd</span>  ).<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">comp_simpl</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">D1</span> <span class="id" title="var">D2</span> <span class="id" title="var">D3</span> : <span class="id" title="var">cpoType</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="var">D2</span> =-&gt; <span class="id" title="var">D3</span>) (<span class="id" title="var">g</span> : <span class="id" title="var">D1</span> =-&gt; <span class="id" title="var">D2</span>) (<span class="id" title="var">x</span> : <span class="id" title="var">D1</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">f</span> &lt;&lt; <span class="id" title="var">g</span>) <span class="id" title="var">x</span> = <span class="id" title="var">f</span> (<span class="id" title="var">g</span> <span class="id" title="var">x</span>).<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">auto</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">prod_simpl</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">D1</span> <span class="id" title="var">D2</span> <span class="id" title="var">D3</span> : <span class="id" title="var">cpoType</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="var">cpoCatType</span> <span class="id" title="var">D1</span> <span class="id" title="var">D2</span>) (<span class="id" title="var">g</span> : <span class="id" title="var">cpoCatType</span> <span class="id" title="var">D1</span> <span class="id" title="var">D3</span>) (<span class="id" title="var">x</span> : <span class="id" title="var">D1</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(&lt;| <span class="id" title="var">f</span> , <span class="id" title="var">g</span> |&gt;) <span class="id" title="var">x</span> =-= (<span class="id" title="var">f</span> <span class="id" title="var">x</span> , <span class="id" title="var">g</span> <span class="id" title="var">x</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">URid</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">x</span> : <span class="id" title="var">VInf</span>), <span class="id" title="var">Unroll</span> (<span class="id" title="var">Roll</span> <span class="id" title="var">x</span>) =-= <span class="id" title="var">x</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>. <span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">comp_simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">UR_id</span>. <span class="id" title="tactic">by</span> <span class="id" title="tactic">unfold</span> <span class="id" title="var">Id</span>; <span class="id" title="tactic">simpl</span>; <span class="id" title="tactic">unfold</span> <span class="id" title="var">id</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">RUid</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">x</span> : <span class="id" title="var">DInf</span>), <span class="id" title="var">Roll</span> (<span class="id" title="var">Unroll</span> <span class="id" title="var">x</span>) =-= <span class="id" title="var">x</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>. <span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">comp_simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">RU_id</span>. <span class="id" title="tactic">by</span> <span class="id" title="tactic">unfold</span> <span class="id" title="var">Id</span>; <span class="id" title="tactic">simpl</span>; <span class="id" title="tactic">unfold</span> <span class="id" title="var">id</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">KLEISLIR_unit2</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">D</span> <span class="id" title="var">E</span> <span class="id" title="var">F</span> : <span class="id" title="var">cpoType</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">f</span> : (<span class="id" title="var">D</span> * <span class="id" title="var">E</span>) =-&gt; (<span class="id" title="var">F</span> <span class="id" title="var">_BOT</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">a</span> : <span class="id" title="var">D</span>) (<span class="id" title="var">b</span> : <span class="id" title="var">E</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">KLEISLIR</span> <span class="id" title="var">f</span>) (<span class="id" title="var">a</span>, <span class="id" title="var">eta</span> <span class="id" title="var">b</span>) =-= <span class="id" title="var">f</span> (<span class="id" title="var">a</span>, <span class="id" title="var">b</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">D</span> <span class="id" title="var">E</span> <span class="id" title="var">F</span> <span class="id" title="var">f</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">KLEISLIR</span>. <span class="id" title="var">unlock</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">unfold</span> <span class="id" title="var">id</span>, <span class="id" title="var">Smash</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">Operator2_simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">kleisliVal</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">KLEISLIL_unit2</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">D</span> <span class="id" title="var">E</span> <span class="id" title="var">F</span> : <span class="id" title="var">cpoType</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">f</span> : (<span class="id" title="var">D</span> * <span class="id" title="var">E</span>) =-&gt; (<span class="id" title="var">F</span> <span class="id" title="var">_BOT</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">a</span> : <span class="id" title="var">D</span>) (<span class="id" title="var">b</span> : <span class="id" title="var">E</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">KLEISLIL</span> <span class="id" title="var">f</span>) (<span class="id" title="var">eta</span> <span class="id" title="var">a</span>, <span class="id" title="var">b</span>) =-= <span class="id" title="var">f</span> (<span class="id" title="var">a</span>, <span class="id" title="var">b</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">D</span> <span class="id" title="var">E</span> <span class="id" title="var">F</span> <span class="id" title="var">f</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">KLEISLIL</span>. <span class="id" title="var">unlock</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">unfold</span> <span class="id" title="var">id</span>, <span class="id" title="var">Smash</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">Operator2_simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">kleisliVal</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">KLEISLIL_PBot</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">D</span> <span class="id" title="var">E</span> <span class="id" title="var">F</span> : <span class="id" title="var">cpoType</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">f</span> : (<span class="id" title="var">D</span> * <span class="id" title="var">E</span>) =-&gt; (<span class="id" title="var">F</span> <span class="id" title="var">_BOT</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">b</span> : <span class="id" title="var">E</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">KLEISLIL</span> <span class="id" title="var">f</span>) (<span class="id" title="var">PBot</span>, <span class="id" title="var">b</span>) =-= <span class="id" title="var">PBot</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">D</span> <span class="id" title="var">E</span> <span class="id" title="var">F</span> <span class="id" title="var">f</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">KLEISLIL</span>. <span class="id" title="var">unlock</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">unfold</span> <span class="id" title="var">id</span>, <span class="id" title="var">Smash</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">Operator2</span>. <span class="id" title="var">unlock</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">by</span> <span class="id" title="tactic">do</span> 3 <span class="id" title="tactic">rewrite</span> <span class="id" title="var">kleisli_bot</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">KLEISLIR_PBot</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">D</span> <span class="id" title="var">E</span> <span class="id" title="var">F</span> : <span class="id" title="var">cpoType</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">f</span> : (<span class="id" title="var">D</span> * <span class="id" title="var">E</span>) =-&gt; (<span class="id" title="var">F</span> <span class="id" title="var">_BOT</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">a</span> : <span class="id" title="var">D</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">KLEISLIR</span> <span class="id" title="var">f</span>) (<span class="id" title="var">a</span>, <span class="id" title="var">PBot</span>) =-= <span class="id" title="var">PBot</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">D</span> <span class="id" title="var">E</span> <span class="id" title="var">F</span> <span class="id" title="var">f</span> <span class="id" title="var">a</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">KLEISLIR</span>. <span class="id" title="var">unlock</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">unfold</span> <span class="id" title="var">id</span>, <span class="id" title="var">Smash</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">Operator2</span>. <span class="id" title="var">unlock</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">do</span> 2 <span class="id" title="tactic">rewrite</span> <span class="id" title="var">kleisliVal</span>. <span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">by</span> <span class="id" title="tactic">do</span> 2 <span class="id" title="tactic">rewrite</span> <span class="id" title="var">kleisli_bot</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">KLEISLI_LR_Val</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> : <span class="id" title="var">cpoType</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">f</span> : (<span class="id" title="var">A</span> * <span class="id" title="var">B</span>) =-&gt; (<span class="id" title="var">C</span> <span class="id" title="var">_BOT</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">a</span> : <span class="id" title="var">A</span> <span class="id" title="var">_BOT</span>) (<span class="id" title="var">b</span> : <span class="id" title="var">B</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">KLEISLIL</span> (<span class="id" title="var">KLEISLIR</span> <span class="id" title="var">f</span>)) (<span class="id" title="var">a</span>, <span class="id" title="var">eta</span> <span class="id" title="var">b</span>) =-= (<span class="id" title="var">KLEISLIL</span> <span class="id" title="var">f</span>) (<span class="id" title="var">a</span>, <span class="id" title="var">b</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> <span class="id" title="var">f</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">KLEISLIL_eq</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">aa</span> <span class="id" title="var">aa'</span> <span class="id" title="var">H</span> <span class="id" title="var">H0</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">KLEISLIR_unit2</span>. <span class="id" title="tactic">rewrite</span> -&gt; <span class="id" title="var">H</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H0</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">vinj</span> <span class="id" title="keyword">with</span> (<span class="id" title="var">D</span>:=<span class="id" title="var">A</span>) <span class="id" title="tactic">in</span> <span class="id" title="var">H0</span>. <span class="id" title="tactic">by</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">H0</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">aa</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exists</span> <span class="id" title="var">aa</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">aa'</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exists</span> <span class="id" title="var">aa'</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">H</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">KLEISLI_RL_Val</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> : <span class="id" title="var">cpoType</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">f</span> : (<span class="id" title="var">A</span> * <span class="id" title="var">B</span>) =-&gt; (<span class="id" title="var">C</span> <span class="id" title="var">_BOT</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">a</span> : <span class="id" title="var">A</span>) (<span class="id" title="var">b</span> : <span class="id" title="var">B</span> <span class="id" title="var">_BOT</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">KLEISLIR</span> (<span class="id" title="var">KLEISLIL</span> <span class="id" title="var">f</span>)) (<span class="id" title="var">eta</span> <span class="id" title="var">a</span>, <span class="id" title="var">b</span>) =-= (<span class="id" title="var">KLEISLIR</span> <span class="id" title="var">f</span>) (<span class="id" title="var">a</span>, <span class="id" title="var">b</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> <span class="id" title="var">f</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">KLEISLIR_eq</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">bb</span> <span class="id" title="var">bb'</span> <span class="id" title="var">H</span> <span class="id" title="var">H0</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">KLEISLIL_unit2</span>. <span class="id" title="tactic">rewrite</span> -&gt; <span class="id" title="var">H</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H0</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">vinj</span> <span class="id" title="keyword">with</span> (<span class="id" title="var">D</span>:=<span class="id" title="var">B</span>) <span class="id" title="tactic">in</span> <span class="id" title="var">H0</span>. <span class="id" title="tactic">by</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">H0</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">bb</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exists</span> <span class="id" title="var">bb</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">bb'</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exists</span> <span class="id" title="var">bb'</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">H</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">KLESILIL_lub_comp_eq</span> :<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> : <span class="id" title="var">cpoType</span>) (<span class="id" title="var">f</span> : (<span class="id" title="var">A</span> * <span class="id" title="var">B</span>) =-&gt; <span class="id" title="var">C</span> <span class="id" title="var">_BOT</span>) (<span class="id" title="var">xi</span> : <span class="id" title="var">natO</span> -=&gt; <span class="id" title="var">A</span> <span class="id" title="var">_BOT</span>) (<span class="id" title="var">y</span> : <span class="id" title="var">B</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">KLEISLIL</span> <span class="id" title="var">f</span>) (<span class="id" title="var">lub</span> <span class="id" title="var">xi</span>, <span class="id" title="var">y</span>) =-= <span class="id" title="var">lub</span> (<span class="id" title="var">ocomp</span> (<span class="id" title="var">kleisli</span> <span class="id" title="var">f</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">ocomp</span> (<span class="id" title="var">RStrength</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(&lt;| <span class="id" title="var">xi</span>, <span class="id" title="var">fmon_cte</span> <span class="id" title="var">_</span> <span class="id" title="var">y</span> |&gt;))).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> <span class="id" title="var">f</span> <span class="id" title="var">xi</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">KLEISLIL</span>. <span class="id" title="var">unlock</span>. <span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">unfold</span> <span class="id" title="var">id</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">lub_comp_eq</span>. <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">lub_comp_eq</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">lub_eq_compat</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">auto</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">KLESILIR_lub_comp_eq</span> :<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> : <span class="id" title="var">cpoType</span>) (<span class="id" title="var">f</span> : (<span class="id" title="var">A</span> * <span class="id" title="var">B</span>) =-&gt; <span class="id" title="var">C</span> <span class="id" title="var">_BOT</span>) (<span class="id" title="var">yi</span> : <span class="id" title="var">natO</span> -=&gt; <span class="id" title="var">B</span> <span class="id" title="var">_BOT</span>) (<span class="id" title="var">x</span> : <span class="id" title="var">A</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">KLEISLIR</span> <span class="id" title="var">f</span>) (<span class="id" title="var">x</span>,<span class="id" title="var">lub</span> <span class="id" title="var">yi</span>) =-= <span class="id" title="var">lub</span> (<span class="id" title="var">ocomp</span> (<span class="id" title="var">kleisli</span> <span class="id" title="var">f</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">ocomp</span> (<span class="id" title="var">LStrength</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(&lt;| <span class="id" title="var">fmon_cte</span> <span class="id" title="var">_</span> <span class="id" title="var">x</span>, <span class="id" title="var">yi</span> |&gt;))).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> <span class="id" title="var">f</span> <span class="id" title="var">yi</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">KLEISLIR</span>. <span class="id" title="var">unlock</span>. <span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">unfold</span> <span class="id" title="var">id</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">lub_comp_eq</span>. <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">lub_comp_eq</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">lub_eq_compat</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">auto</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">IfZSemNat</span> (<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>) (<span class="id" title="var">a</span> <span class="id" title="var">a'</span> : <span class="id" title="var">A</span>) (<span class="id" title="var">n</span> : <span class="id" title="var">nat_cpoType</span>) : <span class="id" title="var">A</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="var">n</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;| <span class="id" title="var">O</span>   =&gt; <span class="id" title="var">a</span><br/>
+&nbsp;&nbsp;| <span class="id" title="var">S</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">a'</span><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">end</span><br/>
+.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">IfZSemInt</span> (<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>) (<span class="id" title="var">a</span> <span class="id" title="var">a'</span> : <span class="id" title="var">A</span>) (<span class="id" title="var">z</span> : <span class="id" title="var">int_cpoType</span>) :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="var">z</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;| 0%<span class="id" title="var">Z</span> =&gt; <span class="id" title="var">a</span><br/>
+&nbsp;&nbsp;| <span class="id" title="var">_</span>   =&gt; <span class="id" title="var">a'</span><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">IfZNatCore_mon</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">ordType</span>) :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">monotonic</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">p</span> : (<span class="id" title="var">A</span> -=&gt; <span class="id" title="var">B</span>) * (<span class="id" title="var">A</span> -=&gt; <span class="id" title="var">B</span>) * <span class="id" title="var">A</span> * <span class="id" title="var">discrete_ordType</span> <span class="id" title="var">nat</span> =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">IfZSemNat</span> (<span class="id" title="var">fst</span> (<span class="id" title="var">fst</span> (<span class="id" title="var">fst</span> <span class="id" title="var">p</span>))) (<span class="id" title="var">snd</span> (<span class="id" title="var">fst</span> (<span class="id" title="var">fst</span> <span class="id" title="var">p</span>))) (<span class="id" title="var">snd</span> <span class="id" title="var">p</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">snd</span> (<span class="id" title="var">fst</span> <span class="id" title="var">p</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">leq</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">x</span> <span class="id" title="keyword">as</span> [[[? ?] ?] ?]. <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">y</span> <span class="id" title="keyword">as</span> [[[? ?] ?] ?]. <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">inversion</span> <span class="id" title="var">leq</span> <span class="id" title="keyword">as</span> [[[? ?] ?] ?]. <span class="id" title="tactic">simpl</span> <span class="id" title="tactic">in</span> *.<br/>
+&nbsp;&nbsp;<span class="id" title="var">have</span> <span class="id" title="var">eq</span> : <span class="id" title="var">s2</span> = <span class="id" title="var">s6</span> <span class="id" title="tactic">by</span> [].<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> -&gt; <span class="id" title="var">eq</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">s6</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">fmon_le_compat</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">H</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">H1</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">fmon_le_compat</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">H0</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">H1</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">IfZIntCore_mon</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">ordType</span>) :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">monotonic</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">p</span> : (<span class="id" title="var">A</span> -=&gt; <span class="id" title="var">B</span>) * (<span class="id" title="var">A</span> -=&gt; <span class="id" title="var">B</span>) * <span class="id" title="var">A</span> * <span class="id" title="var">discrete_ordType</span> <span class="id" title="var">Z</span> =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">IfZSemInt</span> (<span class="id" title="var">fst</span> (<span class="id" title="var">fst</span> (<span class="id" title="var">fst</span> <span class="id" title="var">p</span>))) (<span class="id" title="var">snd</span> (<span class="id" title="var">fst</span> (<span class="id" title="var">fst</span> <span class="id" title="var">p</span>))) (<span class="id" title="var">snd</span> <span class="id" title="var">p</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">snd</span> (<span class="id" title="var">fst</span> <span class="id" title="var">p</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">leq</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">x</span> <span class="id" title="keyword">as</span> [[[? ?] ?] ?]. <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">y</span> <span class="id" title="keyword">as</span> [[[? ?] ?] ?]. <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">inversion</span> <span class="id" title="var">leq</span> <span class="id" title="keyword">as</span> [[[? ?] ?] ?]. <span class="id" title="tactic">simpl</span> <span class="id" title="tactic">in</span> *.<br/>
+&nbsp;&nbsp;<span class="id" title="var">have</span> <span class="id" title="var">eq</span> : <span class="id" title="var">s2</span> = <span class="id" title="var">s6</span> <span class="id" title="tactic">by</span> [].<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> -&gt; <span class="id" title="var">eq</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">s6</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">fmon_le_compat</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">H</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">H1</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">fmon_le_compat</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">H0</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">H1</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">fmon_le_compat</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">H0</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">H1</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">IfZNatCoreM</span> (<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">ordType</span>) :<br/>
+&nbsp;&nbsp;((<span class="id" title="var">A</span> -=&gt; <span class="id" title="var">B</span>) * (<span class="id" title="var">A</span> -=&gt; <span class="id" title="var">B</span>) * <span class="id" title="var">A</span> * <span class="id" title="var">discrete_ordType</span> <span class="id" title="var">nat</span>) =-&gt; <span class="id" title="var">B</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">Eval</span> <span class="id" title="tactic">hnf</span> <span class="id" title="tactic">in</span> <span class="id" title="var">mk_fmono</span> (@<span class="id" title="var">IfZNatCore_mon</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">IfZIntCoreM</span> (<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">ordType</span>) :<br/>
+&nbsp;&nbsp;((<span class="id" title="var">A</span> -=&gt; <span class="id" title="var">B</span>) * (<span class="id" title="var">A</span> -=&gt; <span class="id" title="var">B</span>) * <span class="id" title="var">A</span> * <span class="id" title="var">discrete_ordType</span> <span class="id" title="var">Z</span>) =-&gt; <span class="id" title="var">B</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">Eval</span> <span class="id" title="tactic">hnf</span> <span class="id" title="tactic">in</span> <span class="id" title="var">mk_fmono</span> (@<span class="id" title="var">IfZIntCore_mon</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">IfZNatCore_mon2</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">cpoType</span>) :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">monotonic</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">p</span> : (<span class="id" title="var">A</span> -=&gt; <span class="id" title="var">B</span>) * (<span class="id" title="var">A</span> -=&gt; <span class="id" title="var">B</span>) * <span class="id" title="var">discrete_cpoType</span> <span class="id" title="var">nat</span> =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">IfZSemNat</span> (<span class="id" title="var">fst</span> (<span class="id" title="var">fst</span> <span class="id" title="var">p</span>)) (<span class="id" title="var">snd</span> (<span class="id" title="var">fst</span> <span class="id" title="var">p</span>)) (<span class="id" title="var">snd</span> <span class="id" title="var">p</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">leq</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">x</span> <span class="id" title="keyword">as</span> [[? ?] <span class="id" title="var">n</span>]. <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">y</span> <span class="id" title="keyword">as</span> [[? ?] <span class="id" title="var">n'</span>]. <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">inversion</span> <span class="id" title="var">leq</span> <span class="id" title="keyword">as</span> [[? ?] ?]. <span class="id" title="tactic">simpl</span> <span class="id" title="tactic">in</span> *.<br/>
+&nbsp;&nbsp;<span class="id" title="var">have</span> <span class="id" title="var">eq</span> : <span class="id" title="var">n</span> = <span class="id" title="var">n'</span> <span class="id" title="tactic">by</span> [].<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">eq</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">n</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">H0</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">IfZIntCore_mon2</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">cpoType</span>) :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">monotonic</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">p</span> : (<span class="id" title="var">A</span> -=&gt; <span class="id" title="var">B</span>) * (<span class="id" title="var">A</span> -=&gt; <span class="id" title="var">B</span>) * <span class="id" title="var">discrete_cpoType</span> <span class="id" title="var">Z</span> =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">IfZSemInt</span> (<span class="id" title="var">fst</span> (<span class="id" title="var">fst</span> <span class="id" title="var">p</span>)) (<span class="id" title="var">snd</span> (<span class="id" title="var">fst</span> <span class="id" title="var">p</span>)) (<span class="id" title="var">snd</span> <span class="id" title="var">p</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">leq</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">x</span> <span class="id" title="keyword">as</span> [[? ?] <span class="id" title="var">n</span>]. <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">y</span> <span class="id" title="keyword">as</span> [[? ?] <span class="id" title="var">n'</span>]. <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">inversion</span> <span class="id" title="var">leq</span> <span class="id" title="keyword">as</span> [[? ?] ?]. <span class="id" title="tactic">simpl</span> <span class="id" title="tactic">in</span> *.<br/>
+&nbsp;&nbsp;<span class="id" title="var">have</span> <span class="id" title="var">eq</span> : <span class="id" title="var">n</span> = <span class="id" title="var">n'</span> <span class="id" title="tactic">by</span> [].<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">eq</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">n</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">H0</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">H0</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">IfZNatCoreM2</span> (<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">cpoType</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">Eval</span> <span class="id" title="tactic">hnf</span> <span class="id" title="tactic">in</span> <span class="id" title="var">mk_fmono</span> (@<span class="id" title="var">IfZNatCore_mon2</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">IfZIntCoreM2</span> (<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">cpoType</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">Eval</span> <span class="id" title="tactic">hnf</span> <span class="id" title="tactic">in</span> <span class="id" title="var">mk_fmono</span> (@<span class="id" title="var">IfZIntCore_mon2</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">lub_discrete_chain</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">A</span> : <span class="id" title="var">cpoType</span>) (<span class="id" title="var">f</span> : <span class="id" title="var">natO</span> =-&gt; <span class="id" title="var">discrete_cpoType</span> <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">n</span> : <span class="id" title="var">A</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lub</span> <span class="id" title="var">f</span> =-= <span class="id" title="var">n</span> -&gt; <span class="id" title="keyword">forall</span> <span class="id" title="var">i</span>, <span class="id" title="var">f</span> <span class="id" title="var">i</span> =-= <span class="id" title="var">n</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">A</span> <span class="id" title="var">f</span> <span class="id" title="var">n</span> <span class="id" title="var">H</span> <span class="id" title="var">i</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">f</span> <span class="id" title="var">i</span> &lt;= <span class="id" title="var">lub</span> <span class="id" title="var">f</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">le_lub</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">inversion</span> <span class="id" title="var">H0</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">H2</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">IfZNatCore_cont2</span> (<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">cpoType</span>) :<br/>
+&nbsp;&nbsp;<span class="id" title="var">continuous</span> (@<span class="id" title="var">IfZNatCoreM2</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> (<span class="id" title="var">lub</span> (<span class="id" title="var">pi2</span> &lt;&lt; <span class="id" title="var">x</span>)) <span class="id" title="var">eqn</span>:<span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">lub_le_compat</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Oeq_le</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">fmon_eq_intro</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">n</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Oeq_refl_eq</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">lub_discrete_chain</span> <span class="id" title="keyword">with</span> (<span class="id" title="var">i</span>:=<span class="id" title="var">n</span>) (<span class="id" title="var">f</span> := <span class="id" title="var">pi2</span> &lt;&lt; <span class="id" title="var">x</span>) <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simpl</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">inversion</span> <span class="id" title="var">H</span>. <span class="id" title="tactic">inversion</span> <span class="id" title="var">H0</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">H3</span>. <span class="id" title="tactic">by</span> <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">lub_le_compat</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Oeq_le</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">fmon_eq_intro</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">n</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Oeq_refl_eq</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">lub_discrete_chain</span> <span class="id" title="keyword">with</span> (<span class="id" title="var">i</span>:=<span class="id" title="var">n</span>) (<span class="id" title="var">f</span> := <span class="id" title="var">pi2</span> &lt;&lt; <span class="id" title="var">x</span>) <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simpl</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">inversion</span> <span class="id" title="var">H</span>. <span class="id" title="tactic">inversion</span> <span class="id" title="var">H0</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">H3</span>. <span class="id" title="tactic">by</span> <span class="id" title="tactic">simpl</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">IfZIntCore_cont2</span> (<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">cpoType</span>) :<br/>
+&nbsp;&nbsp;<span class="id" title="var">continuous</span> (@<span class="id" title="var">IfZIntCoreM2</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> (<span class="id" title="var">lub</span> (<span class="id" title="var">pi2</span> &lt;&lt; <span class="id" title="var">x</span>)) <span class="id" title="var">eqn</span>:<span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">lub_le_compat</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Oeq_le</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">fmon_eq_intro</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">n</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Oeq_refl_eq</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">lub_discrete_chain</span> <span class="id" title="keyword">with</span> (<span class="id" title="var">i</span>:=<span class="id" title="var">n</span>) (<span class="id" title="var">f</span> := <span class="id" title="var">pi2</span> &lt;&lt; <span class="id" title="var">x</span>) <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simpl</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">inversion</span> <span class="id" title="var">H</span>. <span class="id" title="tactic">inversion</span> <span class="id" title="var">H0</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">H3</span>. <span class="id" title="tactic">by</span> <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">lub_le_compat</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Oeq_le</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">fmon_eq_intro</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">n</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Oeq_refl_eq</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">lub_discrete_chain</span> <span class="id" title="keyword">with</span> (<span class="id" title="var">i</span>:=<span class="id" title="var">n</span>) (<span class="id" title="var">f</span> := <span class="id" title="var">pi2</span> &lt;&lt; <span class="id" title="var">x</span>) <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simpl</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">inversion</span> <span class="id" title="var">H</span>. <span class="id" title="tactic">inversion</span> <span class="id" title="var">H0</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">H3</span>. <span class="id" title="tactic">by</span> <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">lub_le_compat</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Oeq_le</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">fmon_eq_intro</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">n</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Oeq_refl_eq</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">lub_discrete_chain</span> <span class="id" title="keyword">with</span> (<span class="id" title="var">i</span>:=<span class="id" title="var">n</span>) (<span class="id" title="var">f</span> := <span class="id" title="var">pi2</span> &lt;&lt; <span class="id" title="var">x</span>) <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simpl</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">inversion</span> <span class="id" title="var">H</span>. <span class="id" title="tactic">inversion</span> <span class="id" title="var">H0</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">H3</span>. <span class="id" title="tactic">by</span> <span class="id" title="tactic">simpl</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">IfZNat</span> (<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">cpoType</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">Eval</span> <span class="id" title="tactic">hnf</span> <span class="id" title="tactic">in</span> <span class="id" title="var">mk_fcont</span> (@<span class="id" title="var">IfZNatCore_cont2</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">IfZInt</span> (<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">cpoType</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">Eval</span> <span class="id" title="tactic">hnf</span> <span class="id" title="tactic">in</span> <span class="id" title="var">mk_fcont</span> (@<span class="id" title="var">IfZIntCore_cont2</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">SimpleU_mon</span> (<span class="id" title="var">A</span> :<span class="id" title="keyword">Type</span>) (<span class="id" title="var">B</span>:<span class="id" title="var">ordType</span>) (<span class="id" title="var">op</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>:<span class="id" title="keyword">Type</span>) :<br/>
+&nbsp;&nbsp;<span class="id" title="var">monotonic</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">a</span>:<span class="id" title="var">discrete_ordType</span> <span class="id" title="var">A</span> =&gt; <span class="id" title="var">op</span> <span class="id" title="var">a</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">move</span> =&gt; <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">op</span>. <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">have</span> <span class="id" title="var">e</span>:<span class="id" title="var">x</span> = <span class="id" title="var">y</span> <span class="id" title="tactic">by</span> []. <span class="id" title="tactic">by</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">e</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">SimpleB_mon</span> (<span class="id" title="var">A</span> <span class="id" title="var">B</span> :<span class="id" title="keyword">Type</span>) (<span class="id" title="var">C</span>:<span class="id" title="var">ordType</span>) (<span class="id" title="var">op</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span> -&gt; <span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) : <span class="id" title="var">monotonic</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">p</span>:<span class="id" title="var">discrete_ordType</span> <span class="id" title="var">A</span> * <span class="id" title="var">discrete_ordType</span> <span class="id" title="var">B</span> =&gt; <span class="id" title="var">op</span> (<span class="id" title="var">fst</span> <span class="id" title="var">p</span>) (<span class="id" title="var">snd</span> <span class="id" title="var">p</span>)).<br/>
+<span class="id" title="tactic">move</span> =&gt; <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> <span class="id" title="var">op</span>. <span class="id" title="tactic">case</span> =&gt; <span class="id" title="var">x0</span> <span class="id" title="var">y0</span>. <span class="id" title="tactic">case</span> =&gt; <span class="id" title="var">x1</span> <span class="id" title="var">y1</span>. <span class="id" title="tactic">case</span> ; <span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">move</span> =&gt; <span class="id" title="var">L</span> <span class="id" title="var">L'</span>.<br/>
+<span class="id" title="var">have</span> <span class="id" title="var">e</span>:<span class="id" title="var">x0</span> = <span class="id" title="var">x1</span> <span class="id" title="tactic">by</span> []. <span class="id" title="var">have</span> <span class="id" title="var">e'</span>:<span class="id" title="var">y0</span> = <span class="id" title="var">y1</span> <span class="id" title="tactic">by</span> []. <span class="id" title="tactic">rewrite</span> <span class="id" title="var">e</span>. <span class="id" title="tactic">by</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">e'</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">SimpleBOpm</span> (<span class="id" title="var">A</span> <span class="id" title="var">B</span> :<span class="id" title="keyword">Type</span>) (<span class="id" title="var">C</span>:<span class="id" title="var">ordType</span>) (<span class="id" title="var">op</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span> -&gt; <span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) :<br/>
+&nbsp;&nbsp;<span class="id" title="var">discrete_ordType</span> <span class="id" title="var">A</span> * <span class="id" title="var">discrete_ordType</span> <span class="id" title="var">B</span> =-&gt; <span class="id" title="var">C</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Eval</span> <span class="id" title="tactic">hnf</span> <span class="id" title="tactic">in</span> <span class="id" title="var">mk_fmono</span> (<span class="id" title="var">SimpleB_mon</span> <span class="id" title="var">op</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">SimpleB_cont</span> (<span class="id" title="var">A</span> <span class="id" title="var">B</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">C</span>:<span class="id" title="var">cpoType</span>) (<span class="id" title="var">op</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span> -&gt; <span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) :<br/>
+&nbsp;&nbsp;@<span class="id" title="var">continuous</span> (<span class="id" title="var">discrete_cpoType</span> <span class="id" title="var">A</span> * <span class="id" title="var">discrete_cpoType</span> <span class="id" title="var">B</span>) <span class="id" title="var">C</span> (<span class="id" title="var">SimpleBOpm</span> <span class="id" title="var">op</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">move</span> =&gt; <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> <span class="id" title="var">op</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">move</span> =&gt; <span class="id" title="var">c</span>. <span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">apply</span>: (<span class="id" title="var">Ole_trans</span> <span class="id" title="var">_</span> (<span class="id" title="var">le_lub</span> <span class="id" title="var">_</span> 0)). <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> [].<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">SimpleBOp</span> (<span class="id" title="var">A</span> <span class="id" title="var">B</span>:<span class="id" title="keyword">Type</span>) (<span class="id" title="var">C</span>:<span class="id" title="var">cpoType</span>) (<span class="id" title="var">op</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span> -&gt; <span class="id" title="var">C</span>:<span class="id" title="keyword">Type</span>) :<br/>
+&nbsp;&nbsp;<span class="id" title="var">discrete_cpoType</span> <span class="id" title="var">A</span> * <span class="id" title="var">discrete_cpoType</span> <span class="id" title="var">B</span> =-&gt; <span class="id" title="var">C</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Eval</span> <span class="id" title="tactic">hnf</span> <span class="id" title="tactic">in</span> <span class="id" title="var">mk_fcont</span> (<span class="id" title="var">SimpleB_cont</span> <span class="id" title="var">op</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">OpPlus</span> : <span class="id" title="var">discrete_cpoType</span> <span class="id" title="var">nat</span> * <span class="id" title="var">discrete_cpoType</span> <span class="id" title="var">nat</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=-&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">discrete_cpoType</span> <span class="id" title="var">nat</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">SimpleBOp</span> <span class="id" title="var">Peano.plus</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">Operator2_strictL</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> (<span class="id" title="var">f</span>:<span class="id" title="var">A</span> * <span class="id" title="var">B</span> =-&gt; <span class="id" title="var">C</span> <span class="id" title="var">_BOT</span>) <span class="id" title="var">d</span> :<br/>
+&nbsp;&nbsp;<span class="id" title="var">Operator2</span> <span class="id" title="var">f</span> <span class="id" title="var">PBot</span> <span class="id" title="var">d</span> =-= <span class="id" title="var">PBot</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">move</span> =&gt; <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> <span class="id" title="var">f</span> <span class="id" title="var">d</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">Ole_antisym</span> ; <span class="id" title="var">last</span> <span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span>: <span class="id" title="var">leastP</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">unlock</span> <span class="id" title="var">Operator2</span>. <span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">by</span> <span class="id" title="tactic">do</span> 2 <span class="id" title="tactic">rewrite</span> <span class="id" title="var">kleisli_bot</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">Operator2_strictR</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> (<span class="id" title="var">f</span>:<span class="id" title="var">A</span> * <span class="id" title="var">B</span> =-&gt; <span class="id" title="var">C</span> <span class="id" title="var">_BOT</span>) <span class="id" title="var">d</span> :<br/>
+&nbsp;&nbsp;<span class="id" title="var">Operator2</span> <span class="id" title="var">f</span> <span class="id" title="var">d</span> <span class="id" title="var">PBot</span> =-= <span class="id" title="var">PBot</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">move</span> =&gt; <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> <span class="id" title="var">f</span> <span class="id" title="var">d</span>. <span class="id" title="tactic">apply</span>: <span class="id" title="var">Ole_antisym</span> ; <span class="id" title="var">last</span> <span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span>: <span class="id" title="var">leastP</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">unlock</span> <span class="id" title="var">Operator2</span>. <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span>: (<span class="id" title="var">Ole_trans</span> (<span class="id" title="var">proj2</span> (<span class="id" title="var">fmon_eq_elim</span> (<span class="id" title="var">kleisli_comp2</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) <span class="id" title="var">d</span>))).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span>: <span class="id" title="var">DLless_cond</span>. <span class="id" title="tactic">move</span> =&gt; <span class="id" title="var">c</span> <span class="id" title="var">X</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">case</span>: (<span class="id" title="var">kleisliValVal</span> <span class="id" title="var">X</span>) =&gt; <span class="id" title="var">a</span> [<span class="id" title="var">e</span> <span class="id" title="var">P</span>]. <span class="id" title="tactic">rewrite</span> -&gt; <span class="id" title="var">e</span>. <span class="id" title="tactic">clear</span> <span class="id" title="var">d</span> <span class="id" title="var">e</span> <span class="id" title="var">X</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simpl</span> <span class="id" title="tactic">in</span> <span class="id" title="var">P</span>. <span class="id" title="tactic">rewrite</span> -&gt; <span class="id" title="var">kleisli_bot</span> <span class="id" title="tactic">in</span> <span class="id" title="var">P</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">case</span>: (<span class="id" title="var">PBot_incon</span> (<span class="id" title="var">proj2</span> <span class="id" title="var">P</span>)).<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">Curry1_mon</span> (<span class="id" title="var">D0</span> <span class="id" title="var">D1</span> <span class="id" title="var">D2</span> : <span class="id" title="var">cpoType</span>) : <span class="id" title="var">monotonic</span> (@<span class="id" title="var">exp_fun</span> <span class="id" title="var">cpoExpType</span> <span class="id" title="var">D0</span> <span class="id" title="var">D1</span> <span class="id" title="var">D2</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">D0</span> <span class="id" title="var">D1</span> <span class="id" title="var">D2</span> <span class="id" title="var">x</span> <span class="id" title="var">x'</span> <span class="id" title="var">l</span> <span class="id" title="var">d0</span> <span class="id" title="var">d1</span>. <span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">by</span> <span class="id" title="tactic">rewrite</span> -&gt; <span class="id" title="var">l</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">CURRY1_mon</span> (<span class="id" title="var">D0</span> <span class="id" title="var">D1</span> <span class="id" title="var">D2</span> : <span class="id" title="var">cpoType</span>) :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Eval</span> <span class="id" title="tactic">hnf</span> <span class="id" title="tactic">in</span> <span class="id" title="var">mk_fmono</span> (@<span class="id" title="var">Curry1_mon</span> <span class="id" title="var">D0</span> <span class="id" title="var">D1</span> <span class="id" title="var">D2</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">Curry1_cont</span> (<span class="id" title="var">D0</span> <span class="id" title="var">D1</span> <span class="id" title="var">D2</span> : <span class="id" title="var">cpoType</span>) : <span class="id" title="var">continuous</span> (@<span class="id" title="var">CURRY1_mon</span> <span class="id" title="var">D0</span> <span class="id" title="var">D1</span> <span class="id" title="var">D2</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">D1</span> <span class="id" title="var">D2</span> <span class="id" title="var">D3</span> <span class="id" title="var">f</span> <span class="id" title="var">c</span> <span class="id" title="var">x</span>. <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">lub_le_compat</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">repeat</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">fcont_app_eq</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">intro</span> <span class="id" title="var">n</span>. <span class="id" title="tactic">by</span> <span class="id" title="tactic">simpl</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">CCURRY</span> (<span class="id" title="var">D0</span> <span class="id" title="var">D1</span> <span class="id" title="var">D2</span> : <span class="id" title="var">cpoType</span>) :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Eval</span> <span class="id" title="tactic">hnf</span> <span class="id" title="tactic">in</span> <span class="id" title="var">mk_fcont</span> (@<span class="id" title="var">Curry1_cont</span> <span class="id" title="var">D0</span> <span class="id" title="var">D1</span> <span class="id" title="var">D2</span>).<br/>
+<span class="id" title="var">Arguments</span> <span class="id" title="var">CCURRY</span> [<span class="id" title="var">D0</span> <span class="id" title="var">D1</span> <span class="id" title="var">D2</span>].<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">UnCurry_mon</span> (<span class="id" title="var">D0</span> <span class="id" title="var">D1</span> <span class="id" title="var">D2</span> : <span class="id" title="var">cpoType</span>) :<br/>
+&nbsp;&nbsp;<span class="id" title="var">monotonic</span> (@<span class="id" title="var">uncurry</span> <span class="id" title="var">cpoExpType</span> <span class="id" title="var">D0</span> <span class="id" title="var">D1</span> <span class="id" title="var">D2</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">D0</span> <span class="id" title="var">D1</span> <span class="id" title="var">D2</span> <span class="id" title="var">x</span> <span class="id" title="var">x'</span> <span class="id" title="var">l</span> <span class="id" title="var">a</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">fcont_le_compat</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">fcont_le_compat</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">l</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Ole_refl</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">Ole_refl</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">UNCURRY_mon</span> (<span class="id" title="var">D0</span> <span class="id" title="var">D1</span> <span class="id" title="var">D2</span> : <span class="id" title="var">cpoType</span>) :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Eval</span> <span class="id" title="tactic">hnf</span> <span class="id" title="tactic">in</span> <span class="id" title="var">mk_fmono</span> (@<span class="id" title="var">UnCurry_mon</span> <span class="id" title="var">D0</span> <span class="id" title="var">D1</span> <span class="id" title="var">D2</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">UnCurry_cont</span> (<span class="id" title="var">D0</span> <span class="id" title="var">D1</span> <span class="id" title="var">D2</span> : <span class="id" title="var">cpoType</span>) : <span class="id" title="var">continuous</span> (@<span class="id" title="var">UNCURRY_mon</span> <span class="id" title="var">D0</span> <span class="id" title="var">D1</span> <span class="id" title="var">D2</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">D1</span> <span class="id" title="var">D2</span> <span class="id" title="var">D3</span> <span class="id" title="var">f</span> <span class="id" title="var">c</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">lub_le_compat</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">repeat</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">fcont_app_eq</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">intro</span> <span class="id" title="var">n</span>. <span class="id" title="tactic">by</span> <span class="id" title="tactic">simpl</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">UNCURRY</span> (<span class="id" title="var">D0</span> <span class="id" title="var">D1</span> <span class="id" title="var">D2</span> : <span class="id" title="var">cpoType</span>) :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Eval</span> <span class="id" title="tactic">hnf</span> <span class="id" title="tactic">in</span> <span class="id" title="var">mk_fcont</span> (@<span class="id" title="var">UnCurry_cont</span> <span class="id" title="var">D0</span> <span class="id" title="var">D1</span> <span class="id" title="var">D2</span>).<br/>
+<span class="id" title="var">Arguments</span> <span class="id" title="var">UNCURRY</span> [<span class="id" title="var">D0</span> <span class="id" title="var">D1</span> <span class="id" title="var">D2</span>].<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">Smash_Eps_l</span> :<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">cpoType</span>) (<span class="id" title="var">d</span> : <span class="id" title="var">A</span> <span class="id" title="var">_BOT</span>) (<span class="id" title="var">d'</span> : <span class="id" title="var">B</span> <span class="id" title="var">_BOT</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Smash</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span>) (<span class="id" title="var">Eps</span> <span class="id" title="var">d</span>) <span class="id" title="var">d'</span> = <span class="id" title="var">Eps</span> ((<span class="id" title="var">Smash</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span>) <span class="id" title="var">d</span> <span class="id" title="var">d'</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">d</span> <span class="id" title="var">d'</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">Smash</span>. <span class="id" title="tactic">unfold</span> <span class="id" title="var">Operator2</span>. <span class="id" title="var">unlock</span>. <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">do</span> 2 <span class="id" title="tactic">rewrite</span> <span class="id" title="var">kleisli_simpl</span>. <span class="id" title="tactic">do</span> 2 <span class="id" title="tactic">rewrite</span> <span class="id" title="var">kleisli_Eps</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">do</span> 2 <span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">kleisli_simpl</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Operator2_reverse</span> := <span class="id" title="keyword">fun</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> (<span class="id" title="var">F</span>: <span class="id" title="var">A</span> * <span class="id" title="var">B</span> =-&gt; <span class="id" title="var">C</span> <span class="id" title="var">_BOT</span>) =&gt;<br/>
+&nbsp;&nbsp;<span class="id" title="var">locked</span> (<span class="id" title="var">exp_fun</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">uncurry</span> ((<span class="id" title="var">Application</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) &lt;&lt; (<span class="id" title="var">kleisli</span> (<span class="id" title="var">eta</span> &lt;&lt; (<span class="id" title="var">exp_fun</span> <span class="id" title="var">F</span>)))) &lt;&lt; <span class="id" title="var">SWAP</span>)).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Smash_reverse</span> := <span class="id" title="keyword">fun</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> =&gt; @<span class="id" title="var">Operator2_reverse</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">A</span> * <span class="id" title="var">B</span>) <span class="id" title="var">eta</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">Smashs_eq</span> :<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">cpoType</span>) (<span class="id" title="var">d</span> : <span class="id" title="var">A</span> <span class="id" title="var">_BOT</span>) (<span class="id" title="var">d'</span> : <span class="id" title="var">B</span> <span class="id" title="var">_BOT</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Smash</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span>) <span class="id" title="var">d</span> <span class="id" title="var">d'</span> = (<span class="id" title="var">Smash_reverse</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span>) <span class="id" title="var">d'</span> <span class="id" title="var">d</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">d</span> <span class="id" title="var">d'</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">Smash</span>, <span class="id" title="var">Smash_reverse</span>. <span class="id" title="tactic">unfold</span> <span class="id" title="var">Operator2</span>, <span class="id" title="var">Operator2_reverse</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">unlock</span>. <span class="id" title="tactic">by</span> <span class="id" title="tactic">simpl</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">Smash_Eps_r</span> :<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">cpoType</span>) (<span class="id" title="var">d</span> : <span class="id" title="var">A</span> <span class="id" title="var">_BOT</span>) (<span class="id" title="var">d'</span> : <span class="id" title="var">B</span> <span class="id" title="var">_BOT</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Smash</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span>) <span class="id" title="var">d</span> (<span class="id" title="var">Eps</span> <span class="id" title="var">d'</span>) = <span class="id" title="var">Eps</span> ((<span class="id" title="var">Smash</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span>) <span class="id" title="var">d</span> <span class="id" title="var">d'</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="keyword">Abort</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">KRKUR_id</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">y</span> : <span class="id" title="var">DInf</span> <span class="id" title="var">_BOT</span>), <span class="id" title="var">KR</span> (<span class="id" title="var">KUR</span> <span class="id" title="var">y</span>) =-= <span class="id" title="var">y</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">y</span>. <span class="id" title="tactic">unfold</span> <span class="id" title="var">KR</span>, <span class="id" title="var">KUR</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">comp_simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">setoid_rewrite</span> &lt;- <span class="id" title="var">kleisli_comp2</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">comp_assoc</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">RU_id</span>. <span class="id" title="tactic">rewrite</span> <span class="id" title="var">comp_idR</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">kleisli_unit</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">simpl</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">KURKR_id</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">y</span> : <span class="id" title="var">VInf</span> <span class="id" title="var">_BOT</span>), <span class="id" title="var">KUR</span> (<span class="id" title="var">KR</span> <span class="id" title="var">y</span>) =-= <span class="id" title="var">y</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">y</span>. <span class="id" title="tactic">unfold</span> <span class="id" title="var">KR</span>, <span class="id" title="var">KUR</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">comp_simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">kleisli_comp2</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">comp_assoc</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">UR_id</span>. <span class="id" title="tactic">rewrite</span> <span class="id" title="var">comp_idR</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">kleisli_unit</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">simpl</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">KRKUR_id2</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">A</span> : <span class="id" title="var">cpoType</span>) (<span class="id" title="var">y</span> : <span class="id" title="var">A</span> =-&gt; <span class="id" title="var">DInf</span> <span class="id" title="var">_BOT</span>), <span class="id" title="var">KR</span> &lt;&lt; <span class="id" title="var">KUR</span> &lt;&lt; <span class="id" title="var">y</span> =-= <span class="id" title="var">y</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">A</span> <span class="id" title="var">y</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">fmon_eq_intro</span>. <span class="id" title="tactic">intro</span> <span class="id" title="var">a</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">KRKUR_id</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">KURKR_id2</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">A</span> : <span class="id" title="var">cpoType</span>) (<span class="id" title="var">y</span> : <span class="id" title="var">A</span> =-&gt; <span class="id" title="var">VInf</span> <span class="id" title="var">_BOT</span>), <span class="id" title="var">KUR</span> &lt;&lt; <span class="id" title="var">KR</span> &lt;&lt; <span class="id" title="var">y</span> =-= <span class="id" title="var">y</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">A</span> <span class="id" title="var">y</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">fmon_eq_intro</span>. <span class="id" title="tactic">intro</span> <span class="id" title="var">a</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">KURKR_id</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">KLEISLIR_KR_eq</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">A</span> : <span class="id" title="var">cpoType</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">a</span> : <span class="id" title="var">A</span>) (<span class="id" title="var">b</span> : <span class="id" title="var">VInf</span> <span class="id" title="var">_BOT</span>) (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> * <span class="id" title="var">VInf</span> =-&gt; <span class="id" title="var">VInf</span> <span class="id" title="var">_BOT</span>), <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">KLEISLIR</span> (<span class="id" title="var">KR</span> &lt;&lt; <span class="id" title="var">f</span>)) (<span class="id" title="var">a</span>, <span class="id" title="var">b</span>) =-= <span class="id" title="var">KR</span> ((<span class="id" title="var">KLEISLIR</span> (<span class="id" title="var">f</span> &lt;&lt; <span class="id" title="var">Id</span> &gt;&lt; <span class="id" title="var">Unroll</span>)) (<span class="id" title="var">a</span>, <span class="id" title="var">KR</span> <span class="id" title="var">b</span>)).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">A</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">KR</span>, <span class="id" title="var">KLEISLIR</span>. <span class="id" title="var">unlock</span>. <span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">unfold</span> <span class="id" title="var">id</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">Smash</span>. <span class="id" title="tactic">unfold</span> <span class="id" title="var">Operator2</span>. <span class="id" title="var">unlock</span>. <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">do</span> 4 <span class="id" title="tactic">rewrite</span> <span class="id" title="var">kleisliVal</span>. <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">comp_simpl</span>. <span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">kleisli_comp2</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">comp_simpl</span>. <span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">comp_simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">do</span> 2 <span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">comp_assoc</span>. <span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">kleisli_comp2</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">comp_simpl</span>. <span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">comp_assoc</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">kleisli_comp2</span>. <span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">kleisli_comp</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">fmon_eq_compat</span>. <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">f</span> &lt;&lt; <span class="id" title="var">PAIR</span> <span class="id" title="var">VInf</span> <span class="id" title="var">a</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=-=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;((<span class="id" title="var">f</span> &lt;&lt; <span class="id" title="var">Id</span> &gt;&lt; <span class="id" title="var">Unroll</span>) &lt;&lt; <span class="id" title="var">PAIR</span> <span class="id" title="var">DInf</span> <span class="id" title="var">a</span>) &lt;&lt; <span class="id" title="var">Roll</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">fmon_eq_intro</span>. <span class="id" title="tactic">intro</span> <span class="id" title="var">d</span>. <span class="id" title="tactic">simpl</span>; <span class="id" title="tactic">unfold</span> <span class="id" title="var">id</span>. <span class="id" title="tactic">by</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">URid</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">H</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">KLEISLIR_KR_eq2</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">A</span> : <span class="id" title="var">cpoType</span>) (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> * <span class="id" title="var">VInf</span> =-&gt; <span class="id" title="var">VInf</span> <span class="id" title="var">_BOT</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">KR</span> &lt;&lt; <span class="id" title="var">KLEISLIR</span> <span class="id" title="var">f</span> =-= <span class="id" title="var">KLEISLIR</span> (<span class="id" title="var">KR</span> &lt;&lt; <span class="id" title="var">f</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">A</span> <span class="id" title="var">f</span>. <span class="id" title="tactic">unfold</span> <span class="id" title="var">KR</span>, <span class="id" title="var">KLEISLIR</span>. <span class="id" title="var">unlock</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">comp_assoc</span>. <span class="id" title="tactic">by</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">kleisli_comp</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">Smash_Val</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">cpoType</span>) (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>) (<span class="id" title="var">b</span> : <span class="id" title="var">B</span> <span class="id" title="var">_BOT</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Smash</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span>) (<span class="id" title="var">Val</span> <span class="id" title="var">a</span>) <span class="id" title="var">b</span> = (<span class="id" title="var">kleisli</span> (<span class="id" title="var">eta</span> &lt;&lt; <span class="id" title="var">PAIR</span> <span class="id" title="var">B</span> <span class="id" title="var">a</span>)) <span class="id" title="var">b</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">Smash</span>. <span class="id" title="tactic">unfold</span> <span class="id" title="var">Operator2</span>. <span class="id" title="var">unlock</span>. <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">do</span> 2 <span class="id" title="tactic">rewrite</span> <span class="id" title="var">kleisli_simpl</span>. <span class="id" title="tactic">repeat</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">kleisli_Val</span>. <span class="id" title="tactic">by</span> <span class="id" title="tactic">simpl</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">KLEISLIR_Eps</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> : <span class="id" title="var">cpoType</span>) (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>) (<span class="id" title="var">b</span> : <span class="id" title="var">B</span> <span class="id" title="var">_BOT</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="var">A</span> * <span class="id" title="var">B</span> -=&gt; <span class="id" title="var">C</span> <span class="id" title="var">_BOT</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">KLEISLIR</span> <span class="id" title="var">f</span>) (<span class="id" title="var">a</span>, <span class="id" title="var">Eps</span> <span class="id" title="var">b</span>) = <span class="id" title="var">Eps</span> ((<span class="id" title="var">KLEISLIR</span> <span class="id" title="var">f</span>) (<span class="id" title="var">a</span>, <span class="id" title="var">b</span>)).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">f</span>. <span class="id" title="tactic">unfold</span> <span class="id" title="var">KLEISLIR</span>. <span class="id" title="var">unlock</span>. <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">do</span> 2 <span class="id" title="tactic">rewrite</span> <span class="id" title="var">Smash_Val</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">do</span> 4 <span class="id" title="tactic">rewrite</span> <span class="id" title="var">kleisli_simpl</span>. <span class="id" title="tactic">unfold</span> <span class="id" title="var">id</span>. <span class="id" title="tactic">do</span> 2 <span class="id" title="tactic">rewrite</span> <span class="id" title="var">kleisli_Eps</span>. <span class="id" title="tactic">auto</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">KLEISLIL_Eps</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> : <span class="id" title="var">cpoType</span>) (<span class="id" title="var">a</span> : <span class="id" title="var">A</span> <span class="id" title="var">_BOT</span>) (<span class="id" title="var">b</span> : <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="var">A</span> * <span class="id" title="var">B</span> -=&gt; <span class="id" title="var">C</span> <span class="id" title="var">_BOT</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">KLEISLIL</span> <span class="id" title="var">f</span>) (<span class="id" title="var">Eps</span> <span class="id" title="var">a</span>, <span class="id" title="var">b</span>) = <span class="id" title="var">Eps</span> ((<span class="id" title="var">KLEISLIL</span> <span class="id" title="var">f</span>) (<span class="id" title="var">a</span>, <span class="id" title="var">b</span>)).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">f</span>. <span class="id" title="tactic">unfold</span> <span class="id" title="var">KLEISLIL</span>. <span class="id" title="var">unlock</span>. <span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">unfold</span> <span class="id" title="var">id</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">Smash_Eps_l</span>. <span class="id" title="tactic">rewrite</span> <span class="id" title="var">kleisli_simpl</span>. <span class="id" title="tactic">rewrite</span> <span class="id" title="var">kleisli_Eps</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">kleisli_simpl</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">Smash_ValVal</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">cpoType</span>) (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>) (<span class="id" title="var">b</span> : <span class="id" title="var">B</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Smash</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">Val</span> <span class="id" title="var">a</span>) (<span class="id" title="var">Val</span> <span class="id" title="var">b</span>) =-= <span class="id" title="var">Val</span> (<span class="id" title="var">a</span>, <span class="id" title="var">b</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">Smash</span>, <span class="id" title="var">Operator2</span>. <span class="id" title="var">unlock</span>. <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> -&gt; <span class="id" title="var">kleisliVal</span>. <span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">rewrite</span> -&gt; <span class="id" title="var">kleisliVal</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">rewrite</span> -&gt; <span class="id" title="var">kleisliVal</span>. <span class="id" title="tactic">by</span> <span class="id" title="tactic">simpl</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Fixpoint</span> <span class="id" title="var">FChainCore</span> (<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">cpoType</span>) (<span class="id" title="var">n</span> : <span class="id" title="var">natO</span>) :<br/>
+&nbsp;&nbsp;(<span class="id" title="var">B</span> -=&gt; <span class="id" title="var">A</span> <span class="id" title="var">_BOT</span> -=&gt; <span class="id" title="var">A</span> <span class="id" title="var">_BOT</span>)<br/>
+&nbsp;&nbsp;*<br/>
+&nbsp;&nbsp;<span class="id" title="var">B</span> =-&gt; <span class="id" title="var">A</span> <span class="id" title="var">_BOT</span><br/>
+&nbsp;&nbsp;:=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="var">n</span> <span class="id" title="keyword">with</span> <br/>
+&nbsp;&nbsp;| <span class="id" title="var">O</span>   =&gt; <span class="id" title="var">const</span> <span class="id" title="var">_</span> <span class="id" title="var">PBot</span><br/>
+&nbsp;&nbsp;| <span class="id" title="var">S</span> <span class="id" title="var">m</span> =&gt; <span class="id" title="var">ev</span> &lt;&lt; &lt;| <span class="id" title="var">ev</span>, <span class="id" title="var">FChainCore</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">m</span> |&gt;<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">SwapArgs</span> (<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> : <span class="id" title="var">cpoType</span>) : (<span class="id" title="var">A</span> * <span class="id" title="var">B</span> -=&gt; <span class="id" title="var">C</span>) =-&gt; (<span class="id" title="var">B</span> * <span class="id" title="var">A</span> -=&gt; <span class="id" title="var">C</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">exp_fun</span>(<span class="id" title="var">ev</span> &lt;&lt; <span class="id" title="var">Id</span> &gt;&lt; <span class="id" title="var">SWAP</span>).<br/>
+<span class="id" title="var">Arguments</span> <span class="id" title="var">SwapArgs</span> [<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span>].<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">FixF</span> (<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">cpoType</span>) :<br/>
+&nbsp;&nbsp;(<span class="id" title="var">A</span> <span class="id" title="var">_BOT</span> * <span class="id" title="var">B</span> -=&gt; <span class="id" title="var">A</span> <span class="id" title="var">_BOT</span>) =-&gt; (<span class="id" title="var">B</span> -=&gt; <span class="id" title="var">A</span> <span class="id" title="var">_BOT</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">CURRY</span> (<span class="id" title="var">ccomp</span> <span class="id" title="var">FIXP</span> (<span class="id" title="var">UNCURRY</span> ((@<span class="id" title="var">CCURRY</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)))) &lt;&lt; <span class="id" title="var">SwapArgs</span>.<br/>
+<span class="id" title="var">Arguments</span> <span class="id" title="var">FixF</span> [<span class="id" title="var">A</span> <span class="id" title="var">B</span>].<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">FChain</span> (<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">cpoType</span>) (<span class="id" title="var">n</span> : <span class="id" title="var">natO</span>) :<br/>
+&nbsp;&nbsp;(<span class="id" title="var">A</span> <span class="id" title="var">_BOT</span> * <span class="id" title="var">B</span>) -=&gt; <span class="id" title="var">A</span> <span class="id" title="var">_BOT</span><br/>
+&nbsp;&nbsp;=-&gt;<br/>
+&nbsp;&nbsp;(<span class="id" title="var">B</span> -=&gt; <span class="id" title="var">A</span> <span class="id" title="var">_BOT</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">exp_fun</span> (<span class="id" title="var">FChainCore</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">n</span>)<br/>
+&nbsp;&nbsp;&lt;&lt; @<span class="id" title="var">CCURRY</span> <span class="id" title="var">B</span> (<span class="id" title="var">A</span> <span class="id" title="var">_BOT</span>) (<span class="id" title="var">A</span> <span class="id" title="var">_BOT</span>)<br/>
+&nbsp;&nbsp;&lt;&lt; <span class="id" title="var">SwapArgs</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">FChainCore_unfold</span>: <span class="id" title="keyword">forall</span> (<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">cpoType</span>) (<span class="id" title="var">n</span> : <span class="id" title="var">natO</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">FChainCore</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> (<span class="id" title="var">n</span>.+1)%<span class="id" title="var">N</span> =-= <span class="id" title="var">ev</span> &lt;&lt; &lt;| <span class="id" title="var">ev</span> , <span class="id" title="var">FChainCore</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">n</span> |&gt; .<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">auto</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">FChainCore_S_unfold</span>: <span class="id" title="keyword">forall</span> (<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">cpoType</span>) (<span class="id" title="var">n</span> : <span class="id" title="var">natO</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">d</span> : <span class="id" title="var">B</span> -=&gt; <span class="id" title="var">A</span> <span class="id" title="var">_BOT</span> -=&gt; <span class="id" title="var">A</span> <span class="id" title="var">_BOT</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">η</span> : <span class="id" title="var">B</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">FChainCore</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">n</span> (<span class="id" title="var">d</span>,<span class="id" title="var">η</span>) &lt;= (<span class="id" title="var">d</span> <span class="id" title="var">η</span>) (<span class="id" title="var">FChainCore</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">n</span> (<span class="id" title="var">d</span>,<span class="id" title="var">η</span>)).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">n</span> <span class="id" title="var">d</span> <span class="id" title="var">η</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">n</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">leastP</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">fmon_le_compat</span>. <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">IHn</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">FChainCore_S</span>: <span class="id" title="keyword">forall</span> (<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">cpoType</span>) (<span class="id" title="var">n</span> : <span class="id" title="var">natO</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">FChainCore</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">n</span> &lt;= <span class="id" title="var">FChainCore</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> (<span class="id" title="var">n</span>.+1)%<span class="id" title="var">N</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">θ</span> <span class="id" title="var">c</span> <span class="id" title="var">n</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">n</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">intro</span> <span class="id" title="var">d</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">leastP</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> [<span class="id" title="var">d</span> <span class="id" title="var">η</span>].<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">fmon_le_compat</span>. <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">FChainCore_S_unfold</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">FChain_S</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">cpoType</span>) (<span class="id" title="var">n</span> : <span class="id" title="var">natO</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">FChain</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">n</span>) &lt;= (<span class="id" title="var">FChain</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> (<span class="id" title="var">n</span>.+1)%<span class="id" title="var">N</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">n</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">n</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">d</span> <span class="id" title="var">η</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">leastP</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">d</span> <span class="id" title="var">η</span>. <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">fmon_le_compat</span>. <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">pair_le_compat</span>. <span class="id" title="tactic">specialize</span> (<span class="id" title="var">IHn</span> <span class="id" title="var">d</span> <span class="id" title="var">η</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simpl</span> <span class="id" title="tactic">in</span> <span class="id" title="var">IHn</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">IHn</span>. <span class="id" title="tactic">auto</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">FChainCore_mon</span> (<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">cpoType</span>) (<span class="id" title="var">d</span> : (<span class="id" title="var">B</span> -=&gt; <span class="id" title="var">A</span> <span class="id" title="var">_BOT</span> -=&gt; <span class="id" title="var">A</span> <span class="id" title="var">_BOT</span>) * <span class="id" title="var">B</span>) :<br/>
+&nbsp;&nbsp;<span class="id" title="var">monotonic</span> (<span class="id" title="keyword">fun</span> (<span class="id" title="var">n</span> : <span class="id" title="var">natO</span>) =&gt; <span class="id" title="var">FChainCore</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">n</span> <span class="id" title="var">d</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">d</span> <span class="id" title="var">n</span> <span class="id" title="var">n'</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>, (<span class="id" title="var">x</span> &lt;= <span class="id" title="var">y</span>)%<span class="id" title="var">coq_nat</span> -&gt; <span class="id" title="var">FChainCore</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">x</span> &lt;= <span class="id" title="var">FChainCore</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">y</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">H0</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">H0</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">Ole_trans</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">IHle</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">FChainCore_S</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">H0</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">assert</span> ((<span class="id" title="var">n</span> &lt;= <span class="id" title="var">n'</span>)%<span class="id" title="var">coq_nat</span> &lt;-&gt; <span class="id" title="var">n</span> &lt;= <span class="id" title="var">n'</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">rwP</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">leP</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">inversion</span> <span class="id" title="var">H1</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">H3</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">H</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">FChain_mon</span> (<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">cpoType</span>) (<span class="id" title="var">d</span> : <span class="id" title="var">A</span> <span class="id" title="var">_BOT</span> * <span class="id" title="var">B</span> -=&gt; <span class="id" title="var">A</span> <span class="id" title="var">_BOT</span>) :<br/>
+&nbsp;&nbsp;<span class="id" title="var">monotonic</span> (<span class="id" title="keyword">fun</span> (<span class="id" title="var">n</span> : <span class="id" title="var">natO</span>) =&gt; <span class="id" title="var">FChain</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">n</span> <span class="id" title="var">d</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">d</span> <span class="id" title="var">n</span> <span class="id" title="var">n'</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="keyword">forall</span> <span class="id" title="var">m</span> <span class="id" title="var">m'</span>, (<span class="id" title="var">m</span> &lt;= <span class="id" title="var">m'</span>)%<span class="id" title="var">coq_nat</span> -&gt; <span class="id" title="var">FChainCore</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">m</span> &lt;= <span class="id" title="var">FChainCore</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">m'</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="var">Case</span> "Assert".<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">m</span> <span class="id" title="var">m'</span> <span class="id" title="var">H0</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">H0</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;-- <span class="id" title="var">SCase</span> "m = m'". <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;-- <span class="id" title="var">SCase</span> "m &lt;= m' ⇒ m &lt;= m'+1".<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">Ole_trans</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">IHle</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">FChainCore_S</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">comp_le_ord_compat</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">H0</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">assert</span> ((<span class="id" title="var">n</span> &lt;= <span class="id" title="var">n'</span>)%<span class="id" title="var">coq_nat</span> &lt;-&gt; <span class="id" title="var">n</span> &lt;= <span class="id" title="var">n'</span>) <span class="id" title="tactic">by</span> (<span class="id" title="tactic">apply</span> <span class="id" title="var">rwP</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">leP</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">snd</span> <span class="id" title="var">H1</span>). <span class="id" title="tactic">apply</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Ole_refl</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">FC</span> (<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">cpoType</span>) (<span class="id" title="var">d</span> : <span class="id" title="var">A</span> <span class="id" title="var">_BOT</span> * <span class="id" title="var">B</span> -=&gt; <span class="id" title="var">A</span> <span class="id" title="var">_BOT</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">Eval</span> <span class="id" title="tactic">hnf</span> <span class="id" title="tactic">in</span> <span class="id" title="var">mk_fmono</span> (<span class="id" title="var">FChain_mon</span> <span class="id" title="var">d</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">FC_simpl</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">cpoType</span>) (<span class="id" title="var">d</span> : <span class="id" title="var">A</span> <span class="id" title="var">_BOT</span> * <span class="id" title="var">B</span> -=&gt; <span class="id" title="var">A</span> <span class="id" title="var">_BOT</span>) (<span class="id" title="var">n</span> : <span class="id" title="var">natO</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">FC</span> <span class="id" title="var">d</span> <span class="id" title="var">n</span> =-= <span class="id" title="var">FChain</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">n</span> <span class="id" title="var">d</span>.<br/>
+<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">auto</span>. <span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">FC_zero</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">cpoType</span>) (<span class="id" title="var">d</span> : <span class="id" title="var">A</span> <span class="id" title="var">_BOT</span> * <span class="id" title="var">B</span> -=&gt; <span class="id" title="var">A</span> <span class="id" title="var">_BOT</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">FC</span> <span class="id" title="var">d</span> 0%<span class="id" title="var">N</span> =-= <span class="id" title="var">const</span> <span class="id" title="var">_</span> <span class="id" title="var">PBot</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">d</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">fmon_eq_intro</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">η</span>. <span class="id" title="tactic">by</span> <span class="id" title="tactic">simpl</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">FC_unfold</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">cpoType</span>) (<span class="id" title="var">d</span> : <span class="id" title="var">A</span> <span class="id" title="var">_BOT</span> * <span class="id" title="var">B</span> -=&gt; <span class="id" title="var">A</span> <span class="id" title="var">_BOT</span>) (<span class="id" title="var">n</span> : <span class="id" title="var">natO</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">FC</span> <span class="id" title="var">d</span> (<span class="id" title="var">n</span>.+1)%<span class="id" title="var">N</span> =-= <span class="id" title="var">ev</span> &lt;&lt; &lt;| <span class="id" title="var">CURRY</span> (<span class="id" title="var">SwapArgs</span> <span class="id" title="var">d</span>) , <span class="id" title="var">FC</span> <span class="id" title="var">d</span> <span class="id" title="var">n</span> |&gt;.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">d</span> <span class="id" title="var">n</span>. <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">fmon_eq_intro</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">η</span>. <span class="id" title="tactic">by</span> <span class="id" title="tactic">simpl</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">FC_lub</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">cpoType</span>) (<span class="id" title="var">d</span> : <span class="id" title="var">A</span> <span class="id" title="var">_BOT</span> * <span class="id" title="var">B</span> -=&gt; <span class="id" title="var">A</span> <span class="id" title="var">_BOT</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lub</span> (<span class="id" title="var">FC</span> <span class="id" title="var">d</span>) =-= <span class="id" title="var">FixF</span> <span class="id" title="var">d</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">d</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">fmon_eq_intro</span>. <span class="id" title="tactic">intro</span> <span class="id" title="var">η</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">lub_eq_compat</span>. <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">fmon_eq_intro</span>. <span class="id" title="tactic">intro</span> <span class="id" title="var">n</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">n</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">tset_refl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">fmon_eq_compat</span>. <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">pair_eq_compat</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">pair_eq_compat</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simpl</span> <span class="id" title="tactic">in</span> <span class="id" title="var">IHn</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">IHn</span>. <span class="id" title="tactic">auto</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">FC_Prop</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">cpoType</span>) (<span class="id" title="var">b</span> : <span class="id" title="var">B</span>) (<span class="id" title="var">d</span> : <span class="id" title="var">A</span> <span class="id" title="var">_BOT</span> * <span class="id" title="var">B</span> -=&gt; <span class="id" title="var">A</span> <span class="id" title="var">_BOT</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">j</span> : <span class="id" title="var">natO</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">FC</span> <span class="id" title="var">d</span> (<span class="id" title="var">j</span>.+1)%<span class="id" title="var">N</span> <span class="id" title="var">b</span> =-= <span class="id" title="var">d</span> (<span class="id" title="var">FC</span> <span class="id" title="var">d</span> <span class="id" title="var">j</span> <span class="id" title="var">b</span>, <span class="id" title="var">b</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">b</span> <span class="id" title="var">d</span> <span class="id" title="var">j</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">simpl</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>
