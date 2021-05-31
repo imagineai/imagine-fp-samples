@@ -33,42 +33,42 @@ The formalization of the *chapter 4* is modularized in these files:
 
 - cbv-language/formalization/
 ### Language ###
--- Lang.v
+- Lang.v
    Syntax definition of the language
--- Types.v
--- ExSem.v
+- Types.v
+- ExSem.v
    Extrinsic denotational semantics for the language
--- InSem.v
+- InSem.v
    Intrinsic denotational semantics for the language
--- OperSem.v
+- OperSem.v
    Operational semantics for the language
 
 ### Adequacy ###
--- OperApprox.v
-   Operational approximation for values and expressions
--- DenoApprox.v
+- OperApprox.v
+   Operational approximation for values and expression
+- DenoApprox.v
    Denotational approximation for values and expressions   
--- Adequacy.v
+- Adequacy.v
    Complete results of adequacy
--- fib_Adequacy.v
+- fib_Adequacy.v
    Example of the application of adequacy for prove the
    adequacy of fibonacci.
 
 ### Meaning of Types / Bracketing ###
--- StrictExt.v
+- StrictExt.v
    Strict Extension of Relations
--- EmbProjPair.v
+- EmbProjPair.v
    Embedding-projections pairs
--- MoT.v
+- MoT.v
    Complete results of bracketing
--- CoherenceExample.v
+- CoherenceExample.v
    Example of the application of coherence.
 
 ### Domain Theory extensions ###
--- Domains.v
--- PredomProd.v
--- DomainStuff.v
--- Utils.v
+- Domains.v
+- PredomProd.v
+- DomainStuff.v
+- Utils.v
 
 The formalization of the *chapter 5* is modularized in these files:
 
