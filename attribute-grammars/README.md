@@ -7,3 +7,5 @@ problem and type inference for lambda calculus.
 
 We used a DSL built on top of Haskell, for using attribute grammars. 
 Each AST is defined together with attributes specifying semantics.
+In `code/LambdaCalculus/Lambda.ag` we define the AST for lambda calculus
+together with the semantics for type inference. 
