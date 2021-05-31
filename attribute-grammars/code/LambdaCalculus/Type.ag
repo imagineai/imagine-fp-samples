@@ -1,0 +1,217 @@
+module {Type} {}
+{
+import Data.List
+import Data.Maybe
+import UU.Pretty
+import qualified Data.Set as S
+
+-- Type TVar
+
+type TVar = Int
+
+stringTVar = "t"
+
+showTVar :: TVar -> String
+showTVar 0 = stringTVar
+showTVar n = stringTVar ++ (show n)
+
+nextTVar :: TVar -> TVar
+nextTVar = (+1)
+
+initTVar :: TVar
+initTVar = 0
+    
+-- Returns a fresh variable
+freshTVar :: TVar -> TVar
+freshTVar = nextTVar
+
+}
+
+-- Types for lambda terms
+data Type
+    | AtomType at :: {TVar}
+    | FunType lt,rt :: Type
+
+deriving Type : Eq
+
+attr Type
+    inh subst  :: SingleS
+    inh var    :: TVar
+    inh tunify :: Type
+    
+    syn apply    :: Type
+    syn inType   :: Bool
+    syn tvars    :: {S.Set TVar}
+    syn unify    :: {(Type,TSubst)}
+    syn cpy      :: self
+
+    
+sem Type
+    | AtomType lhs.apply  = if fst @lhs.subst == @at
+                                then snd @lhs.subst
+                                else AtomType @at
+                  .inType = @lhs.var == @at
+                  .tvars  = S.singleton @at
+                  .unify  = case @lhs.tunify of
+                                AtomType v -> if @at == v
+                                                then (@lhs.tunify,[])
+                                                else (@lhs.tunify,
+                                                     [(@at,@lhs.tunify)])
+                                _ -> (@lhs.tunify,[(@at,@lhs.tunify)])
+    | FunType lhs.apply  = FunType @lt.apply @rt.apply
+                 .inType = @lt.inType || @rt.inType
+                 .tvars  = @lt.tvars `S.union` @rt.tvars
+                 .unify  = case @lhs.tunify of
+                                AtomType v   -> (@this,[(v,@this)])
+                                FunType s s' -> (@lhs.tunify,(snd $ @lt.unify)++
+                                                 (snd $ @rt.unify))
+              loc.this   = FunType @lt.cpy @rt.cpy
+              (loc.t1,loc.t2) = case @lhs.tunify of
+                                    FunType s s' -> (s,s')
+                                    _ -> (@lhs.tunify,@lhs.tunify)
+              lt.tunify = @t1
+              rt.tunify = @t2
+
+-- Single substitution
+type SingleS = (TVar,Type)
+
+attr SingleS
+    inh v       :: TVar
+    inh t       :: Type
+    
+    syn replace :: SingleS
+    syn lookup  :: {Maybe Type}
+    syn occurs  :: Bool
+    syn cpy     :: self
+    
+sem SingleS
+     | Tuple lhs.replace = (@x1, @x2.apply)
+             x2.subst    = (@lhs.v,@lhs.t)
+             x2.var      = @x1
+             x2.tunify   = @x2.cpy
+             lhs.occurs  = @x2.inType
+             lhs.lookup = if @lhs.v == @x1
+                            then Just @x2.cpy
+                            else Nothing
+
+-- List of substitutions
+type TSubst = [SingleS]
+
+attr TSubst 
+    inh vt       :: SingleS
+    
+    -- Replace a tvar by a type
+    -- in all types of substitution
+    syn replace :: TSubst
+    -- Add the pair (v,t) from inherited attribute to substitution,
+    -- the replace v by t is performed in all substitution and
+    -- if v is contained, unification is performed.
+    -- The return value is the substitution with pair added and
+    -- substitution resulting of unification.
+    syn addTS    :: {(TSubst,TSubst)}
+    -- lookup variable (fst vt) on substitution.
+    syn lookup  :: {Maybe Type}
+    
+
+sem TSubst
+    | Nil lhs.addTS   = if not (occurs @lhs.vt)
+                          then ([@lhs.vt],[])
+                          else occursCheck @lhs.vt
+             .lookup  = Nothing
+             .replace = []
+    
+    | Cons loc.rep     = @hd.replace : @tl.replace
+           lhs.replace = @rep
+           hd.v        = fst @lhs.vt
+           hd.t        = snd @lhs.vt
+           loc.lkp     = case @hd.lookup of
+                            Nothing -> @tl.lookup
+                            Just t  -> Just t
+           lhs.lookup   = @lkp
+           -- unifyres is a tuple containing the unified type
+           -- and substitution resulting from unification. If
+           -- is not necessary unification, contains original
+           -- type and empty list.
+           loc.unifyres = case @lkp of
+                            Just t  -> unify t (snd @lhs.vt)
+                            Nothing -> (snd @lhs.vt,[])
+           lhs.addTS = if not (occurs @lhs.vt)
+                         then case @lkp of
+                            -- if variable (fst @lhs.vt) is not in substitution
+                            -- we replace it for type (snd @lhs.vt) and add the new pair
+                            Nothing -> (@rep ++ [@lhs.vt],[])
+                            -- if variable (fst @lhs.vt) is in substitution
+                            -- we perform unification. Resulting substitution
+                            -- contains variable (fst @lhs.vt) only once.
+                            Just _  -> let (tladd,tlts) = @tl.addTS in
+                                         if fst @hd.cpy == fst @lhs.vt 
+                                            then (tladd,tlts++(snd @unifyres))
+                                            else (@hd.cpy:tladd,tlts++(snd @unifyres))
+                         else occursCheck @lhs.vt
+           tl.vt     = (fst @lhs.vt,fst @unifyres)
+
+{
+
+-- Show
+instance Show Type where
+    show (AtomType v) = showTVar v
+    show (FunType t1 t2) = (parents t1) ++" -> "++(show t2)
+
+    
+parents :: Type -> String
+parents t@(FunType t1 t2) = "("++(show t)++")"
+parents t                 = show t
+    
+    
+-- Utilities
+    
+-- Applies a substitution on a type
+apply :: TSubst -> Type -> Type
+apply ts t = foldl (flip apply') t ts
+    where apply' vt t = apply_Syn_Type (wrap_Type (sem_Type t) $ 
+                                            Inh_Type vt t (fst vt))
+
+
+-- Return True if var occurs at type:
+occurs :: (TVar,Type) -> Bool
+occurs (v,t) = occurs_Syn_SingleS (wrap_SingleS (sem_SingleS (v,t)) $ Inh_SingleS t v)
+
+-- Returns all variables occurring on a type. Inherited values are not necessary here.
+allTVars :: Type -> S.Set TVar
+allTVars t = tvars_Syn_Type (wrap_Type (sem_Type t) $ Inh_Type undefined undefined undefined)
+                                            
+                                            
+-- Concat two substitution performing unification and replacement
+-- online
+concatTS :: TSubst -> TSubst -> TSubst
+concatTS ts []          = ts
+-- addTS return the substitution ts with pair (v,t) added to the end and
+-- if v is in ts, res contains v only once. ts'' is the substitution resulting
+-- from unification and is added to the end
+concatTS ts ((v,t):ts') = let (res,ts'') = addTS  in
+                            concatTS res (concatTS ts' ts'')
+    where addTS = addTS_Syn_TSubst (wrap_TSubst (sem_TSubst ts) $ Inh_TSubst (v,t))
+          
+-- Unify two types, return one of these and the substitution performed
+unify :: Type -> Type -> (Type,TSubst)
+unify t1 t2 = unify_Syn_Type (wrap_Type (sem_Type t1) $ Inh_Type undefined t2 undefined)
+
+
+-- Occurs check error
+occursCheck (v,t) = error ("Occurs check: Cannot construct type "++
+                            (showTVar v)++" = "++(show t))
+
+mapSnd :: (a -> b) -> (c, a) -> (c, b)
+mapSnd f (x,y) = (x,f y)
+
+-- From a set of variables returns a substitution of
+-- variables with lower indices.
+getMinVars :: S.Set TVar -> [(TVar,TVar)]
+getMinVars s = zip l [0..length l]
+    where l = S.toAscList s
+
+-- Replace variables in a type by others with lower indices
+reduceIndexes :: Type -> Type
+reduceIndexes t = apply (map (mapSnd AtomType) (getMinVars (allTVars t)))
+                        t
+}

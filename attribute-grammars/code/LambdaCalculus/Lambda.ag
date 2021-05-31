@@ -1,0 +1,136 @@
+module {Lambda} {}
+{
+import Data.Maybe
+import Type
+import UU.PPrint
+
+
+-- Utilities
+
+-- Variables
+type Var = String
+
+-- Context for assign types to variables
+type Ctx = [(Var,Type)]
+
+-- Add a pair (Variable,Type) to context
+addCtx :: Var -> Type -> Ctx -> Maybe Ctx
+addCtx v t ctx = maybe (add v t ctx) (const Nothing) (lookup v ctx)
+    where add v t ctx = Just $ (v,t):ctx
+    
+    
+-- From the maximum used TVar, get a fresh type:
+freshType :: TVar -> Type
+freshType  = AtomType . freshTVar
+    
+-- Initial Type
+initType = AtomType initTVar   
+}
+
+-- Abstract Syntax
+data Term
+    | Id  ident :: {Var}
+    | App lt,rt :: Term
+    | Abs var   :: {Var}
+          term  :: Term
+          
+attr Term 
+    -- Asignación de variables a tipos
+    inh ctx       :: Ctx
+    -- Asummed type for a term
+    inh termType      :: Type
+    -- max used TVar, needed for obtain fresh type variables
+    chn maxTVar     :: TVar
+    -- Type substitution
+    syn tsubst    :: TSubst
+    
+sem Term
+    | Id loc.ctxInfo    = lookup @ident @lhs.ctx
+         lhs.tsubst = case @ctxInfo of
+                            Just t@(AtomType v) -> if @lhs.termType == t
+                                                    then []
+                                                    else concatTS [] [(v,@lhs.termType)]
+                            Nothing -> error ("Not in scope: "++(@ident))
+                            
+    | Abs loc.ntypel      = case @lhs.termType of
+                             FunType t1 _ -> t1
+                             AtomType v   -> freshType @lhs.maxTVar
+          loc.ntyper      = case @lhs.termType of
+                             FunType _ t2 -> t2
+                             AtomType v   -> freshType (nextTVar @lhs.maxTVar)
+          loc.mctx        = addCtx @var @ntypel @lhs.ctx
+          term.ctx        = maybe (error "Variable in context") id @mctx
+              .termType   = @ntyper
+              .maxTVar    = case @lhs.termType of
+                             FunType _ _ -> @lhs.maxTVar
+                             AtomType _  -> nextTVar (nextTVar @lhs.maxTVar)
+          lhs.tsubst      = case @lhs.termType of
+                                FunType _ _ -> @term.tsubst
+                                AtomType v  -> concatTS [(v,FunType @ntypel @ntyper)]
+                                                        @term.tsubst 
+                                                    
+    | App loc.ntype      = freshType @lhs.maxTVar 
+          lt.termType    = FunType @ntype @lhs.termType
+            .maxTVar     = nextTVar @lhs.maxTVar
+          rt.termType    = @ntype
+            .maxTVar     = @lt.maxTVar
+          lhs.tsubst     = concatTS @lt.tsubst @rt.tsubst
+
+
+          
+-- PRETTY PRINTING
+
+{
+data ParenInfo = NoParen | Paren | ParenAbs
+}
+
+attr Term 
+    syn pprint          :: {Doc}
+    inh paren           :: {ParenInfo}
+    
+sem Term
+    | Id  lhs.pprint  = text @ident
+    | App lhs.pprint  = (putParen @lhs.paren) (group $ @lt.pprint <> line <> (group $ text "@" <> line <>
+                        @rt.pprint))
+          rt.paren    = Paren
+          lt.paren    = ParenAbs
+    | Abs lhs.pprint  = (putParen' @lhs.paren) (text "λ " <> text @var <> 
+                        text " →" <> group (nest 3 $ line <> @term.pprint))
+          term.paren  = NoParen
+    
+    
+{
+putParen :: ParenInfo -> Doc -> Doc
+putParen Paren = parens
+putParen _     = id
+
+putParen' :: ParenInfo -> Doc -> Doc
+putParen' NoParen = id
+putParen' _       = parens
+
+
+uncurry4 :: (a -> b -> c -> d -> g) -> 
+            (a,b,c,d) -> g
+uncurry4 fun (a,b,c,d) = fun a b c d    
+
+inhValues = ([],initTVar,NoParen,initType)
+
+
+
+
+pprint :: Int -> Term -> String
+pprint n t = 
+    let pdoc = pprint_Syn_Term (wrap_Term (sem_Term t)
+                                        (uncurry4 Inh_Term inhValues))
+    in displayS (renderPretty 1 n pdoc) $ ""
+    
+instance Show Term where
+    show = pprint 50
+    
+-- Main function for type inference. From a term returns the type.
+getType :: Term -> Type
+getType t = 
+    let tsubst = tsubst_Syn_Term (wrap_Term (sem_Term t)
+                                        (uncurry4 Inh_Term inhValues))
+    in reduceIndexes (apply tsubst initType)
+}

@@ -1,0 +1,24 @@
+----Type Inference for Lambda Calculus----
+
+* Execute make to install.
+
+Ensure you have uuagc installed.
+
+-----------------------
+
+Usage: infer OPTION ...
+
+Option:
+    --help                 Display this info.
+    --showExamples         Display predefined examples infers his types.
+    --getType "Term"       Parse and infer type of Term.
+
+
+Lambda Terms concrete syntax:
+
+Var ::= Strings
+
+Term ::= Var
+      | \Var . Term
+      | Term @ Term
+
