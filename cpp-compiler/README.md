@@ -13,9 +13,9 @@ Interesting aspects:
 
 * The native support for defining Abstract Syntax Trees in Haskell 
   allows us to have a clean representation of each language. 
-  We define an AST of the source language in src/Syntax, an AST of an 
-  intermediate code in src/InterCode and an AST of the Assembly 
-  machine code in src/Machine. 
+  We define an AST of the source language in `src/Syntax`, an AST of an 
+  intermediate code in `src/InterCode` and an AST of the Assembly 
+  machine code in `src/Machine`. 
 
 * The intermediate code doesn’t take care of particular memory 
   addresses or registers. It assumes infinite registers with a common 
