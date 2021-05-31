@@ -1,0 +1,5 @@
+(* sumar uno *)
+
+read x;
+    x := cons nil x;
+write x;

@@ -1,0 +1,24 @@
+(* reverse *)
+
+prog reverse:
+
+read X;
+    Y := nil;
+    while X do
+        Y := cons (hd X) Y;
+        X := tl X
+    od;
+write Y;
+
+
+prog main:
+
+read X;
+    A := hd X;
+    Y := tl X;
+    B := reverse A;
+    while B do
+        Y := cons (hd B) Y;
+        B := tl B
+    od;
+write Y;

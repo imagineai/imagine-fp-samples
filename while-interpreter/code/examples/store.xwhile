@@ -1,0 +1,66 @@
+
+pattern j : 10;
+pattern v : 5;
+
+(* pred *)
+prog pred :
+    read X;
+        Y := tl X;
+    write Y;
+
+(* X := lookup (J . Store) *)
+prog lookup :
+  read JStore;
+    
+    J     := hd JStore;
+    Store := tl JStore;   
+
+    T := Store;
+    K := J;
+    while K do       (* Remove the first i elements from a copy of Store *) 
+        K := pred K;
+        T := tl T;
+    od;
+    X := hd T;
+
+  write X;
+
+(* Store := update (J . (V . Store)) *)
+
+prog update :
+  read JVStore;
+    
+    J     := hd JVStore;
+    V     := hd (tl JVStore);
+    Store := tl (tl JVStore);
+    
+    T := nil; 
+    K := J;
+    
+    while K do                     (* Net effect is to set *)
+        T := cons (hd Store) T;    (* T = (dj-1 ... d0) and *)
+	Store := tl Store;         (* Store = (dj dj+1 ... dn) *)
+	K := pred K;
+    od;
+   
+    Store := cons V (tl Store);     (* Store = (d dj+1 ... dn) *)
+    while T do                      (* Replace d0 d1... dj-1 on Store *)
+       Store := cons (hd T) Store;
+       T := tl T;
+    od;
+    
+  write Store;
+
+prog main :
+  read X;
+    Store := X;
+
+    JStore := cons j Store;
+    Y      := lookup JStore;
+
+    JVStore := cons j (cons v Store);
+    Store   := update JVStore;
+
+    Res := cons Y Store;
+
+  write Res;

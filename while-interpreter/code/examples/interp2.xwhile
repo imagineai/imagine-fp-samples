@@ -1,0 +1,104 @@
+(* Intérprete de While en While, para programas que tengan cualquier cantidad de variables. *)
+
+pattern dohd   ;
+pattern dotl   ;
+pattern docons ;
+pattern doeq   ;
+pattern doasgn ;
+pattern dowh   ;
+
+(* pred *)
+prog pred :
+    read X;
+        Y := tl X;
+    write Y;
+
+(* X := lookup (J . Store) *)
+prog lookup :
+  read JStore;
+    
+    J     := hd JStore;
+    Store := tl JStore;   
+
+    T := Store;
+    K := J;
+    while K do       (* Remove the first i elements from a copy of Store *) 
+        K := pred K;
+        T := tl T;
+    od;
+    X := hd T;
+
+  write X;
+
+(* Store := update (J . (V . Store)) *)
+
+prog update :
+  read JVStore;
+    
+    J     := hd JVStore;
+    V     := hd (tl JVStore);
+    Store := tl (tl JVStore);
+    
+    T := nil;
+    K := J;
+    
+    while K do                         (* Net effect is to set *)
+        T     := cons (hd Store) T;    (* T = (dj-1 ... d0) and *)
+	Store := tl Store;             (* Store = (dj dj+1 ... dn) *)
+	K     := pred K;
+    od;
+   
+    Store := cons V (tl Store);     (* Store = (d dj+1 ... dn) *)
+    while T do                      (* Replace d0 d1... dj-1 on Store *)
+       Store := cons (hd T) Store;
+       T     := tl T;
+    od;
+    
+  write Store;
+
+prog main:
+
+read PD;                               (* Input (p.d) *)
+
+    Pgm := hd PD;                      (* p = ((var i) c (var j))            *)
+    D   := tl PD;                      (* D = d (input value)                *)
+
+    I   := tl (hd Pgm);                (* I = i (input variable)             *)
+    J   := tl (tl (tl Pgm));           (* J = j (output variable)            *)
+
+    C   := hd (tl Pgm);                (* C = c, program code                *)
+    
+    IDNil := cons I (cons D nil);
+    Vl    := update IDNil;             (* (var i) initially d, others nil    *)
+    Cd    := cons C nil;               (* Cd = (c.nil), Code to execute is c *)
+    St    := nil;                      (* St = nil, computation Stack empty  *)
+    
+    while Cd do
+        rewrite [Cd , St] by
+            [(('quote'.D).Cr)  ,     St]            ==> St := cons D St ; Cd := Cr;
+            [(('var'.J).Cr) ,     St]               ==> JVl := cons J Vl; X := lookup JVl;
+	    		    	  		    	St:=cons X St; Cd := Cr;
+            [(('hd'.E).Cr)     ,     St]            ==> [cons E (cons dohd Cr), St]
+            [(dohd.Cr)       , (T.Sr)]              ==> [Cr , cons (hd T) Sr]
+            [(('tl'.E).Cr)     ,     St]            ==> [cons E (cons dotl Cr), St]
+            [(dotl.Cr)       , (T.Sr)]              ==> [Cr, cons (tl T) Sr]
+            [(('cons'.(E1.E2)).Cr),    St]          ==> [cons E1 (cons E2 (cons docons Cr)),St]
+            [(docons.Cr)  ,(U.(T.Sr))]              ==> [Cr, cons (cons T U) Sr]
+            [(('=?'.(E1.E2)).Cr)  ,    St]          ==> [cons E1 (cons E2 (cons doeq Cr)),St]
+            [(doeq.Cr)    ,(U.(T.Sr))]              ==> [Cr, cons (=? T U) Sr]
+            [((';'.(C1.C2)).Cr) ,    St]            ==> [cons C1 (cons C2 Cr), St]
+            [((':='.((var.K).E)).Cr),St]            ==> Cd := cons E (cons doasgn (cons K Cr));
+            [(doasgn.(K.Cr))     , (T.Sr)]          ==> KTVl := cons K (cons T Vl);
+	    			   		    	Vl := update KTVl;
+	    			   	       	    	Cd := Cr; St := Sr;
+            [(('while'.(E.C)).Cr),   St]            ==> [cons E (cons dowh (cons (cons 'while' (cons E C)) Cr)), St]
+            [(dowh.(('while'.(E.C)).Cr)), (nil.Sr)] ==> [Cr,Sr]
+            [(dowh.(('while'.(E.C)).Cr)),((D.F).S)] ==> [cons C (cons (cons 'while' (cons E C)) Cr), S]
+            [nil,St]                                ==> [nil,St]
+        end;
+    od;
+    
+    JVl := cons J Vl;
+    Out := lookup JVl;                 (* Output is the value of (var j)   *)
+
+write Out;

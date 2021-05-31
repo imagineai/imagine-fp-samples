@@ -1,0 +1,25 @@
+(* succ *)
+prog succ :
+
+    read X;
+        Y := cons nil X;
+    write Y;
+
+(* pred *)
+prog pred :
+    
+    read X;
+        Y := tl X;
+    write Y;
+
+(* add *)
+prog main :
+
+    read XY;
+        X := hd XY;
+        Y := tl XY;
+        while X do
+            Y := succ Y;
+            X := pred X;
+        od;
+    write Y;

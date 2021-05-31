@@ -1,0 +1,40 @@
+(* Intérprete de While en While, sólo para programas que tengan una única variable. *)
+
+pattern dohd   ;
+pattern dotl   ;
+pattern docons ;
+pattern doeq   ;
+pattern doasgn ;
+pattern dowh   ;
+
+prog main:
+
+read PD;
+    P := hd PD;
+    C := hd (tl P);
+    Cd := cons C nil;
+    St := nil;
+    Vl := tl PD;
+    while Cd do
+        rewrite [Cd , St] by
+            [(('quote'.D).Cr)  ,     St] ==> St := cons D St ; Cd := Cr;
+            [(('var'.(nil.nil)).Cr) ,     St] ==> [Cr , cons Vl St]
+            [(('hd'.E).Cr)     ,     St] ==> [cons E (cons dohd Cr) , St]
+            [(dohd.Cr)       , (T.Sr)] ==> [Cr , cons (hd T) Sr]
+            [(('tl'.E).Cr)     ,     St] ==> [cons E (cons dotl Cr), St]
+            [(dotl.Cr)       , (T.Sr)] ==> [Cr, cons (tl T) Sr]
+            [(('cons'.(E1.E2)).Cr),    St] ==> [cons E1 (cons E2 (cons docons Cr)),St]
+            [(docons.Cr)  ,(U.(T.Sr))] ==> [Cr, cons (cons T U) Sr]
+            [(('=?'.(E1.E2)).Cr)  ,    St] ==> [cons E1 (cons E2 (cons doeq Cr)),St]
+            [(doeq.Cr)    ,(U.(T.Sr))] ==> [Cr, cons (=? T U) Sr]
+            [((';'.(C1.C2)).Cr) ,    St] ==> [cons C1 (cons C2 Cr), St]
+            [((':='.((var.(nil.nil)).E)).Cr),St] ==> [cons E (cons doasgn Cr),St]
+            [(doasgn.Cr)     , (W.Sr)] ==> Cd := Cr; Vl := W; St := Sr;
+            [(('while'.(E.C)).Cr),   St] ==> [cons E (cons dowh (cons (cons 'while' (cons E C)) Cr)), St]
+            [(dowh.(('while'.(E.C)).Cr)), (nil.Sr)] ==> [Cr,Sr]
+            [(dowh.(('while'.(E.C)).Cr)),((D.F).S)] ==> [cons C (cons (cons 'while' (cons E C)) Cr), S]
+            [nil,St]                              ==> [nil,St]
+        end;
+    od;
+write Vl;
+

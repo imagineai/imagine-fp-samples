@@ -1,0 +1,76 @@
+\documentclass[a4paper,10pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{verbatim}
+
+%opening
+\title{Gramáticas}
+\author{}
+\date{}
+
+% Estilo para los no terminales.
+\newcommand{\nt}[1]{\textbf{#1}}
+
+\begin{document}
+
+\maketitle
+
+\section{Gramáticas}
+
+\indent \indent v, name $\in$ Var $=$ String \hspace{15pt}
+d $\in$ RawValue $::=$ \nt{nil} $|$ d \nt{.} d' \hspace{15pt}
+Value $::=$ d $|$ p\\
+
+\
+
+p $\in$ Prog $::=$ \nt{proc} name \nt{:} bp\\
+\indent \hspace{45pt} $|$ \nt{proc} name \nt{:} xp\\
+
+\
+
+e $\in$ Expr $::=$ v $|$ \nt{nil} $|$ \nt{cons} e e'\\
+\indent \hspace{45pt} $|$ \nt{hd} e $|$ \nt{tl} e $|$ \nt{=?} e e'\\
+\indent \hspace{45pt}  $|$ \nt{*} $|$ \nt{univ} e e'
+
+\
+
+c $\in$ Comm $::=$ v \nt{:=} e \\
+\indent \hspace{50pt} $|$ \nt{while} e \nt{do} c \nt{od}\\
+\indent \hspace{50pt} $|$ c \nt{;} c'
+
+\
+
+bp $\in$ BaseProg $::=$ \nt{read} v \nt{;} c \nt{;} \nt{write} w \nt{;}
+
+\
+
+pat $\in$ Pattern $::=$ \nt{nil} $|$ pat \nt{.} pat' $|$ v
+
+\
+
+xc $\in$ ExtComm $::=$ v \nt{:=} e \\
+\indent \hspace{72pt} $|$ v \nt{:=} name v' \\
+\indent \hspace{72pt} $|$ \nt{while} e \nt{do} xc \nt{od}\\
+\indent \hspace{72pt} $|$ xc \nt{;} xc'\\
+\indent \hspace{72pt} $|$ \nt{if} e \nt{then} xc \nt{fi}\\
+\indent \hspace{72pt} $|$ \nt{if} e \nt{then} xc \nt{else} xc' \nt{fi}\\
+\indent \hspace{72pt} $|$ \nt{rewrite} \nt{[} v$_1$ \nt{, \ldots ,} v$_n$ \nt{]} \nt{by}\\
+\indent \hspace{92pt} \nt{[} pat$^1_1$ \nt{, \ldots ,} pat$^1_n$ \nt{]} \nt{==\textgreater} 
+(xc $|$ \nt{[} e$^1_1$ \nt{, \ldots ,} e$^1_n$ \nt{]})\\
+\indent \hspace{185pt} \vdots\\
+\indent \hspace{92pt} \nt{[} pat$^m_1$ \nt{, \ldots ,} pat$^m_n$ \nt{]} \nt{==\textgreater} 
+(xc $|$ \nt{[} e$^m_1$ \nt{, \ldots ,} e$^m_n$ \nt{]})\\
+\indent \hspace{78pt} \nt{end}\\
+\indent \hspace{72pt} $|$ \nt{case} v \nt{of}\\
+\indent \hspace{92pt} pat$^1$ \nt{==\textgreater} xc$^1$\\
+\indent \hspace{120pt} \vdots\\
+\indent \hspace{92pt} pat$^m$ \nt{==\textgreater} xc$^m$\\
+\indent \hspace{78pt} \nt{end}\\
+
+xp $\in$ ExtProg $::=$ \nt{read} v \nt{;} xc \nt{;} \nt{write} w \nt{;}
+
+
+
+
+\end{document}

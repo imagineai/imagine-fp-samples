@@ -1,0 +1,575 @@
+\documentclass[a4paper,twoside,12pt]{article}
+
+\usepackage{xltxtra}
+
+%% STRUCTURE
+
+\usepackage{xspace}
+\usepackage{expl3}
+%\usepackage{enumitem}
+\usepackage[olditem]{paralist}
+\usepackage{todo}
+
+\usepackage{amsmath,amssymb,amsthm,thmtools}
+\usepackage{braket}
+
+\usepackage[nounderscore]{syntax}
+
+\usepackage{bussproofs}
+\usepackage{graphicx}
+\usepackage{stmaryrd}
+\usepackage{bbold}
+
+\usepackage{tikz}
+\usepackage{tikz-cd}
+
+\declaretheorem[name=Teorema]{theorem}
+\declaretheorem[name=Lema]{lemma}
+\declaretheorem[name=Corolario]{corollary}
+\declaretheorem[name=Definición]{definition}
+\declaretheorem[name=Proposición]{proposition}
+\declaretheorem[name=Ejemplo]{example}
+\declaretheorem[name=Ejercicio]{exercise}
+\declaretheorem[name=Excursus]{excursus}
+\declaretheorem[name=Preguntas]{questions}
+
+\usepackage{biblatex}
+\addbibresource[location=remote]{http://www.citeulike.org/bibtex/user/miguelpagano/library?fieldmap=posted-at:posted-date&clean_urls=0}
+\title{Semántica para While}
+
+\newcommand{\trees}{\mathbb{D}}
+
+%% Elementos de D
+\newcommand{\nil}{\mathsf{nil}}
+\newcommand{\cons}[2]{(#1\, .\, #2)}
+\newcommand{\falseD}{\mathit{false}}
+\newcommand{\trueD}{\mathit{true}}
+
+%% Expresiones
+\newcommand{\vars}{\mathcal{V}}
+\newcommand{\hd}{\mathsf{hd}}
+\newcommand{\tl}{\mathsf{tl}}
+\newcommand{\conse}{\mathsf{cons}}
+\newcommand{\isEq}{\mathop{?\!\!=}}
+
+%% Comandos
+\newcommand{\assign}{\mathop{:=}}
+\newcommand{\seq}{\mathop{;}}
+\newcommand{\whilec}{\mathsf{while}}
+\newcommand{\doc}{\mathsf{do}}
+\newcommand{\whilestmt}[2]{\whilec\,#1\,\doc\,#2}
+\newcommand{\seqstmt}[2]{#1\,\seqc\,#2}
+\newcommand{\ifstmt}[3]{\mathsf{if}\,#1\,\mathsf{then}\,#2\,\mathsf{else}\,#3}
+
+%% Programas
+\newcommand{\readV}{\mathsf{read}}
+\newcommand{\writeV}{\mathsf{write}}
+
+\newcommand{\sem}[2]{\llbracket #1 \rrbracket #2}
+\newcommand{\semR}[3]{\llbracket #2 \rrbracket^{#1} #3}
+\newcommand{\upd}[3]{[#1 \mid #2 \colon #3]}
+\newcommand{\semf}[1]{\llbracket #1 \rrbracket}
+\newcommand{\liftFun}[1]{{#1}_{\bot\!\!\bot}}
+\newcommand{\fixpoint}[2]{\mathbf{Y}_{#1}\,#2}
+\newcommand{\getVar}[1]{\mathop{get}\, #1}
+
+\setlength{\grammarparsep}{2pt}
+
+% Semántica operacional
+\newcommand{\bigstep}{\Rightarrow}
+
+
+\begin{document}
+
+El libro ``Computability and Complexity'' de Neil
+Jones %\cite{jones-comp}
+presenta un lenguaje cuyos datos permiten manipular programas escritos
+en el mismo lenguaje. La intención de este documento es dar una
+semántica denotacional del lenguaje. En realidad en el libro se
+presentan varios lenguajes, nuestra exposición intentará ser gradual
+de la misma manera que el libro.
+
+\section{El lenguaje While}
+\label{sec:syntax}
+
+La sintaxis del lenguaje se define a partir de árboles binarios
+sobre un único átomo:
+
+\begin{definition}[Árboles]
+  El conjunto $\trees$ de \emph{árboles} es el menor conjunto que satisface:
+  \begin{enumerate}
+  \item $\nil \in \trees$ 
+  \item Si $d_1 \in \trees$ y $d_2 \in \trees$, entonces
+    $\cons{d_1}{d_2}\in\trees$.
+  \end{enumerate}
+\end{definition}
+
+Los elementos de $\trees$ serán los ``datos'' que manipularán los
+programas While; para ello definimos una sintaxis para las expresiones:
+
+\begin{definition}[Expresiones]
+  Dado un conjunto numerable $\vars$, representado por $\synt{var}$ en
+  la grámatica, de variables la sintaxis abstracta de las expresiones
+  está dada por:
+  \begin{grammar}
+  <atom> ::= $\nil$
+
+  <exp> ::=  <var> | <atom> | $\hd$ <exp> | $\tl$ <exp> | $\conse$ <exp> <exp> | <exp> $\isEq$ <exp>
+
+  <comm> ::= <var> $\assign$ <exp> 
+          | <comm> $\seq$ <comm> 
+          | $\whilec$ <exp> $\doc$ <comm> 
+
+  <prog> ::= $\readV$ <var> $\seq$ <comm> $\seq$ $\writeV$ <var>
+\end{grammar}
+\end{definition}
+
+La semántica denotacional de expresiones toma como parámetro un estado
+que mapea variables a elementos de $\trees$. Para representar los
+booleanos con elementos de $\trees$ alcanza con definir dos valores
+distintos: a falso lo representamos con $\falseD = \nil$, mientras que
+a verdadero con $\trueD = \cons \nil \nil$.
+
+
+\begin{definition}[Semántica]
+  Sea $\Sigma = \vars \to \trees$ el conjunto de \emph{estados}; sea
+  $\sigma \in \Sigma$. Definimos por recursión la semántica de
+  expresiones:
+  \[
+  \array{r@{\,=\,}l@{\quad}l@{}}%
+  \sem{v}{\sigma} & \sigma\,v & {} \\
+  \sem{\nil}{\sigma} & \nil & {} \\
+  \sem{\conse\,e\,e'}{\sigma} & \cons{\sem e \sigma}{\sem{e'}{\sigma}} & {} \\
+  \sem{\hd\,e}{\sigma} & d & \text{ si } \sem{e}{\sigma} = \cons{d}{d'} \\
+  \sem{\hd\,e}{\sigma} & \nil & \text{ caso contrario }\\
+  \sem{\tl\,e}{\sigma} & d' & \text{ si } \sem{e}{\sigma} = \cons{d}{d'} \\
+  \sem{\tl\,e}{\sigma} & \nil & \text{ caso contrario }\\
+  \sem{e\,\isEq\,e'}{\sigma} & \trueD & \text{ si } \sem{e}{\sigma} = \sem{e'}{\sigma} \\
+  \sem{e\,\isEq\,e'}{\sigma} & \falseD & \text{ caso contrario } \\
+  \endarray
+  \]
+\end{definition}
+
+Uno esperaría que la semántica de comandos sea una función que toma un
+estado y devuelve otro estado; el comando de repetición complica las
+cosas y requiere que nos movamos a funciones parciales. En el libro la
+semántica de un comando está dada en términos de una semántica
+operacional, de este modo, un comando es indefinido si no existe una
+derivación (finita) construida utilizando las reglas de la semántica
+operacional.
+
+Otro camino, quizás más matemático, es recurrir a resultados de teoría
+de dominios y pensar que la semántica de comandos sean funciones
+continuas de $\Sigma$ en $\Sigma_\bot$. Recordemos que $\Sigma_\bot$
+es el dominio \emph{llano} obtenido al extender $\Sigma$ con un nuevo
+elemento $\bot$ y definiendo el siguiente orden: $x \leqslant y$ si y
+sólo si $x = \bot$ ó $x = y$. Puesto que $\Sigma_\bot$ es un dominio, entonces
+$\Sigma\to \Sigma_\bot$ también es un dominio; el orden entre
+funciones está dado por el orden punto-a-punto: $f \leqslant g $ si y
+sólo si ``para todo $\sigma$, $f\,\sigma \leqslant g\,\sigma$''. 
+
+Un teorema de teoría de dominios indica cómo encontrar el menor punto
+fijo de una endo-función continua. Sea $f \colon D \to D$, donde $D$
+es un dominio, entonces podemos construir la siguiente cadena 
+$f\,\bot_D \leqslant f\,(f\,\bot_D) \leqslant f^3\,\bot_D\leqslant
+\ldots$.
+Puesto que $D$ es un dominio, entonces sabemos que existe el supremo
+de esa cadena y es fácil ver que ese supremo es un punto fijo para
+$f$. Dada una función $f \colon D \to D$, utilizamos $\fixpoint{D}{f}$
+para referirnos al menor punto fijo dado por esa construcción.
+
+\begin{definition}[Semántica de comandos]
+  \[
+  \array{r@{\,=\,}l@{\quad}l@{}}%
+  \sem{v \assign e}{\sigma} & \upd{\sigma}{v}{\sem e \sigma} & {} \\
+  \sem{c \seq c'}{\sigma} & \liftFun{\semf{c'}}\,(\sem c \sigma) & {} \\
+  \sem{\whilec\, e\, \doc\, c}{\sigma} & \fixpoint{\Sigma_\bot \to \Sigma_\bot}{F}\,\sigma & \text{ donde } \\
+  \endarray
+  \]
+
+  \[
+  \array{r@{\,}l}%
+  F \colon & (\Sigma \to \Sigma_\bot) \to (\Sigma \to \Sigma_\bot) \\
+  F\,g\,\sigma = &
+  \begin{cases}
+    \sigma & \text{ si } \sem{e}{\sigma} = \falseD \\
+    \liftFun{g}\,(\sem c \sigma) & \text{ caso contrario } 
+  \end{cases}
+  \endarray
+  \]
+\end{definition}
+
+Dada la semántica de comandos es fácil definir la de programas, tomamos
+un elemento $d \in D$ y un estado $\sigma$, actualizamos el valor de la
+variable de entrada en $\sigma$ con $d$, calculamos la semántica del comando
+y el resultado será o bien $\bot$ si el programa no termina o bien el valor
+de la variable de salida en el estado alcanzado.
+\begin{definition}[Semántica de programas]
+  \[
+  \semf{\readV\, v\seq\, c\,\seq \writeV\, w}\, d\, \sigma = \liftFun{(\getVar{w})}\,(\sem{c}{\upd{\sigma}{v}{d}})
+  \] 
+\end{definition}
+
+\section{El lenguaje reflexivo}
+\label{sec:refl}
+
+En esta sección veremos cómo dar semántica al lenguaje extendido
+con la estrella, que hace referencia al propio texto del programa,
+y con la expresión $\mathsf{univ}$. La única sintaxis que cambia
+es la de expresiones:
+\newcommand{\univ}{\mathsf{univ}}
+
+\begin{definition}[Expresiones para el lenguaje reflexivo]\hfill
+
+  \begin{grammar}
+    <exp> ::=  $\ldots$ | $\star$ | $\univ$ <exp> <exp>
+  \end{grammar}
+\end{definition}
+
+Expliquemos la semántica informal de estas nuevas expresiones: la
+semántica de $\star$ es el código del programa mismo codificado como
+un árbol. Por otro lado para evaluar $\univ\,e_1\,e_2$ debemos primero
+evaluar $e_1$ obteniendo el valor $d_1$: si $d_1$ resulta ser la
+codificación de un programa $p$ (por ejemplo si $e_1$ es $\star$ entonces
+sabremos efectivamente que $d_1$ será la codificación de un programa),
+luego evaluamos $e_2$ obteniendo el valor, digamos, $d_2$; finalmente
+evaluamos $p$ en el estado actual con valor inicial $d_2$. 
+
+\paragraph{Codificando While como árboles}
+
+\newcommand{\toD}[1]{\lfloor #1 \rfloor }
+\newcommand{\toDF}{\toD{\_}}
+\newcommand{\fromD}[1]{\lceil #1 \rceil }
+\newcommand{\fromDF}{\fromD{\_}}
+A los fines prácticos vamos a tomar $\vars = \mathbb N$, esto no produce
+ninguna dificultad más que de legibilidad de programas. Es claro que podemos
+codificar los naturales como elementos de $\trees$:
+\[
+\begin{array}{r@{\,}l}
+\toDF \colon & \mathbb N \to \trees\\
+\toD{0} & = \nil\\
+\toD{n+1} & = \cons{\nil}{\toD n}
+\end{array}
+\]
+Es decir, los numerales en $\trees$ se codifican como listas con $n+1$
+$\nil$s.
+
+Para codificar expresiones y comandos lo que haremos es construir
+listas de dos elementos $\cons \gamma \iota$: el primer elemento es
+fijo $\gamma = \cons \nil \nil$ y nos indica que el segundo elemento
+debemos interpretarlo como un constructor; para esto enumeramos los
+constructores:
+
+\begin{minipage}[t]{0.5\linewidth}
+  \[
+  \begin{array}{r@{\,=\,}l}
+    \mathsf{var} & \toD 1\\
+    \mathsf{atom} & \toD 2\\
+    \mathsf{hd} & \toD 3\\
+    \mathsf{tl} & \toD 4\\
+    \mathsf{cons} & \toD 5\\
+    \mathsf{eq} & \toD 6\\
+  \end{array}
+  \]
+\end{minipage}
+\begin{minipage}[t]{0.5\linewidth}
+\[
+\begin{array}{r@{\,=\,}l}
+  \mathsf{assgn} & \toD 7\\
+  \mathsf{seq} & \toD 8\\
+  \mathsf{while} & \toD 9\\
+  \mathsf{star} & \toD{10}\\
+  \mathsf{univ} & \toD{11}\\
+\end{array}
+\]
+\end{minipage}
+
+Ahora para codificar una expresión nos construimos una lista que tiene
+primero el constructor y luego tantos elementos más como argumentos
+tome ese constructor; para aligerar la carga nos referimos con $\mathsf{c}$ al siguiente elemento de $D$: $\cons{\gamma}{\mathsf{c}}$.
+\[
+\begin{array}{r@{\,=\,}l@{\quad}l}
+  \toD{v} & \cons{\mathsf{var}}{\toD v} & \text{ donde $v$ es una variable} \\
+  \toD{\nil} & \cons{\mathsf{atom}}{\nil} & \\
+  \toD{\conse\,e\,e'} & \cons{\mathsf{cons}}{\cons{\toD{e}}{\toD{e'}}} & \\
+  \toD{\hd\,e} & \cons{\mathsf{hd}}{\toD{e}} & \\
+  \toD{\tl\,e} & \cons{\mathsf{tl}}{\toD{e}} & \\
+  \toD{e\,\isEq\,e'} & \cons{\mathsf{eq}}{\cons{\toD{e}}{\toD{e'}}} & \\
+  \toD{\star} & \mathsf{star} & \\
+  \toD{\univ\,e\,e'} & \cons{\mathsf{univ}}{\cons{\toD{e}}{\toD{e'}}} & 
+\end{array}
+\]
+Para los comandos no hay más que usar los otros ``constructores'':
+\[
+\begin{array}{r@{\,=\,}l}
+  \toD{v\,\assign\, e} & \cons{\mathsf{assgn}}{\cons{\toD v}{\toD e}} \\
+  \toD{c\seq c'} & \cons{\mathsf{seq}}{\cons{\toD{c}}{\toD{c'}}} \\
+  \toD{\whilec\,e\,\doc\,c} & \cons{\mathsf{while}}{\cons{\toD{e}}{\toD c}} 
+\end{array}
+\]
+Finalmente los programas los codificamos como una lista con tres elementos:
+\[\toD{\readV\,v\,\seq\, c\,\seq \writeV\, w} = 
+  \cons{\toD v}{\cons{\toD c}{\toD w}}
+\]
+Resaltemos que con $\toD v$ nos referimos a
+$\cons{\mathsf{var}}{\toD v}$, y análogamente con $\toD w$.
+
+No es díficil, pero es tedioso, dar funciones parciales $\fromDF$ que
+\emph{proyecten} árboles en naturales, expresiones, comandos y
+programas, de tal manera que $\fromD{\toD{n}}=n$ para todo natural $n$
+(y análogamente para las otras entidades sintácticas). Puesto que
+$\toDF$ no es sobre, no podemos esperar que $\fromDF$ sea total y
+satisfaga $\toD{\fromD d}=d$.
+
+\paragraph{Semántica formal}
+
+Dada la descripción informal de la semántica de $\univ$ debería ser
+claro que ahora la semántica de las expresiones no puede ser más una
+función con tipo $\synt{exp} \to \Sigma \to \trees$, sino que el tipo
+será $\synt{exp} \to \Sigma \times \trees_{\bot}$. A su vez la
+inclusión de $\star$ requiere que tomemos un programa (el programa en
+el cual ocurre la expresión $\star$) como argumento.
+Otra variación notable respecto al lenguaje considerado anteriormente
+es que ahora la semántica de expresiones, comandos y programas debe ser
+dada simultáneamente. 
+
+\newcommand{\inj}[1]{\iota_\uparrow\,#1} Introduzcamos algunas
+funciones que nos faciliten la notación en las ecuaciones semánticas.
+En este apartado utilizamos las siguientes convenciones: $d,d'\in\trees$,
+$a,b\in\trees_\bot$
+\begin{description}
+\item[inyección] $\inj d \in\trees_{\bot}$
+\item[concatenación] 
+  $a \centerdot b =
+  \begin{cases}
+    \bot & \text{ si } a = \bot \text{ ó } b = \bot\\
+    \inj{\cons{d}{d'}} & \text{ si } a = \inj{d} \text{ y } b = \inj{d'}
+  \end{cases}
+  $
+\item[proyecciones] 
+  \[
+  \begin{array}{r@{\,}l}
+  \pi_i \colon& \trees_\bot \to \trees \\
+  \pi_i a =&
+  \begin{cases}
+   \bot & \text{ si } a = \bot\\
+   \inj{d_i} & \text{ si } a = \inj{\cons{d_1}{d_2}}\\
+   \inj{\nil} & \text{ si } a = \nil 
+  \end{cases}
+  \end{array}
+  \]
+\item[igualdad] 
+  $a \overset{?}{=} b =
+  \begin{cases}
+    \bot & \text{ si } a = \bot \text{ ó } b = \bot\\
+    \inj{\trueD} & \text{ si } a = \inj{d} = b\\
+    \inj{\falseD} & \text{ caso contrario}
+  \end{cases}
+  $
+\item[actualización]
+$\mathop{upd}\,\sigma\,v\,a =
+\begin{cases}
+  \bot & \text{ si } a = \bot \\
+  [\sigma \mid v : d ] & \text{ si } a = \inj{d}
+\end{cases}
+$
+\item[condicional]
+  $\mathop{cond}\,a\,x\,y =
+  \begin{cases}
+    \bot & \text{ si } a = \bot\\
+    x & \text{ si } a = \inj{\falseD}\\
+    y & \text{ si } a = \inj{d} \text{ con } d\neq \falseD
+  \end{cases}
+  $
+\end{description}
+
+Como ya dijimos, dado un elemento $d\in\trees$, $\fromD d$ puede o no
+estar definida; podemos ``internalizar'' la parcialidad cambiando el
+tipo de $\fromDF \colon D \to \synt{prg}$ a
+$\fromDF \colon D \to \synt{prg}_\bot$. 
+
+\begin{definition}[Semántica]
+  Sea $\Sigma = \vars \to \trees$ el conjunto de \emph{estados}; sea
+  $\sigma \in \Sigma$. Definimos simultáneamente  la semántica de
+  expresiones, comandos y programas:
+  \[
+  \array{r@{\;=\;}l}%
+  \semR{p}{v}{\sigma} & \inj{(\sigma\,v)} \\
+  \semR{p}{\nil}{\sigma} & \inj{\nil} \\
+  \semR{p}{\conse\,e\,e'}{\sigma} & \semR{p}{e}{\sigma}\centerdot \semR{p}{e'}{\sigma} \\
+  \semR{p}{\hd\,e}{\sigma} & \pi_1\, (\semR{p}{e}{\sigma}) \\
+  \semR{p}{\tl\,e}{\sigma} & \pi_2\, (\semR{p}{e}{\sigma}) \\
+  \semR{p}{e\,\isEq\,e'}{\sigma} & \semR{p}{e}{\sigma} \overset{?}{=} \semR{p}{e'}{\sigma} \\
+  \semR{p}{\star}{\sigma} & \inj{\toD{p}} \\
+  \semR{p}{\univ\,e\,e'}{\sigma} & 
+  \liftFun{(\liftFun{(\liftFun{\sem{\_}{ }} \circ \fromDF)}\, (\semR{p}{e}{\sigma}))}\, (\semR{p}{e'}{\sigma})\,\sigma \\  
+  \endarray
+  \]
+  La semántica de comandos no cambia, sólo llevamos como parámetro
+  el programa para dar la semántica de expresiones:
+  \[
+  \array{r@{\;=\;}l@{\quad}l}%
+  \semR{p}{v\,\assign\,e}{\sigma} & \mathop{upd}\,\sigma\,v\,\semR{p}{e}{\sigma} \\
+  \semR{p}{c\,\seq\, c'}{\sigma} & \liftFun{(\semR{p}{c'})}\,(\semR{p}{c}{\sigma})\\
+  \semR{p}{\whilec\, e\, \doc\, c}{\sigma} & \fixpoint{\Sigma_\bot \to \Sigma_\bot}{F}\,\sigma & \text{ donde } \\
+  \endarray
+  \]
+  \[
+  \array{r@{\,}l}%
+  F \colon & (\Sigma \to \Sigma_\bot) \to (\Sigma \to \Sigma_\bot) \\
+  F\,g\,\sigma =& \mathop{cond}\, (\semR{p}{e}{\sigma})\, \sigma\, (\liftFun{g}\,(\semR p c \sigma))
+  \endarray
+  \]
+  Finalmente la semántica de un programa es:
+  \[\semf{\readV\,v\,\seq\,c\,\seq\,\writeV\,w}\,d\,\sigma = 
+  \liftFun{(\mathop{get}\,w)}\,(\semR{p}{c}{[\sigma\mid v:d]}) \quad\text{ donde }\]
+  \[ p = \readV\,v\,\seq\,c\,\seq\,\writeV\,w\]
+  \end{definition}
+
+  Así como la acabamos de definir la semántica del lenguaje reflexivo NO es
+  dirigida por sintaxis; para corregir este defecto conceptual podemos hacer
+  la siguiente modificación:
+  \[\semf{\readV\,v\,\seq\,c\,\seq\,\writeV\,w}\,d\,\sigma = 
+  \liftFun{(\mathop{get}\,w)}\,(\semR{d'}{c}{[\sigma\mid v:d]}) \quad\text{ donde }\]
+  \[ d' =   \cons{\toD v}{\cons{\toD c}{\toD w}}\]
+  Es decir ahora la semántica de comandos (y la de expresiones) no toma como
+  parámetro un programa, sino un elemento de $\trees$. La otra modificación
+  respecto a la semántica de la definición anterior es en la ecuación para $\star$:
+  \[ \semR{d}{\star}{\sigma}\,=\,\inj{d}  \]
+
+\section{Semántica operacional}
+
+En esta sección damos la semántica operacional big-step de While. Para
+ello damos tres conjuntos definidos mutuamente de reglas $\bigstep_E$,
+$\bigstep_C$ y $\bigstep_P$ de evaluación de expresiones, comandos y
+programas respectivamente. Las configuraciones no terminales para
+expresiones serán triplas $(\sigma,p,e)$ y las configuraciones
+terminales son valores $d \in \trees$.
+
+\begin{minipage}{.5\linewidth}
+\begin{prooftree}
+  \AxiomC{ }
+  \RightLabel{$(\mathit{nil})$}
+  \UnaryInfC{$(\sigma,p,\nil) \bigstep_E \nil$}
+\end{prooftree}
+\end{minipage}
+\begin{minipage}{.5\linewidth}
+\begin{prooftree}
+  \AxiomC{ }
+  \RightLabel{$(\mathit{var})$}
+  \UnaryInfC{$(\sigma,p,v) \bigstep_E \sigma\,v$}
+\end{prooftree}
+\end{minipage}
+
+\begin{prooftree}
+  \AxiomC{$(\sigma,p,e) \bigstep_E d$}
+  \AxiomC{$(\sigma,p,e') \bigstep_E d'$}
+  \RightLabel{$(\mathit{cons})$}
+  \BinaryInfC{$(\sigma,p,\conse\,e\,e') \bigstep_E \cons{d}{d'}$}
+\end{prooftree}
+
+\begin{minipage}{.5\linewidth}
+  \begin{prooftree}
+    \AxiomC{$(\sigma,p,e) \bigstep_E \cons{d}{d'}$}
+    \RightLabel{$(\mathit{hd})$}
+    \UnaryInfC{$(\sigma,p,\hd\,e) \bigstep_E d$}
+  \end{prooftree}
+\end{minipage}
+\begin{minipage}{.5\linewidth}
+  \begin{prooftree}
+    \AxiomC{$(\sigma,p,e) \bigstep_E \nil$}
+    \RightLabel{$(\mathit{hd-nil})$}
+    \UnaryInfC{$(\sigma,p,\hd\,e) \bigstep_E \nil$}
+  \end{prooftree}
+\end{minipage}
+
+\begin{minipage}{.5\linewidth}
+  \begin{prooftree}
+    \AxiomC{$(\sigma,p,e) \bigstep_E \cons{d}{d'}$}
+    \RightLabel{$(\mathit{tl})$}
+    \UnaryInfC{$(\sigma,p,\tl\,e) \bigstep_E d'$}
+  \end{prooftree}
+\end{minipage}
+\begin{minipage}{.5\linewidth}
+  \begin{prooftree}
+    \AxiomC{$(\sigma,p,e) \bigstep_E \nil$}
+    \RightLabel{$(\mathit{tl-nil})$}
+    \UnaryInfC{$(\sigma,p,\tl\,e) \bigstep_E \nil$}
+  \end{prooftree}
+\end{minipage}
+
+\begin{prooftree}
+  \AxiomC{$(\sigma,p,e) \bigstep_E d$}
+  \AxiomC{$(\sigma,p,e') \bigstep_E d'$}
+  \RightLabel{$d \equiv d'\qquad (\mathit{eq-true})$}
+  \BinaryInfC{$(\sigma,p,e\isEq\,e') \bigstep_E \trueD$}
+\end{prooftree}
+
+\begin{prooftree}
+  \AxiomC{$(\sigma,p,e) \bigstep_E d$}
+  \AxiomC{$(\sigma,p,e') \bigstep_E d'$}
+  \RightLabel{$d \not\equiv d'\qquad (\mathit{eq-false})$}
+  \BinaryInfC{$(\sigma,p,e\,\isEq\,e') \bigstep_E \falseD$}
+\end{prooftree}
+
+\begin{prooftree}
+  \AxiomC{ }
+  \RightLabel{$(\mathit{star})$}
+  \UnaryInfC{$(\sigma,p,\star)\bigstep_E \toD{p}$}
+\end{prooftree}
+
+En la evaluación de $\univ$ es necesario tener definida la evaluación
+de programas.
+
+\begin{prooftree}
+  \AxiomC{$(\sigma,p,e) \bigstep_E d$}
+  \AxiomC{$(\sigma,p,e') \bigstep_E d'$}
+  \AxiomC{$(\sigma,p',d') \bigstep_P d''$}
+  \RightLabel{$\fromD{d} = p'\qquad (\mathit{univ})$}
+  \TrinaryInfC{$(\sigma,p,\univ\,e\,e') \bigstep_E d''$}
+\end{prooftree}
+
+Las configuraciones no terminales para evaluar comandos son tuplas
+$(\sigma,p,c)$ de estados, programas y comandos, mientras que las
+configuraciones terminales son estados.
+
+  \begin{prooftree}
+    \AxiomC{$(\sigma,p,e) \bigstep_E d$} 
+    \RightLabel{$(\mathit{assgn})$}
+    \UnaryInfC{$(\sigma,p,v\,\assign\,e) \bigstep_C [\sigma\.\mid\.v
+      \colon d]$}
+  \end{prooftree}
+
+  \begin{prooftree}
+    \AxiomC{$(\sigma,p,c) \bigstep_C \sigma'$}
+    \AxiomC{$(\sigma',p,c') \bigstep_C \sigma''$}
+    \RightLabel{$(\mathit{seq})$}
+    \BinaryInfC{$(\sigma,p,c\;;c') \bigstep_C \sigma''$}
+  \end{prooftree}
+
+
+\begin{prooftree}
+  \AxiomC{$(\sigma,p,e) \bigstep_E \falseD$}
+  \RightLabel{$(\mathit{while-false})$}
+  \UnaryInfC{$(\sigma,p,\whilestmt{e}{c}) \bigstep_C \sigma$}  
+\end{prooftree}
+
+\begin{prooftree}
+  \AxiomC{$(\sigma,p,e) \bigstep_E \trueD$}
+  \AxiomC{$(\sigma,p,c) \bigstep_C \sigma'$}
+  \AxiomC{$(\sigma',p,\whilestmt{e}{c}) \bigstep_C \sigma''$}
+  \RightLabel{$(\mathit{while-true})$}
+  \TrinaryInfC{$(\sigma,p,\whilestmt{e}{c}) \bigstep_C \sigma''$}
+\end{prooftree}
+
+Finalmente damos las reglas para los programas, ahora las
+configuraciones no terminales son triplas $(\sigma,p,d)$ de estados,
+programas y valores, mientras que las terminales son valores.
+
+\begin{prooftree}
+  \AxiomC{$([\sigma\.\mid\. v\colon d],\readV\,v\,\seq\,c\,\seq\,\writeV\,w,c)\bigstep_C \sigma'$}
+  \RightLabel{$(\mathit{prg})$}
+  \UnaryInfC{$(\sigma,\readV\,v\,\seq\,c\,\seq\,\writeV\,w,d) \bigstep_P \sigma'\,w$}
+\end{prooftree}
+
+\end{document}

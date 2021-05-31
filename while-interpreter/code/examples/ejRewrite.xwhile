@@ -1,0 +1,24 @@
+(* Ejemplo de la seccion 2.3.1 del libro *)
+
+prog main:
+
+read X;
+    D  := hd X;
+    E  := tl X;
+    GO := cons nil nil;
+    Y  := nil;
+    while GO do
+        rewrite [D, E] by
+            [ ((D11.D12).D2), ((E11.E12).E2)] ==> [cons D11 (cons D12 D2)
+	      		      		      	  , cons E11 (cons E12 E2)
+						  ]
+            [ ((D11.D12).D2), (nil.E2) ]      ==> GO := nil;
+            [ ((D11.D12).D2), nil ]           ==> GO := nil;
+            [ (nil.D2), ((E11.E12).E2) ]      ==> GO := nil;
+            [ (nil.D2), (nil.E2) ]            ==> [ D2, E2 ]
+            [ (nil.D2), nil ]                 ==> GO := nil;
+            [ nil,(E1.E2) ]                   ==> GO := nil;
+            [ nil,nil ]                       ==> Y := cons nil nil; GO := nil;
+        end;
+    od;
+write Y;

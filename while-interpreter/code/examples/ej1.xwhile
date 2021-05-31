@@ -1,0 +1,11 @@
+
+prog main:
+(* ejemplo de programa while *)
+read x;
+    y := nil;
+    while x 
+    do
+        x := tl x;
+        y := cons nil y;
+    od;
+write y;
