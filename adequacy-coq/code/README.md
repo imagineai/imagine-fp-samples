@@ -24,6 +24,7 @@ The formalization was tested on Ubuntu with Coq 8.8.1.
 
 ** Modules **
 
+# Chapter 4 #
 The formalization of the *chapter 4* is modularized in these files:
 
 - cbv-language/domain-theory/
@@ -70,6 +71,7 @@ The formalization of the *chapter 4* is modularized in these files:
 - DomainStuff.v
 - Utils.v
 
+# Chapter 5 #
 The formalization of the *chapter 5* is modularized in these files:
 
 - lazy-language/coq-formalization/denot/
