@@ -14,7 +14,7 @@ Interesting aspects:
   is the concrete formalization of these constructions.
 
 * In this language the programs can be values too, so a program can receive as
-  input another program. In src/ProgAsValue we define a bijection from programs
+  input another program. In `src/ProgAsValue` we define a bijection from programs
   to values, and finally we could implement the interpreter of "while language"
   in the same "while language": src/examples/interp2.xwhile.
 
