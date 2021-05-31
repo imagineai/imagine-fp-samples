@@ -77,19 +77,19 @@ The formalization of the *chapter 5* is modularized in these files:
   -- Mechanization of Biorthogonality and Step-Indexed by Rodriguez
 
 - lazy-language/coq-formalization/lazy/
-#### High-Level Language ####
+### High-Level Language ###
 - *Syntax.v*,
   Syntax definition of the language and the type system
 - *Semantics.v*,
   Intrinsic denotational semantics for the language
 
-#### The Abstract Machine ####
+### The Abstract Machine ###
 - *Machine.v*,
   Syntax and transition rules of the abstract machine
 - *Map.v*
   A lot of properties about the heaps.
 
-#### Correctness of the Compiler ####
+### Correctness of the Compiler ###
 - *Obs.v*,
   Definition of Observation for the denotational approximation.
 - *ObsSI.v*, 
