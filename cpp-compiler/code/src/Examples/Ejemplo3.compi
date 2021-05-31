@@ -1,0 +1,64 @@
+class fibonacci {
+
+    int n;
+
+    void new (int a){
+       n = a;
+    }
+
+    int fib(){
+        
+	int i, j, k, t;
+	
+	i = 1; j = 0;
+	
+	for k = 1, k <= n {
+   	    t = i + j;
+	    i = j;
+	    j = t;
+  	}
+	
+	return j;
+    }
+
+    int fib2(){
+        
+	int i, j, k, t;
+	
+	k = 1; i = 1; j = 0;
+	
+	while k <= n {
+   	    t = i + j;
+	    i = j;
+	    j = t;
+	    k += 1;
+  	}
+	
+	return j;
+    }
+    
+}
+
+class main {
+      
+   void printf(string s) extern;
+
+   void main(){
+
+   	fibonacci fib;
+	int f, f2;
+
+	fib.new(200);
+
+	f = fib.fib();
+	f2 = fib.fib2();
+	
+	if (f == f2)
+	   printf("Genial!\n");
+	else
+	   printf("No Genial!\n");
+   	
+	return;
+
+   }
+}

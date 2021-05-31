@@ -1,0 +1,9 @@
+class program {
+
+    void printf(string s) extern;
+
+    void main() {
+    	 printf("lañksjdalkjdsk\n");
+    	 return ;
+    }
+}

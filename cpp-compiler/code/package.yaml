@@ -1,0 +1,40 @@
+name:                compi
+version:             0.1.0.0
+#github:              "githubuser/compi"
+license:             BSD3
+author:              "Ale Gadea, Manu Gunther"
+#maintainer:          "example@example.com"
+#copyright:           "2019 Author name here"
+
+extra-source-files:
+- README.md
+
+# Metadata used when publishing your package
+# synopsis:            Short description of your package
+# category:            Web
+
+# To avoid duplicated efforts in documentation and dealing with the
+# complications of embedding Haddock markup inside cabal files, it is
+# common to point users to the README.md file.
+#description: Please see the README on GitHub at
+# <https://github.com/githubuser/compi#readme>
+
+executables:
+  compi:
+    main:                Main.hs
+    source-dirs:         src
+    ghc-options:
+    - -O2
+    - -Wall
+    - -Werror
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - base >= 4.7.0
+    - parsec >= 3.1.0
+    - containers >= 0.6.0
+    - mtl >= 2.2.0
+    - pretty >= 1.1.3.6
+    - filepath >= 1.4.0
+    - process >= 1.6.5.0

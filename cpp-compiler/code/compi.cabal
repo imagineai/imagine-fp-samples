@@ -1,0 +1,78 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.31.2.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: 48cdd6fde8602af72cfbe55db040a7ab36c5da83ae888da2a4c0023b8aafdc78
+
+name:           compi
+version:        0.1.0.0
+author:         Ale Gadea, Manu Gunther
+maintainer:     Ale Gadea, Manu Gunther
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+
+executable compi
+  main-is: Main.hs
+  other-modules:
+      InterCode
+      InterCode.Expr
+      InterCode.InterCode
+      InterCode.Monad
+      InterCode.Program
+      InterCode.Statement
+      Machine
+      Machine.ArithCode
+      Machine.BoolCode
+      Machine.Code
+      Machine.GenCode
+      Machine.Monad
+      Machine.PPrint
+      MainHandler.ArgsHandler
+      MainHandler.Exceptions
+      MainHandler.InputHandler
+      Parser
+      Parser.Expr
+      Parser.Lexer
+      Parser.Program
+      Parser.Statement
+      StaticCheck
+      StaticCheck.Generic
+      StaticCheck.Generic.Checks
+      StaticCheck.Generic.Error
+      StaticCheck.Generic.Monad
+      StaticCheck.TypeChecker
+      StaticCheck.TypeChecker.Class
+      StaticCheck.TypeChecker.Error
+      StaticCheck.TypeChecker.Expr
+      StaticCheck.TypeChecker.Monad
+      StaticCheck.TypeChecker.PPrint
+      StaticCheck.TypeChecker.Program
+      StaticCheck.TypeChecker.Statement
+      StaticCheck.TypeChecker.TypedSyntax
+      Syntax
+      Syntax.Expr
+      Syntax.PPrint
+      Syntax.PPrint.Expr
+      Syntax.PPrint.Program
+      Syntax.PPrint.Statement
+      Syntax.Program
+      Syntax.Statement
+      Syntax.Type
+      Paths_compi
+  hs-source-dirs:
+      src
+  ghc-options: -O2 -Wall -Werror -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.7.0
+    , containers >=0.6.0
+    , filepath >=1.4.0
+    , mtl >=2.2.0
+    , parsec >=3.1.0
+    , pretty >=1.1.3.6
+    , process >=1.6.5.0
+  default-language: Haskell2010

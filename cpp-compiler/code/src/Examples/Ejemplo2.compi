@@ -1,0 +1,31 @@
+class A {
+      int i;
+      
+      void printf(string s, int i) extern;
+      
+      int getI(){
+      	  return i;
+      }
+
+      void setI(int j){
+      	   i = j;
+      }
+      
+      int main() {
+      	  int i;
+
+	  setI (100);
+	  i = 10;
+	  
+	  if (true) {
+	     int i;
+	     i = 1;
+	     printf("\ni if-local: %i\n",i);
+	  }
+
+	  printf("\ni local: %i\n",i);
+	  printf("\ni global: %i\n",getI());
+	  
+	  return 0;
+      }
+}

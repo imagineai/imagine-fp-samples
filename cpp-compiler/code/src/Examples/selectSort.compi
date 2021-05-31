@@ -1,0 +1,62 @@
+class A {
+
+      int array[10];
+      int n;
+
+      void printf(string s, int i) extern;
+      int rand() extern;
+
+      void genArray(){
+      	   int i;
+	   
+	   for i = 0, n {
+	       array[i] = rand() % 1000;
+	  }
+      }
+
+      void printArray(){
+      	   int i;
+
+	   for i = 0, n {
+	      printf("%i\n", array[i]);
+	  }
+      }
+
+      void swap(int pos0,int pos1){
+      	   int aux;
+	   
+	   aux = array[pos0];
+	   array[pos0] = array[pos1];
+	   array[pos1] = aux;
+      }
+
+      int main() {
+      	  int c, position,d,swap;
+
+	  n = 9;
+
+	  genArray();
+	  
+	  printf("Array to sort:\n",0);
+	  
+	  printArray();
+
+	  for c = 0, ( n - 1 ){
+      	      position = c;
+ 	      
+	      for d = c + 1, n {
+              	  if ( array[position] > array[d] ) position = d;
+	      }
+      	      
+	      if ( position != c ) {
+	      	 swap(position, c);
+      	      }
+          }
+	  
+	  printf("Sorted array in ascending order:\n",0);
+	  
+	  printArray();
+ 
+	  return 0;
+      }
+}

@@ -1,0 +1,41 @@
+class A {
+      
+      int attr1;
+      boolean attr2;
+      float attr3;
+
+      void init(int a, boolean b, float c){
+      	   attr1 = a;
+	   attr2 = b;
+	   attr3 = c;
+      }
+
+      int get1(){
+      	  return attr1;
+      }
+
+      boolean get2(){
+      	  return attr2;
+      }
+
+      float get3(){
+      	  return attr3;
+      }
+}
+
+class B {
+      A attr[10];
+      
+      void main(){
+      	   int i;
+      	   boolean b;
+	   
+	   for i = 0, 9 {
+	       attr[i].init(i,true,3.14);
+	   }
+	   
+	   b = attr[0].get2();
+	   attr[5].attr2 = b;
+	   
+      }
+}
