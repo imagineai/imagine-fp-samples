@@ -1,68 +1,69 @@
 While
 ======
 
-# Dependencias
+# Dependencies
 
-### Instalando dependencias usando *cabal*
+### Installing dependencies with *cabal*
 
 `cabal install --only-dependencies`
 
-# Instalación
+# 1
 
-### Usando cabal
+### Using cabal
 
 0. `cabal clean`
 1. `cabal configure`
 2. `cabal build`
 3. `cabal install`
 
-### Usando GHC
+### Using GHC
 
 `ghc --make src/Main`
 
-# Tipos de archivos while
+# While kind-files
 
-# Uso
+# Usage
 
-#### Iniciando el interprete
+#### Starting the interpreter
 ```sh
 $> iwhile
 		--- WHILE intérprete, versión 0.1 ---
-		          (help para ayuda)
+		          (help for info)
 
 [--,--] > 
 ```
-El promp se constituye de dos campos (inicialmente vacíos), donde el lugar izquierdo indica el programa cargado y el derecho el dato, o entrada, para ejecutar ese programa.
+The prompt is conformed with two components (initially empty), where the left component tells the loaded program and the right componen the loaded data.
 
-#### Cargando un programa
-Para cargar un programa while usamos **lp** (load program)
+#### Loading a program
+We can load a program using **lp** (load program)
 ```sh
 [--,--] > lp examples/sum1.while
 [sum1,--] > 
 ```
-Cargamos, por ejemplo, el programa `sum1.while` que suma uno.
+So, for instance, we load the program `sum1.while` that adds one.
 
-#### Cargando un dato
-Para cargar un dato usamos **ld** (load data). Este comando se puede usar de tres maneras:
+#### Loading a data
+We can load a data using **ld** (load data). This command has three different uses:
 
-- Para cargar un dato de tipo `nat`, `tree` o `list`.
+- Loading a data of type `nat`, `tree` or `list`.
     ```sh
     [sum1,--] > ld 1
-    [sum1,dato] > 
+    [sum1,data] > 
     ```
-- Para cargar un dato desde un archivo con extensión `.data`.
+- Loading a data from a file with extension `.data`.
     ```sh
     [sum1,--] > ld examples/1.data
-    [sum1,dato] > 
+    [sum1,data] > 
     ```
-- Para cargar un programa como dato.
+- Loading a program as a data.
     ```sh
     [sum1,--] > ld examples/sum1.while
     [sum1,sum1] > 
     ```
 
-#### Usando iwhile
-Para ejecutar un programa while y en un dato previamente cargados podemos hacer **run** seguido de la forma en que queremos representar el resultado. Las cuales a modo de ejemplo pueden llegar a tener la siguiente "forma", donde no siempre vamos a poder ver a todo dato (o programa) con cualquier representación.
+#### Using iwhile
+It's possible to run a previously loaded while program with a data doing **run**, followed by the type on which we want to represent the result. These could be
+any of the followings, clearly not all the results supports all the type representations.
 
 - `tree`
     ```sh
@@ -90,25 +91,26 @@ Para ejecutar un programa while y en un dato previamente cargados podemos hacer 
         1 := cons nil 1
     write 1
     ```
-Continuando con el ejemplo donde teníamos cargado el programa que sumaba uno y como dato al número 1:
+Following with the example on which we had loaded the program that adds one and the data was the number 1:
 
 ```sh
-[sum1,dato] > run nat 
-Resultado:
+[sum1,data] > run nat 
+Result:
 
 2
 ```
 
-#### Otros comandos útiles
+#### Other useful commands
 
-Además existen **showp** y **showd** que nos permiten mostrar un programa o dato respectivamente. Y al igual que con **run** tenemos las distintas "formas" de representación (`tree`, `data`, `nat`, `list`, `prog`).
+Also we have **showp** y **showd** commands that allows us to show a program or a data respectively. As it happens with **run** these have different
+types of representation: `tree`, `data`, `nat`, `list` and `prog`.
 
-Por otro lado un comando que suele ser útil en ciertas circunstancias es el **append**, que funciona parecido al **ld**. Pero cuya meta es pegar dos datos.
+Another useful command is **append**, that allows us to append two datas.
 
 ```sh
 [--,--] > ld 1
-[--,dato] > append 2
-[--,dato.dato] > showd tree 
+[--,data] > append 2
+[--,data.data] > showd tree 
 Dato cargado: 
 
          |         
@@ -125,5 +127,3 @@ nil nil nil    |
              /   \ 
             nil nil
 ```
-
-# Ejemplos
