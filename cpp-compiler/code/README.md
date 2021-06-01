@@ -1,15 +1,14 @@
 Compi
 =====
 
-En este trabajo describimos la implementación de un compilador para
-un lenguaje imperativo con clases, abordando las distintas etapas que
-intervienen en el desarrollo: análisis léxico, parsing, análisis estático,
-generación de código intermedio y por último código de máquina.
+On this work we describe the implementation of a compiler for an imperative
+language with support for classes, approaching the different phases of the
+compiler: lexical analysis, parsing, static checks, code generation to an
+intermediate code and finally the code generation to machine code.
 
-La implementación fue realizada en Haskell, siguiendo una modularización
-que pretende respetar la división en etapas del desarrollo de compiladores.
+The implementation was made on Haskell using a compiler phase-driven modularization.
 
-# Dependencias
+# Dependencies
 
 * base       >= 4.7.0
 * parsec     >= 3.1.0
@@ -19,42 +18,39 @@ que pretende respetar la división en etapas del desarrollo de compiladores.
 * filepath   >= 1.4.0
 * process    >= 1.6.5.0
 
-# Instalación
+# Installation
 
-### Usando *stack* (Recomendado)
+### Using *stack* (Recommended)
 
 1. `stack setup`
 2. `stack build`
 
-### Usando cabal
+### Using cabal
 
 1. `cabal configure`
 2. `cabal build`
 3. `cabal install`
 
-### Usando GHC
+### Using GHC
 
 `ghc --make Main`
 
-# Uso utilizando stack
+# Usage with stack
 
 ```
-$stack exec -- compi [opciones]
+$stack exec -- compi [options]
 
-Optiones: 
+Options: 
 
-  -i <entrada>  --input=<entrada>  Nombre del archivo de <entrada>
-  -o <salida>   --output=<salida>  Renombra el archivo ejecutable a <salida>
-  -t <etapa>    --target=<etapa>   <etapa> es la de "parse", "staticcheck",
+  -i <input>    --input=<input>  Name of the file <input>
+  -o <output>   --output=<output>  Rename the exe with <output>
+  -t <phase>    --target=<phase>   <phase> es la de "parse", "staticcheck",
      				   "codinter", "assembly" o "executable".
-                                   La compilación procede hasta la etapa dada.
-  -h            --help             Muestra la información actual.
+                                   The compilation proceeds until the given phase.
+  -h            --help             Show the current information..
 ```
 
-# Ejemplos
+# Examples
 
-* Ejemplos/Ejemplo1.compi: Ejemplo variado para mostrar el parseo.
-* Ejemplos/Ejemplo2.compi: Ejemplo para mostrar la localidad.
-* Ejemplos/selectionSort.compi: Una implementación andando del selección
-  sort que utiliza atributos de clase, varias funciones definidas y uso
-  de funciones externas.
+* Ejemplos/selectionSort.compi: Selection Sort implementation using
+  many internal and external functions.
